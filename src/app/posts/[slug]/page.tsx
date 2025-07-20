@@ -14,7 +14,11 @@ export async function generateStaticParams() {
     .map((file) => ({ slug: file.replace(/\.md$/, '') }));
 }
 
-export default async function PostPage({ params }: { params: { slug: string } }) {
+type PageProps = {
+  params: { slug: string }
+};
+
+export default async function PostPage({ params }: PageProps) {
   const postPath = path.join(process.cwd(), 'posts', `${params.slug}.md`);
   if (!fs.existsSync(postPath)) return notFound();
   const source = fs.readFileSync(postPath, 'utf8');
