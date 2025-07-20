@@ -36,8 +36,8 @@ export default function Home() {
         className="rounded-full mb-6 shadow-lg object-cover"
         priority
       />
-      <h1 className="text-3xl font-bold mb-2">你的名字</h1>
-      <p className="text-gray-500 mb-8 text-center max-w-md">这里写一小段你的个人简介，介绍你自己或你的兴趣。</p>
+      <h1 className="text-3xl font-bold mb-2">Taffy Wang</h1>
+      <p className="text-gray-500 mb-8 text-center max-w-md">提前退役的转码广告人，Take it Easy, just thinking 🐣</p>
       <h2 className="text-xl font-semibold mb-4 mt-8">Thoughts</h2>
       <div className="w-full max-w-xl flex flex-col gap-4">
         {posts.length === 0 && <p className="text-center text-gray-400">暂无文章</p>}
