@@ -8,7 +8,7 @@ import Link from 'next/link';
 
 export async function generateStaticParams() {
   const postsDir = path.join(process.cwd(), 'posts');
-  const files = fs.readdirSync(postsDir);
+  const files = await fs.promises.readdir(postsDir);
   return files
     .filter((file) => file.endsWith('.md'))
     .map((file) => ({ slug: file.replace(/\.md$/, '') }));
