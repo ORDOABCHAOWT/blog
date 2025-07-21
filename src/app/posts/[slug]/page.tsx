@@ -30,6 +30,9 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
       <article className="w-full max-w-2xl">
         <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>
       </article>
+      <div className="w-full flex justify-center mt-8 mb-4">
+        <span className="text-xs text-gray-400">© {new Date().getFullYear()} Taffy</span>
+      </div>
     </main>
   );
 } 
