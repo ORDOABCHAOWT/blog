@@ -28,6 +28,20 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         {children}
+        <footer style={{
+          width: '100%',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          padding: '32px 0',
+          color: '#bcbec7',
+          fontSize: '2rem',
+          fontWeight: 500,
+          borderRadius: '64px',
+          background: 'rgba(0,0,0,0.01)'
+        }}>
+          © {new Date().getFullYear()} Taffy
+        </footer>
       </body>
     </html>
   );
