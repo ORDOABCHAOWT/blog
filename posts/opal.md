@@ -6,9 +6,7 @@ description: "缺失「主线任务」的人生，哪怕没有手机和互联网
 
 现代人戒手机一般来讲无非就是卸载娱乐型App、采用系统自带的时间限制或重新使用Dumb Phone（功能机），但尝试过后要么发现对生活造成了不便，要么反馈收效甚微。曾经我也是「小红书」、「抖音」等各种APP卸载了又重新下；不断「续杯15分钟后提醒我」；手机刷不了我上电脑网页版刷……抱着死马当活马医的心态，我在某个工作日的上午安装了Opal，一周过后，我发现我的注意力终于回来了。
 ![iPhone自带的App使用时间限制功能](https://taffyblog.oss-ap-northeast-1.aliyuncs.com/1754874447_1.png)
-<figure>
-<figcaption>iPhone自带的App使用时间限制功能</figcaption>
-</figure>
+<p style="text-align:center; color:#666;"><em>iPhone自带的App使用时间限制功能</em></p>
 
 下载并且填完一些个人需求问卷后，Opal会根据我填写的需求自动设置不同时间段要屏蔽的App，像我的工作日就被设置的比周末严格一些（上班比假期更喜欢刷手机），你也可以按照自己的需求去设置时间段、需要屏蔽的App列表并选择摆脱限制的难易度（我认为选择最简单的那一档就够用了）。
 ![Opal的主界面，App屏蔽列表设置](https://taffyblog.oss-ap-northeast-1.aliyuncs.com/1754874448_2.png)
