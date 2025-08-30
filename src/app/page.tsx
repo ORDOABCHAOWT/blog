@@ -38,7 +38,7 @@ export default function Home() {
           priority
         />
         <h1 className="text-3xl font-bold mb-2">Taffy Wang</h1>
-        <p className="text-gray-500 mb-8 text-center max-w-md">提前退役的转码广告人，Take it Easy, just thinking 🐣</p>
+        <p className="text-gray-500 mb-8 text-center max-w-md">Take it Easy, just thinking 🐣</p>
         {/* 社交媒体图标栏 */}
         <div className="flex flex-row items-center gap-6 mb-6">
           {/* 微信 */}
@@ -71,16 +71,7 @@ export default function Home() {
               className="group-hover:brightness-75 transition"
             />
           </a>
-          {/* Instagram */}
-          <a href="https://www.instagram.com/orderfrom_/" target="_blank" rel="noopener noreferrer" className="p-1 group">
-            <Image
-              src="/instagram.png"
-              alt="Instagram"
-              width={28}
-              height={28}
-              className="group-hover:brightness-75 transition"
-            />
-          </a>
+         
         </div>
         {/* END 社交媒体图标栏 */}
         <h2 className="text-xl font-semibold mb-4 mt-8">Thoughts</h2>
