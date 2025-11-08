@@ -61,16 +61,6 @@ export default function Home() {
               className="group-hover:brightness-75 transition"
             />
           </a>
-          {/* Substack */}
-          <a href="https://substack.com/@iwanted?utm_source=global-search" target="_blank" rel="noopener noreferrer" className="p-1 group">
-            <Image
-              src="/substack.png"
-              alt="Substack"
-              width={24}
-              height={24}
-              className="group-hover:brightness-75 transition"
-            />
-          </a>
          
         </div>
         {/* END 社交媒体图标栏 */}
