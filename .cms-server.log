@@ -1,0 +1,27 @@
+
+> minimal-blog@0.1.0 dev
+> next dev --turbopack
+
+   ▲ Next.js 15.4.1 (Turbopack)
+   - Local:        http://localhost:3000
+   - Network:      http://192.168.50.206:3000
+   - Environments: .env.local
+
+ ✓ Starting...
+ ✓ Ready in 935ms
+ ○ Compiling /admin ...
+ ✓ Compiled /admin in 5.6s
+ GET /admin 200 in 5796ms
+ ✓ Compiled /api/posts in 229ms
+ GET /api/posts 200 in 297ms
+ GET /favicon.ico?favicon.18fbc6a8.ico 200 in 428ms
+ GET /admin 200 in 73ms
+ GET /api/posts 200 in 33ms
+ ✓ Compiled /admin/new in 467ms
+ GET /admin/new 200 in 493ms
+ ○ Compiling /api/upload ...
+ ✓ Compiled /api/upload in 686ms
+ POST /api/upload 200 in 3487ms
+ POST /api/upload 200 in 999ms
+ POST /api/upload 200 in 2211ms
+[?25h
