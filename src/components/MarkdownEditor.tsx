@@ -19,16 +19,16 @@ export interface MarkdownEditorRef {
 
 const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>(
   ({ value, onChange }, ref) => {
-    const [instance, setInstance] = useState<any>(null);
+    const instanceRef = useRef<any>(null);
 
     const getMdeInstance = useCallback((instance: any) => {
-      setInstance(instance);
+      instanceRef.current = instance;
     }, []);
 
     useImperativeHandle(ref, () => ({
       insertAtCursor: (text: string) => {
-        if (instance?.codemirror) {
-          const cm = instance.codemirror;
+        if (instanceRef.current?.codemirror) {
+          const cm = instanceRef.current.codemirror;
           const doc = cm.getDoc();
           const cursor = doc.getCursor();
 
@@ -46,11 +46,11 @@ const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>(
           cm.focus();
         } else {
           // 备用方案：获取当前编辑器内容并追加
-          const currentValue = instance?.codemirror?.getValue() || '';
+          const currentValue = instanceRef.current?.codemirror?.getValue() || '';
           onChange(currentValue + '\n' + text + '\n');
         }
       },
-    }), [instance, onChange]);
+    }), [onChange]);
 
     return (
       <div className="markdown-editor">

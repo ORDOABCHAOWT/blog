@@ -28,3 +28,18 @@
  GET /admin 200 in 69ms
  GET /api/posts 200 in 27ms
  ✓ Compiled /api/deploy in 96ms
+ POST /api/deploy 200 in 6297ms
+ GET /admin/new 200 in 148ms
+ ✓ Compiled in 128ms
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ ✓ Compiled in 39ms
+ GET /favicon.ico?favicon.18fbc6a8.ico 200 in 249ms
+ GET /admin/new 200 in 293ms
+ GET /favicon.ico?favicon.18fbc6a8.ico 200 in 237ms
+ ○ Compiling /api/upload ...
+ ✓ Compiled /api/upload in 500ms
+ POST /api/upload 200 in 3051ms
+ POST /api/posts 200 in 40ms
+ GET /admin 200 in 45ms
+ GET /api/posts 200 in 20ms
+ GET /api/posts 200 in 17ms
