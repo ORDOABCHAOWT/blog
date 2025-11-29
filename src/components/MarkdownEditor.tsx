@@ -22,20 +22,30 @@ const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>(
 
     useImperativeHandle(ref, () => ({
       insertAtCursor: (text: string) => {
-        if (editorRef.current) {
-          const cm = editorRef.current.codemirror;
-          if (cm) {
+        // 尝试使用 CodeMirror 插入
+        try {
+          if (editorRef.current?.codemirror) {
+            const cm = editorRef.current.codemirror;
             const doc = cm.getDoc();
             const cursor = doc.getCursor();
             doc.replaceRange(text, cursor);
-            // 移动光标到插入文本之后
-            const newCursor = { line: cursor.line, ch: cursor.ch + text.length };
+            const lines = text.split('\n');
+            const lastLine = lines[lines.length - 1];
+            const newCursor = lines.length > 1
+              ? { line: cursor.line + lines.length - 1, ch: lastLine.length }
+              : { line: cursor.line, ch: cursor.ch + text.length };
             doc.setCursor(newCursor);
             cm.focus();
+            return;
           }
+        } catch (e) {
+          // 忽略错误，使用备用方案
         }
+
+        // 备用方案：直接添加到末尾
+        onChange(value + '\n\n' + text + '\n\n');
       },
-    }));
+    }), [value, onChange]);
 
   useEffect(() => {
     // 动态导入 easymde 样式

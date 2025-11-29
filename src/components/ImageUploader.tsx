@@ -41,6 +41,7 @@ export default function ImageUploader({ onUploadSuccess }: ImageUploaderProps) {
 
       if (response.ok && data.success) {
         onUploadSuccess(data.markdown);
+        alert('✅ 图片上传成功！');
       } else {
         alert(`上传失败: ${data.error || '未知错误'}`);
       }
