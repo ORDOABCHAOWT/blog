@@ -43,3 +43,7 @@
  GET /admin 200 in 45ms
  GET /api/posts 200 in 20ms
  GET /api/posts 200 in 17ms
+ POST /api/deploy 200 in 3851ms
+ ✓ Compiled /api/posts/[slug] in 147ms
+ DELETE /api/posts/d 200 in 544ms
+ GET /api/posts 200 in 26ms
