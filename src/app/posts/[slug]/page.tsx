@@ -32,7 +32,8 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
         <ReactMarkdown
           remarkPlugins={[remarkGfm]}
           components={{
-            img: ({ node, ...props }) => (
+            // @ts-expect-error - ReactMarkdown types are complex
+            img: ({ ...props }) => (
               <img
                 {...props}
                 alt={props.alt || ''}
@@ -40,7 +41,7 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
                 loading="lazy"
               />
             ),
-            a: ({ node, ...props }) => (
+            a: ({ ...props }) => (
               <a
                 {...props}
                 className="text-blue-600 hover:underline"
@@ -48,30 +49,30 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
                 rel={props.href?.startsWith('http') ? 'noopener noreferrer' : undefined}
               />
             ),
-            p: ({ node, ...props }) => (
+            p: ({ ...props }) => (
               <p {...props} className="my-4 leading-relaxed" />
             ),
-            h1: ({ node, ...props }) => (
+            h1: ({ ...props }) => (
               <h1 {...props} className="text-2xl font-bold mt-8 mb-4" />
             ),
-            h2: ({ node, ...props }) => (
+            h2: ({ ...props }) => (
               <h2 {...props} className="text-xl font-semibold mt-6 mb-3" />
             ),
-            h3: ({ node, ...props }) => (
+            h3: ({ ...props }) => (
               <h3 {...props} className="text-lg font-semibold mt-4 mb-2" />
             ),
-            blockquote: ({ node, ...props }) => (
+            blockquote: ({ ...props }) => (
               <blockquote {...props} className="border-l-4 border-gray-300 pl-4 italic my-4 text-gray-600" />
             ),
-            code: ({ node, inline, ...props }: any) => (
-              inline
-                ? <code {...props} className="bg-gray-100 px-1 py-0.5 rounded text-sm" />
-                : <code {...props} className="block bg-gray-100 p-4 rounded-lg my-4 overflow-x-auto" />
+            code: (props: { inline?: boolean }) => (
+              props.inline
+                ? <code className="bg-gray-100 px-1 py-0.5 rounded text-sm">{props.children}</code>
+                : <code className="block bg-gray-100 p-4 rounded-lg my-4 overflow-x-auto">{props.children}</code>
             ),
-            ul: ({ node, ...props }) => (
+            ul: ({ ...props }) => (
               <ul {...props} className="list-disc list-inside my-4 space-y-2" />
             ),
-            ol: ({ node, ...props }) => (
+            ol: ({ ...props }) => (
               <ol {...props} className="list-decimal list-inside my-4 space-y-2" />
             ),
           }}

@@ -1,7 +1,8 @@
 'use client';
 
-import { useEffect, useRef, useImperativeHandle, forwardRef } from 'react';
+import { useRef, useImperativeHandle, forwardRef } from 'react';
 import dynamic from 'next/dynamic';
+import 'easymde/dist/easymde.min.css';
 
 const SimpleMDE = dynamic(() => import('react-simplemde-editor'), {
   ssr: false,
@@ -18,7 +19,7 @@ export interface MarkdownEditorRef {
 
 const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>(
   ({ value, onChange }, ref) => {
-    const editorRef = useRef<any>(null);
+    const editorRef = useRef<{ codemirror?: { getDoc: () => { getCursor: () => { line: number; ch: number }; replaceRange: (text: string, cursor: { line: number; ch: number }) => void; setCursor: (cursor: { line: number; ch: number }) => void }; focus: () => void } } | null>(null);
 
     useImperativeHandle(ref, () => ({
       insertAtCursor: (text: string) => {
@@ -38,7 +39,7 @@ const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>(
             cm.focus();
             return;
           }
-        } catch (e) {
+        } catch {
           // 忽略错误，使用备用方案
         }
 
@@ -46,11 +47,6 @@ const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>(
         onChange(value + '\n\n' + text + '\n\n');
       },
     }), [value, onChange]);
-
-  useEffect(() => {
-    // 动态导入 easymde 样式
-    import('easymde/dist/easymde.min.css');
-  }, []);
 
     return (
       <div className="markdown-editor">
