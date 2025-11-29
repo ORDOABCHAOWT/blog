@@ -8,20 +8,24 @@
    - Environments: .env.local
 
  ✓ Starting...
- ✓ Ready in 935ms
+ ✓ Ready in 775ms
  ○ Compiling /admin ...
- ✓ Compiled /admin in 5.6s
- GET /admin 200 in 5796ms
- ✓ Compiled /api/posts in 229ms
- GET /api/posts 200 in 297ms
- GET /favicon.ico?favicon.18fbc6a8.ico 200 in 428ms
- GET /admin 200 in 73ms
- GET /api/posts 200 in 33ms
- ✓ Compiled /admin/new in 467ms
- GET /admin/new 200 in 493ms
+ ✓ Compiled /admin in 3.3s
+ GET /admin 200 in 3519ms
+ GET /admin 200 in 103ms
+ ✓ Compiled /api/posts in 261ms
+ GET /api/posts 200 in 326ms
+ GET /favicon.ico?favicon.18fbc6a8.ico 200 in 463ms
+ ✓ Compiled /admin/edit/[slug] in 407ms
+ GET /admin/edit/s 200 in 727ms
+ ✓ Compiled /api/posts/[slug] in 73ms
+ GET /api/posts/s 200 in 344ms
+ GET /api/posts/s 200 in 35ms
  ○ Compiling /api/upload ...
- ✓ Compiled /api/upload in 686ms
- POST /api/upload 200 in 3487ms
- POST /api/upload 200 in 999ms
- POST /api/upload 200 in 2211ms
-[?25h
+ ✓ Compiled /api/upload in 1042ms
+ POST /api/upload 200 in 3789ms
+ GET /admin 200 in 86ms
+ GET /api/posts 200 in 32ms
+ DELETE /api/posts/s 200 in 34ms
+ GET /api/posts 200 in 52ms
+ ✓ Compiled /api/deploy in 115ms

@@ -67,7 +67,7 @@ export default function NewPostPage() {
   const handleImageUpload = (markdown: string) => {
     // 在光标位置插入图片链接
     if (editorRef.current) {
-      editorRef.current.insertAtCursor(`\n${markdown}\n`);
+      editorRef.current.insertAtCursor(markdown);
     }
   };
 

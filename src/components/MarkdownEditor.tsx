@@ -29,12 +29,17 @@ const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>(
             const cm = editorRef.current.codemirror;
             const doc = cm.getDoc();
             const cursor = doc.getCursor();
-            doc.replaceRange(text, cursor);
-            const lines = text.split('\n');
-            const lastLine = lines[lines.length - 1];
-            const newCursor = lines.length > 1
-              ? { line: cursor.line + lines.length - 1, ch: lastLine.length }
-              : { line: cursor.line, ch: cursor.ch + text.length };
+
+            // 在当前光标位置插入，前后各加一个换行
+            const textToInsert = '\n' + text + '\n';
+            doc.replaceRange(textToInsert, cursor);
+
+            // 移动光标到插入内容之后
+            const lines = textToInsert.split('\n');
+            const newCursor = {
+              line: cursor.line + lines.length - 1,
+              ch: lines[lines.length - 1].length
+            };
             doc.setCursor(newCursor);
             cm.focus();
             return;
@@ -44,7 +49,7 @@ const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>(
         }
 
         // 备用方案：直接添加到末尾
-        onChange(value + '\n\n' + text + '\n\n');
+        onChange(value + '\n' + text + '\n');
       },
     }), [value, onChange]);
 
