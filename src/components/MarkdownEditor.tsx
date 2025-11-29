@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useImperativeHandle, forwardRef } from 'react';
+import { useRef, useImperativeHandle, forwardRef, useState, useCallback } from 'react';
 import dynamic from 'next/dynamic';
 import 'easymde/dist/easymde.min.css';
 
@@ -19,46 +19,45 @@ export interface MarkdownEditorRef {
 
 const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>(
   ({ value, onChange }, ref) => {
-    const editorRef = useRef<{ codemirror?: { getDoc: () => { getCursor: () => { line: number; ch: number }; replaceRange: (text: string, cursor: { line: number; ch: number }) => void; setCursor: (cursor: { line: number; ch: number }) => void }; focus: () => void } } | null>(null);
+    const [instance, setInstance] = useState<any>(null);
+
+    const getMdeInstance = useCallback((instance: any) => {
+      setInstance(instance);
+    }, []);
 
     useImperativeHandle(ref, () => ({
       insertAtCursor: (text: string) => {
-        // 尝试使用 CodeMirror 插入
-        try {
-          if (editorRef.current?.codemirror) {
-            const cm = editorRef.current.codemirror;
-            const doc = cm.getDoc();
-            const cursor = doc.getCursor();
+        if (instance?.codemirror) {
+          const cm = instance.codemirror;
+          const doc = cm.getDoc();
+          const cursor = doc.getCursor();
 
-            // 在当前光标位置插入，前后各加一个换行
-            const textToInsert = '\n' + text + '\n';
-            doc.replaceRange(textToInsert, cursor);
+          // 在当前光标位置插入，前后各加一个换行
+          const textToInsert = '\n' + text + '\n';
+          doc.replaceRange(textToInsert, cursor);
 
-            // 移动光标到插入内容之后
-            const lines = textToInsert.split('\n');
-            const newCursor = {
-              line: cursor.line + lines.length - 1,
-              ch: lines[lines.length - 1].length
-            };
-            doc.setCursor(newCursor);
-            cm.focus();
-            return;
-          }
-        } catch {
-          // 忽略错误，使用备用方案
+          // 移动光标到插入内容之后
+          const lines = textToInsert.split('\n');
+          const newCursor = {
+            line: cursor.line + lines.length - 1,
+            ch: lines[lines.length - 1].length
+          };
+          doc.setCursor(newCursor);
+          cm.focus();
+        } else {
+          // 备用方案：获取当前编辑器内容并追加
+          const currentValue = instance?.codemirror?.getValue() || '';
+          onChange(currentValue + '\n' + text + '\n');
         }
-
-        // 备用方案：直接添加到末尾
-        onChange(value + '\n' + text + '\n');
       },
-    }), [value, onChange]);
+    }), [instance, onChange]);
 
     return (
       <div className="markdown-editor">
         <SimpleMDE
-          ref={editorRef}
           value={value}
           onChange={onChange}
+          getMdeInstance={getMdeInstance}
           options={{
           spellChecker: false,
           placeholder: '在这里输入文章内容（支持Markdown）...',

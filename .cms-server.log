@@ -8,24 +8,23 @@
    - Environments: .env.local
 
  ✓ Starting...
- ✓ Ready in 775ms
+ ✓ Ready in 893ms
  ○ Compiling /admin ...
- ✓ Compiled /admin in 3.3s
- GET /admin 200 in 3519ms
- GET /admin 200 in 103ms
- ✓ Compiled /api/posts in 261ms
- GET /api/posts 200 in 326ms
- GET /favicon.ico?favicon.18fbc6a8.ico 200 in 463ms
- ✓ Compiled /admin/edit/[slug] in 407ms
- GET /admin/edit/s 200 in 727ms
- ✓ Compiled /api/posts/[slug] in 73ms
- GET /api/posts/s 200 in 344ms
- GET /api/posts/s 200 in 35ms
- ○ Compiling /api/upload ...
- ✓ Compiled /api/upload in 1042ms
- POST /api/upload 200 in 3789ms
- GET /admin 200 in 86ms
- GET /api/posts 200 in 32ms
- DELETE /api/posts/s 200 in 34ms
- GET /api/posts 200 in 52ms
- ✓ Compiled /api/deploy in 115ms
+ ✓ Compiled /admin in 3.7s
+ GET /admin 200 in 3942ms
+ ✓ Compiled /admin/new in 429ms
+ GET /admin/new 200 in 521ms
+ ✓ Compiled /favicon.ico in 331ms
+ GET /favicon.ico?favicon.18fbc6a8.ico 200 in 609ms
+ GET /admin 200 in 69ms
+ ✓ Compiled /api/posts in 188ms
+ GET /api/posts 200 in 234ms
+ GET /admin/new 200 in 58ms
+ GET /admin/new 200 in 103ms
+ GET /favicon.ico?favicon.18fbc6a8.ico 200 in 245ms
+ GET /admin/new 200 in 157ms
+ GET /favicon.ico?favicon.18fbc6a8.ico 200 in 247ms
+ ✓ Compiled in 93ms
+ GET /admin 200 in 69ms
+ GET /api/posts 200 in 27ms
+ ✓ Compiled /api/deploy in 96ms
