@@ -50,3 +50,18 @@
  POST /api/deploy 200 in 3800ms
  GET /admin 200 in 87ms
  GET /api/posts 200 in 39ms
+ POST /api/deploy 200 in 4353ms
+ GET /admin/new 200 in 54ms
+ POST /api/upload 200 in 893ms
+ ✓ Compiled / in 345ms
+ GET / 200 in 414ms
+ GET /admin 200 in 152ms
+ GET /api/posts 200 in 34ms
+ GET /admin 200 in 305ms
+ GET /api/posts 200 in 34ms
+ GET /admin/new 200 in 196ms
+ ✓ Compiled in 103ms
+ ✓ Compiled in 99ms
+ GET /admin 200 in 140ms
+ GET /api/posts 200 in 34ms
+[?25h

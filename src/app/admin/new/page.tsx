@@ -72,79 +72,79 @@ export default function NewPostPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
+    <div className="admin-container p-8">
       <div className="max-w-5xl mx-auto">
         <div className="mb-6">
-          <h1 className="text-3xl font-bold mb-2">写新文章</h1>
-          <Link href="/admin" className="text-sm text-blue-600 hover:underline">
+          <h1 className="text-3xl font-bold mb-2 admin-text-primary">写新文章</h1>
+          <Link href="/admin" className="text-sm admin-link">
             ← 返回管理后台
           </Link>
         </div>
 
         {error && (
-          <div className="mb-6 p-4 bg-red-100 text-red-800 rounded-lg">
+          <div className="admin-alert admin-alert-error mb-6 p-4">
             {error}
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow p-6 space-y-6">
+        <form onSubmit={handleSubmit} className="admin-card p-6 space-y-6">
           <div className="grid grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-medium mb-2">文章标题 *</label>
+              <label className="block text-sm font-medium mb-2 admin-text-primary">文章标题 *</label>
               <input
                 type="text"
                 required
                 value={formData.title}
                 onChange={(e) => handleInputChange('title', e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="admin-input w-full px-4 py-2"
                 placeholder="输入文章标题"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2">文章别名（Slug）*</label>
+              <label className="block text-sm font-medium mb-2 admin-text-primary">文章别名（Slug）*</label>
               <input
                 type="text"
                 required
                 value={formData.slug}
                 onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="admin-input w-full px-4 py-2"
                 placeholder="article-slug"
               />
-              <p className="text-xs text-gray-500 mt-1">用于URL，只能包含字母、数字和连字符</p>
+              <p className="text-xs admin-text-secondary mt-1">用于URL，只能包含字母、数字和连字符</p>
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-medium mb-2">发布日期</label>
+              <label className="block text-sm font-medium mb-2 admin-text-primary">发布日期</label>
               <input
                 type="date"
                 value={formData.date}
                 onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="admin-input w-full px-4 py-2"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2">文章描述</label>
+              <label className="block text-sm font-medium mb-2 admin-text-primary">文章描述</label>
               <input
                 type="text"
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="admin-input w-full px-4 py-2"
                 placeholder="简短描述文章内容"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">图片上传</label>
+            <label className="block text-sm font-medium mb-2 admin-text-primary">图片上传</label>
             <ImageUploader onUploadSuccess={handleImageUpload} />
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">文章内容 *</label>
+            <label className="block text-sm font-medium mb-2 admin-text-primary">文章内容 *</label>
             <MarkdownEditor
               ref={editorRef}
               value={formData.content}
@@ -155,17 +155,17 @@ export default function NewPostPage() {
           <div className="flex justify-end gap-3">
             <Link
               href="/admin"
-              className="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
+              className="admin-button admin-button-secondary px-6 py-2.5"
             >
               取消
             </Link>
             <button
               type="submit"
               disabled={saving}
-              className={`px-6 py-2 rounded-lg transition ${
+              className={`admin-button px-6 py-2.5 ${
                 saving
-                  ? 'bg-gray-400 cursor-not-allowed'
-                  : 'bg-blue-600 hover:bg-blue-700 text-white'
+                  ? 'bg-gray-400 cursor-not-allowed opacity-60'
+                  : 'admin-button-primary'
               }`}
             >
               {saving ? '保存中...' : '保存文章'}
