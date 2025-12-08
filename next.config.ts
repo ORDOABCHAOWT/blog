@@ -1,9 +1,6 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
   typescript: {
     ignoreBuildErrors: true,
   },
@@ -18,6 +15,10 @@ const nextConfig: NextConfig = {
         hostname: '**.aliyuncs.com',
       },
     ],
+  },
+  env: {
+    ADMIN_USER: process.env.ADMIN_USER,
+    ADMIN_PASSWORD: process.env.ADMIN_PASSWORD,
   },
 };
 

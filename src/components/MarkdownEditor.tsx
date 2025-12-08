@@ -59,30 +59,32 @@ const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>(
           onChange={onChange}
           getMdeInstance={getMdeInstance}
           options={{
-          spellChecker: false,
-          placeholder: '在这里输入文章内容（支持Markdown）...',
-          autofocus: false,
-          status: ['lines', 'words', 'cursor'],
-          toolbar: [
-            'bold',
-            'italic',
-            'heading',
-            '|',
-            'quote',
-            'unordered-list',
-            'ordered-list',
-            '|',
-            'link',
-            'image',
-            '|',
-            'preview',
-            'side-by-side',
-            'fullscreen',
-            '|',
-            'guide',
-          ],
-        }}
-      />
+            spellChecker: false,
+            placeholder: '在这里输入文章内容（支持Markdown）...',
+            autofocus: false,
+            status: ['lines', 'words', 'cursor'],
+            toolbar: [
+              'bold',
+              'italic',
+              'heading',
+              '|',
+              'quote',
+              'unordered-list',
+              'ordered-list',
+              '|',
+              'link',
+              'image',
+              '|',
+              'preview',
+              'side-by-side',
+              'fullscreen',
+              '|',
+              'guide',
+            ],
+            inputStyle: 'contenteditable',
+            lineWrapping: true,
+          }}
+        />
       <style jsx global>{`
         .markdown-editor .EasyMDEContainer {
           border: 1px solid #e5e7eb;

@@ -6,28 +6,48 @@ export function middleware(request: NextRequest) {
 
   // 保护管理端点和 API（但允许公开访问博客文章）
   if (pathname.startsWith('/admin') || pathname.startsWith('/api')) {
-    // 检查是否配置了认证
-    const adminUser = process.env.ADMIN_USER;
-    const adminPassword = process.env.ADMIN_PASSWORD;
+    const authHeader = request.headers.get('authorization');
 
-    // 如果配置了认证信息，则要求认证
-    if (adminUser && adminPassword) {
-      const authHeader = request.headers.get('authorization');
-      const expectedAuth = 'Basic ' + Buffer.from(`${adminUser}:${adminPassword}`).toString('base64');
-
-      if (authHeader !== expectedAuth) {
-        return new NextResponse('认证失败，需要管理员权限', {
-          status: 401,
-          headers: {
-            'WWW-Authenticate': 'Basic realm="Blog Admin Area"',
-            'Content-Type': 'text/plain; charset=utf-8'
-          },
-        });
-      }
+    // 从请求头中提取认证信息
+    if (!authHeader || !authHeader.startsWith('Basic ')) {
+      return new NextResponse('需要认证', {
+        status: 401,
+        headers: {
+          'WWW-Authenticate': 'Basic realm="Blog Admin Area"',
+          'Content-Type': 'text/plain; charset=utf-8'
+        },
+      });
     }
-    // 如果未配置认证，则在响应头中添加警告（但仍允许访问，保持向后兼容）
-    else {
-      console.warn('⚠️  警告: 未配置 ADMIN_USER 和 ADMIN_PASSWORD 环境变量，管理端点未受保护！');
+
+    // 解码 Base64 认证信息
+    const base64Credentials = authHeader.split(' ')[1];
+    const credentials = Buffer.from(base64Credentials, 'base64').toString('utf-8');
+    const [username, password] = credentials.split(':');
+
+    // 验证用户名和密码（从环境变量读取）
+    const validUsername = process.env.ADMIN_USER || 'admin';
+    const validPassword = process.env.ADMIN_PASSWORD;
+
+    // 如果未设置密码，则拒绝访问（安全优先）
+    if (!validPassword) {
+      console.error('⚠️ ADMIN_PASSWORD 未配置！');
+      return new NextResponse('服务器配置错误', {
+        status: 500,
+        headers: {
+          'Content-Type': 'text/plain; charset=utf-8'
+        },
+      });
+    }
+
+    // 验证凭据
+    if (username !== validUsername || password !== validPassword) {
+      return new NextResponse('用户名或密码错误', {
+        status: 401,
+        headers: {
+          'WWW-Authenticate': 'Basic realm="Blog Admin Area"',
+          'Content-Type': 'text/plain; charset=utf-8'
+        },
+      });
     }
   }
 
