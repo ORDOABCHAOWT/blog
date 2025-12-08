@@ -5,6 +5,12 @@ import matter from 'gray-matter';
 
 const postsDir = path.join(process.cwd(), 'posts');
 
+// 验证 slug 是否安全（防止路径遍历攻击）
+function isValidSlug(slug: string): boolean {
+  // 只允许字母、数字、连字符和下划线
+  return /^[a-zA-Z0-9_-]+$/.test(slug);
+}
+
 // GET - 获取所有文章
 export async function GET() {
   try {
@@ -38,6 +44,11 @@ export async function POST(request: NextRequest) {
 
     if (!slug || !title) {
       return NextResponse.json({ error: 'Slug and title are required' }, { status: 400 });
+    }
+
+    // 验证 slug 格式
+    if (!isValidSlug(slug)) {
+      return NextResponse.json({ error: 'Invalid slug format. Only letters, numbers, hyphens and underscores are allowed.' }, { status: 400 });
     }
 
     const frontmatter = matter.stringify(content, {

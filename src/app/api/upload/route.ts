@@ -10,10 +10,19 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'No file provided' }, { status: 400 });
     }
 
-    // 验证文件类型
-    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'];
+    // 验证文件类型（移除 SVG 支持以防止 XSS 攻击）
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
     if (!allowedTypes.includes(file.type)) {
-      return NextResponse.json({ error: 'Invalid file type. Only images are allowed.' }, { status: 400 });
+      return NextResponse.json({ error: 'Invalid file type. Only JPEG, PNG, GIF, and WebP images are allowed.' }, { status: 400 });
+    }
+
+    // 验证文件扩展名（双重验证）
+    const originalFileName = file.name.toLowerCase();
+    const allowedExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp'];
+    const hasValidExtension = allowedExtensions.some(ext => originalFileName.endsWith(ext));
+
+    if (!hasValidExtension) {
+      return NextResponse.json({ error: 'Invalid file extension.' }, { status: 400 });
     }
 
     // 验证文件大小 (最大 10MB)
@@ -26,7 +35,7 @@ export async function POST(request: NextRequest) {
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
-    // 生成文件名
+    // 生成唯一文件名
     const fileName = generateFileName(file.name);
 
     // 上传到 OSS

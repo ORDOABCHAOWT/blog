@@ -1,13 +1,13 @@
 import { NextResponse } from 'next/server';
-import { exec } from 'child_process';
+import { execFile } from 'child_process';
 import { promisify } from 'util';
 
-const execAsync = promisify(exec);
+const execFileAsync = promisify(execFile);
 
 export async function POST() {
   try {
-    // 检查是否有未提交的更改
-    const { stdout: status } = await execAsync('git status --porcelain');
+    // 检查是否有未提交的更改（使用参数化命令防止注入）
+    const { stdout: status } = await execFileAsync('git', ['status', '--porcelain']);
 
     if (!status.trim()) {
       return NextResponse.json({
@@ -16,15 +16,15 @@ export async function POST() {
       });
     }
 
-    // 添加所有更改
-    await execAsync('git add posts/ .');
+    // 添加所有更改（参数化执行）
+    await execFileAsync('git', ['add', 'posts/', '.']);
 
-    // 创建提交
+    // 创建提交（参数化执行，commit message 作为单独参数传递）
     const commitMessage = `博客更新 - ${new Date().toLocaleString('zh-CN')}`;
-    await execAsync(`git commit -m "${commitMessage}"`);
+    await execFileAsync('git', ['commit', '-m', commitMessage]);
 
-    // 推送到远程仓库
-    await execAsync('git push origin main');
+    // 推送到远程仓库（参数化执行）
+    await execFileAsync('git', ['push', 'origin', 'main']);
 
     return NextResponse.json({
       success: true,

@@ -5,6 +5,12 @@ import matter from 'gray-matter';
 
 const postsDir = path.join(process.cwd(), 'posts');
 
+// 验证 slug 是否安全（防止路径遍历攻击）
+function isValidSlug(slug: string): boolean {
+  // 只允许字母、数字、连字符和下划线
+  return /^[a-zA-Z0-9_-]+$/.test(slug);
+}
+
 // GET - 获取单个文章
 export async function GET(
   request: NextRequest,
@@ -12,6 +18,12 @@ export async function GET(
 ) {
   try {
     const { slug } = await params;
+
+    // 验证 slug 格式
+    if (!isValidSlug(slug)) {
+      return NextResponse.json({ error: 'Invalid slug format' }, { status: 400 });
+    }
+
     const filePath = path.join(postsDir, `${slug}.md`);
 
     if (!fs.existsSync(filePath)) {
@@ -41,6 +53,16 @@ export async function PUT(
   try {
     const { slug } = await params;
     const { title, date, description, content, newSlug } = await request.json();
+
+    // 验证原始 slug 格式
+    if (!isValidSlug(slug)) {
+      return NextResponse.json({ error: 'Invalid slug format' }, { status: 400 });
+    }
+
+    // 如果有新 slug，也需要验证
+    if (newSlug && !isValidSlug(newSlug)) {
+      return NextResponse.json({ error: 'Invalid new slug format' }, { status: 400 });
+    }
 
     const oldFilePath = path.join(postsDir, `${slug}.md`);
 
@@ -81,6 +103,12 @@ export async function DELETE(
 ) {
   try {
     const { slug } = await params;
+
+    // 验证 slug 格式
+    if (!isValidSlug(slug)) {
+      return NextResponse.json({ error: 'Invalid slug format' }, { status: 400 });
+    }
+
     const filePath = path.join(postsDir, `${slug}.md`);
 
     if (!fs.existsSync(filePath)) {
