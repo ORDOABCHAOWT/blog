@@ -2,66 +2,37 @@
 > minimal-blog@0.1.0 dev
 > next dev --turbopack
 
-   ▲ Next.js 15.4.1 (Turbopack)
-   - Local:        http://localhost:3000
-   - Network:      http://192.168.50.206:3000
+   ▲ Next.js 16.0.7 (Turbopack)
+   - Local:         http://localhost:3000
+   - Network:       http://172.20.10.2:3000
    - Environments: .env.local
 
  ✓ Starting...
- ✓ Ready in 893ms
+ ⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+ ✓ Ready in 852ms
  ○ Compiling /admin ...
- ✓ Compiled /admin in 3.7s
- GET /admin 200 in 3942ms
- ✓ Compiled /admin/new in 429ms
- GET /admin/new 200 in 521ms
- ✓ Compiled /favicon.ico in 331ms
- GET /favicon.ico?favicon.18fbc6a8.ico 200 in 609ms
- GET /admin 200 in 69ms
- ✓ Compiled /api/posts in 188ms
- GET /api/posts 200 in 234ms
- GET /admin/new 200 in 58ms
- GET /admin/new 200 in 103ms
- GET /favicon.ico?favicon.18fbc6a8.ico 200 in 245ms
- GET /admin/new 200 in 157ms
- GET /favicon.ico?favicon.18fbc6a8.ico 200 in 247ms
- ✓ Compiled in 93ms
- GET /admin 200 in 69ms
- GET /api/posts 200 in 27ms
- ✓ Compiled /api/deploy in 96ms
- POST /api/deploy 200 in 6297ms
- GET /admin/new 200 in 148ms
- ✓ Compiled in 128ms
- ⚠ Fast Refresh had to perform a full reload due to a runtime error.
- ✓ Compiled in 39ms
- GET /favicon.ico?favicon.18fbc6a8.ico 200 in 249ms
- GET /admin/new 200 in 293ms
- GET /favicon.ico?favicon.18fbc6a8.ico 200 in 237ms
- ○ Compiling /api/upload ...
- ✓ Compiled /api/upload in 500ms
- POST /api/upload 200 in 3051ms
- POST /api/posts 200 in 40ms
- GET /admin 200 in 45ms
- GET /api/posts 200 in 20ms
- GET /api/posts 200 in 17ms
- POST /api/deploy 200 in 3851ms
- ✓ Compiled /api/posts/[slug] in 147ms
- DELETE /api/posts/d 200 in 544ms
- GET /api/posts 200 in 26ms
- POST /api/deploy 200 in 3800ms
- GET /admin 200 in 87ms
- GET /api/posts 200 in 39ms
- POST /api/deploy 200 in 4353ms
- GET /admin/new 200 in 54ms
- POST /api/upload 200 in 893ms
- ✓ Compiled / in 345ms
- GET / 200 in 414ms
- GET /admin 200 in 152ms
- GET /api/posts 200 in 34ms
- GET /admin 200 in 305ms
- GET /api/posts 200 in 34ms
- GET /admin/new 200 in 196ms
- ✓ Compiled in 103ms
- ✓ Compiled in 99ms
- GET /admin 200 in 140ms
- GET /api/posts 200 in 34ms
-[?25h
+ HEAD /admin 200 in 4.9s (compile: 4.8s, proxy.ts: 3ms, render: 67ms)
+ GET /api/posts 200 in 309ms (compile: 296ms, render: 12ms)
+ GET /admin 200 in 71ms (compile: 12ms, proxy.ts: 16ms, render: 43ms)
+ GET /api/posts 200 in 18ms (compile: 6ms, render: 11ms)
+ GET /admin/new 200 in 437ms (compile: 407ms, proxy.ts: 6ms, render: 24ms)
+ GET /admin 200 in 59ms (compile: 6ms, proxy.ts: 8ms, render: 45ms)
+ GET /api/posts 200 in 8ms (compile: 2ms, render: 6ms)
+ GET /admin/new 200 in 36ms (compile: 8ms, proxy.ts: 5ms, render: 23ms)
+ GET /admin 200 in 56ms (compile: 3ms, proxy.ts: 24ms, render: 29ms)
+ GET /api/posts 200 in 7ms (compile: 1430µs, render: 6ms)
+ GET /admin/new 200 in 28ms (compile: 5ms, proxy.ts: 4ms, render: 19ms)
+ GET /admin 200 in 185ms (compile: 28ms, proxy.ts: 66ms, render: 90ms)
+ GET /api/posts 200 in 25ms (compile: 15ms, render: 10ms)
+ GET /admin/new 200 in 43ms (compile: 9ms, proxy.ts: 5ms, render: 29ms)
+ GET /admin 200 in 35ms (compile: 7ms, proxy.ts: 4ms, render: 24ms)
+ GET /api/posts 200 in 10ms (compile: 3ms, render: 7ms)
+ GET /api/posts 200 in 6ms (compile: 1475µs, render: 4ms)
+ GET /admin 200 in 119ms (compile: 10ms, proxy.ts: 17ms, render: 92ms)
+ GET /api/posts 200 in 8ms (compile: 1324µs, render: 7ms)
+ GET /admin/new 200 in 40ms (compile: 8ms, proxy.ts: 5ms, render: 27ms)
+ POST /api/upload 200 in 5.6s (compile: 906ms, render: 4.7s)
+ GET /admin 200 in 53ms (compile: 12ms, proxy.ts: 15ms, render: 25ms)
+ GET /api/posts 200 in 13ms (compile: 3ms, render: 11ms)
+ GET /api/posts 200 in 7ms (compile: 1499µs, render: 6ms)
+ ✓ Compiled in 107ms

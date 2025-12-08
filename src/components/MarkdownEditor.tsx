@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useImperativeHandle, forwardRef, useState, useCallback } from 'react';
+import { useRef, useImperativeHandle, forwardRef, useState, useCallback, memo, useMemo } from 'react';
 import dynamic from 'next/dynamic';
 import 'easymde/dist/easymde.min.css';
 
@@ -52,38 +52,40 @@ const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>(
       },
     }), [onChange]);
 
+    const editorOptions = useMemo(() => ({
+      spellChecker: false,
+      placeholder: '在这里输入文章内容（支持Markdown）...',
+      autofocus: false,
+      status: ['lines', 'words', 'cursor'],
+      toolbar: [
+        'bold',
+        'italic',
+        'heading',
+        '|',
+        'quote',
+        'unordered-list',
+        'ordered-list',
+        '|',
+        'link',
+        'image',
+        '|',
+        'preview',
+        'side-by-side',
+        'fullscreen',
+        '|',
+        'guide',
+      ],
+      inputStyle: 'textarea' as const,
+      lineWrapping: true,
+    }), []);
+
     return (
       <div className="markdown-editor">
         <SimpleMDE
           value={value}
           onChange={onChange}
           getMdeInstance={getMdeInstance}
-          options={{
-            spellChecker: false,
-            placeholder: '在这里输入文章内容（支持Markdown）...',
-            autofocus: false,
-            status: ['lines', 'words', 'cursor'],
-            toolbar: [
-              'bold',
-              'italic',
-              'heading',
-              '|',
-              'quote',
-              'unordered-list',
-              'ordered-list',
-              '|',
-              'link',
-              'image',
-              '|',
-              'preview',
-              'side-by-side',
-              'fullscreen',
-              '|',
-              'guide',
-            ],
-            inputStyle: 'contenteditable',
-            lineWrapping: true,
-          }}
+          options={editorOptions}
         />
       <style jsx global>{`
         .markdown-editor .EasyMDEContainer {

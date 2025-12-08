@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import MarkdownEditor, { MarkdownEditorRef } from '@/components/MarkdownEditor';
@@ -92,6 +92,10 @@ export default function EditPostPage() {
       editorRef.current.insertAtCursor(markdown);
     }
   };
+
+  const handleContentChange = useCallback((value: string) => {
+    setFormData((prev) => ({ ...prev, content: value }));
+  }, []);
 
   if (loading) {
     return (
@@ -192,7 +196,7 @@ export default function EditPostPage() {
             <MarkdownEditor
               ref={editorRef}
               value={formData.content}
-              onChange={(value) => setFormData({ ...formData, content: value })}
+              onChange={handleContentChange}
             />
           </div>
 
