@@ -89,17 +89,24 @@ const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>(
         />
       <style jsx global>{`
         .markdown-editor .EasyMDEContainer {
-          border: 1px solid #e5e7eb;
+          border: 1px solid #e0e0e0;
           border-radius: 0.5rem;
+          transition: all 0.2s ease-in-out;
+        }
+        .markdown-editor .EasyMDEContainer:hover,
+        .markdown-editor .EasyMDEContainer.active {
+          border-color: #3b82f6;
+          box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
         }
         .markdown-editor .CodeMirror {
           min-height: 400px;
           font-size: 16px;
-          line-height: 2;
-          font-family: 'LXGW WenKai', 'Songti SC', 'Noto Serif SC', 'Source Han Serif SC',
-                       'STSong', 'SimSun', 'Georgia', 'Times New Roman', serif;
-          letter-spacing: 0.5px;
-          padding: 16px;
+          line-height: 1.8;
+          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+          letter-spacing: 0.2px;
+          padding: 20px;
+          background-color: #ffffff;
+          color: #212121;
         }
         .markdown-editor .CodeMirror-scroll {
           min-height: 400px;
@@ -109,25 +116,25 @@ const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>(
           padding: 2px 0;
         }
         .markdown-editor .CodeMirror pre.CodeMirror-line {
-          line-height: 2;
-          letter-spacing: 0.5px;
+          line-height: 1.8;
+          letter-spacing: 0.2px;
         }
         .markdown-editor .editor-toolbar {
           border-top-left-radius: 0.5rem;
           border-top-right-radius: 0.5rem;
-          border-color: #e5e7eb;
-          background: #fafafa;
+          border-color: #e0e0e0;
+          background: #f9f9f9;
         }
         .markdown-editor .CodeMirror-cursor {
-          border-left: 2px solid #4a5568;
+          border-left: 2px solid #3b82f6;
         }
         .markdown-editor .cm-header {
           font-weight: 600;
-          letter-spacing: 1px;
+          letter-spacing: 0.5px;
         }
         .markdown-editor .CodeMirror-placeholder {
-          font-family: 'LXGW WenKai', 'PingFang SC', 'Hiragino Sans GB', sans-serif;
-          color: #a0aec0;
+          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+          color: #9e9e9e;
           font-style: italic;
         }
       `}</style>
