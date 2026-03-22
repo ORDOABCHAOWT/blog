@@ -11,10 +11,9 @@ type FrameState = {
   y: number;
 };
 
-type FractalSegment = {
-  d: string;
-  opacity: number;
-  width: number;
+type Point = {
+  x: number;
+  y: number;
 };
 
 function clamp(value: number, min: number, max: number) {
@@ -23,7 +22,7 @@ function clamp(value: number, min: number, max: number) {
 
 function pointPath(
   count: number,
-  getPoint: (index: number) => { x: number; y: number }
+  getPoint: (index: number) => Point
 ) {
   let path = '';
 
@@ -35,83 +34,27 @@ function pointPath(
   return path.trim();
 }
 
-function noise(seed: number) {
-  const value = Math.sin(seed * 91.221 + 19.73) * 43758.5453;
-  return value - Math.floor(value);
+function polygonPoints(
+  centerX: number,
+  centerY: number,
+  radius: number,
+  rotation: number
+) {
+  return Array.from({ length: 6 }, (_, index) => {
+    const angle = rotation + (index * TAU) / 6 - Math.PI / 2;
+    return {
+      x: centerX + Math.cos(angle) * radius,
+      y: centerY + Math.sin(angle) * radius,
+    };
+  });
 }
 
-function buildFractalBranch(
-  segments: FractalSegment[],
-  x: number,
-  y: number,
-  length: number,
-  angle: number,
-  depth: number,
-  spread: number,
-  bend: number,
-  time: number,
-  driftX: number,
-  driftY: number,
-  family: number
-) {
-  if (depth <= 0 || length < 12) {
-    return;
-  }
-
-  const pulse = Math.sin(time * 0.8 + family * 0.9 + depth * 0.7);
-  const curve = bend * (0.7 + depth * 0.08) + pulse * 0.18;
-  const controlX =
-    x +
-    Math.cos(angle - curve * 0.55) * length * 0.56 +
-    driftX * depth * 2.8;
-  const controlY =
-    y +
-    Math.sin(angle + curve * 0.35) * length * 0.44 +
-    pulse * 9 +
-    driftY * depth * 2.1;
-  const nextX = x + Math.cos(angle + pulse * 0.08) * length;
-  const nextY = y + Math.sin(angle + pulse * 0.08) * length;
-
-  segments.push({
-    d: `M${x.toFixed(2)} ${y.toFixed(2)} Q${controlX.toFixed(2)} ${controlY.toFixed(2)} ${nextX.toFixed(2)} ${nextY.toFixed(2)}`,
-    opacity: clamp(0.38 - depth * 0.04, 0.12, 0.34),
-    width: 0.9 + depth * 0.12,
-  });
-
-  const childLength = length * (0.72 - depth * 0.015);
-  const childSpread = spread * (0.92 + depth * 0.035);
-  const nextBend = bend * 0.78;
-  const sway = Math.sin(time * 0.62 + family + depth) * 0.08;
-
-  buildFractalBranch(
-    segments,
-    nextX,
-    nextY,
-    childLength,
-    angle - childSpread + sway,
-    depth - 1,
-    spread,
-    nextBend,
-    time,
-    driftX,
-    driftY,
-    family
-  );
-
-  buildFractalBranch(
-    segments,
-    nextX,
-    nextY,
-    childLength,
-    angle + childSpread - sway,
-    depth - 1,
-    spread,
-    nextBend,
-    time,
-    driftX,
-    driftY,
-    family
-  );
+function polygonPath(points: Point[]) {
+  return `${points
+    .map((point, index) =>
+      `${index === 0 ? 'M' : 'L'}${point.x.toFixed(2)} ${point.y.toFixed(2)}`
+    )
+    .join(' ')} Z`;
 }
 
 export default function WayfinderHero({
@@ -153,107 +96,93 @@ export default function WayfinderHero({
 
   const scene = useMemo(() => {
     const normalizedIndex =
-      activeIndex && activeIndex > 0 ? ((activeIndex - 1) % 12) / 11 : 0.42;
-    const centerX = 244 + frame.x * 34 + (normalizedIndex - 0.5) * 16;
-    const centerY = 234 + frame.y * 18 + Math.sin(frame.time * 0.32) * 6;
-    const spread = 0.44 + normalizedIndex * 0.08 + frame.x * 0.08;
-    const fieldLines = Array.from({ length: 8 }, (_, index) => {
-      const baseY = 96 + index * 34;
-      return pointPath(52, (step) => {
-        const t = step / 51;
+      activeIndex && activeIndex > 0 ? ((activeIndex - 1) % 12) / 11 : 0.4;
+    const centerX = 248 + frame.x * 24 + (normalizedIndex - 0.5) * 18;
+    const centerY = 236 + frame.y * 14 + Math.sin(frame.time * 0.32) * 4;
+    const baseRotation =
+      frame.time * 0.14 + normalizedIndex * 0.18 + frame.x * 0.2;
+    const fieldLines = Array.from({ length: 7 }, (_, index) => {
+      const baseY = 112 + index * 34;
+      return pointPath(44, (step) => {
+        const t = step / 43;
         const x = SIZE * t;
         const distance = x - centerX;
-        const influence = Math.exp(-(distance * distance) / 22000);
+        const influence = Math.exp(-(distance * distance) / 24000);
 
         return {
           x,
           y:
             baseY +
-            Math.sin(x * 0.011 + frame.time * 0.32 + index * 0.55) * (3.5 + index * 0.8) -
-            influence * (10 + index * 1.6) +
-            Math.cos(x * 0.018 - frame.time * 0.18 + index) * 1.9,
+            Math.sin(x * 0.012 + frame.time * 0.28 + index * 0.55) * (2.8 + index * 0.5) -
+            influence * (7 + index * 1.25) +
+            Math.cos(x * 0.02 - frame.time * 0.16 + index) * 1.6,
         };
       });
     });
 
-    const contourLoops = Array.from({ length: 6 }, (_, index) => {
-      const radiusX = 28 + index * 20 + normalizedIndex * 10;
-      const radiusY = 18 + index * 11;
-      const localRotation = frame.time * 0.12 + index * 0.07;
-
-      return pointPath(64, (step) => {
-        const t = step / 63;
-        const angle = t * TAU;
-        const ripple =
-          Math.sin(angle * 3 + frame.time * 0.75 + index) * 2.2 +
-          Math.cos(angle * 2 - frame.time * 0.44 + index) * 1.4;
-
-        return {
-          x:
-            centerX +
-            Math.cos(angle + localRotation) * (radiusX + ripple) +
-            frame.x * (8 - index * 0.4),
-          y:
-            centerY +
-            Math.sin(angle + localRotation) * (radiusY + ripple * 0.75) +
-            frame.y * (6 - index * 0.3),
-        };
-      });
-    });
-
-    const fractalSegments: FractalSegment[] = [];
-    const familyCount = 5;
-
-    for (let family = 0; family < familyCount; family += 1) {
-      const baseAngle =
-        -Math.PI / 2 +
-        (family * TAU) / familyCount +
-        Math.sin(frame.time * 0.22 + family) * 0.08;
-
-      buildFractalBranch(
-        fractalSegments,
-        centerX,
-        centerY,
-        92 + family * 4 + normalizedIndex * 12,
-        baseAngle,
-        4,
-        spread,
-        0.36 + family * 0.04,
-        frame.time,
-        frame.x,
-        frame.y,
-        family
-      );
-    }
-
-    const stars = Array.from({ length: 112 }, (_, index) => {
-      const band = Math.floor(index / 14);
-      const offset = index % 14;
-      const radius = 26 + band * 18 + noise(index + normalizedIndex * 9) * 12;
-      const angle =
-        (offset / 14) * TAU +
-        frame.time * (0.1 + band * 0.015) +
-        band * 0.45;
+    const rings = Array.from({ length: 6 }, (_, index) => {
+      const radius = 34 + index * 28 + normalizedIndex * 10;
+      const rotation =
+        baseRotation +
+        index * 0.08 +
+        Math.sin(frame.time * 0.5 + index) * 0.03 +
+        frame.y * 0.08;
+      const points = polygonPoints(centerX, centerY, radius, rotation);
 
       return {
-        x:
-          centerX +
-          Math.cos(angle) * radius +
-          Math.sin(frame.time * 0.4 + band + offset) * 4,
-        y:
-          centerY +
-          Math.sin(angle) * radius * 0.72 +
-          Math.cos(frame.time * 0.34 + offset) * 3,
-        r: 0.45 + (index % 5) * 0.12,
-        opacity: clamp(0.08 + band * 0.02, 0.08, 0.22),
+        path: polygonPath(points),
+        points,
       };
     });
 
+    const spokes = rings[rings.length - 1].points.map((outerPoint, index) => {
+      const middlePoint = rings[2].points[index];
+      return {
+        d: `M${centerX.toFixed(2)} ${centerY.toFixed(2)} Q${middlePoint.x.toFixed(2)} ${middlePoint.y.toFixed(2)} ${outerPoint.x.toFixed(2)} ${outerPoint.y.toFixed(2)}`,
+      };
+    });
+
+    const lattice = rings.flatMap((ring, ringIndex) => {
+      if (ringIndex === rings.length - 1) {
+        return [];
+      }
+
+      const nextRing = rings[ringIndex + 1];
+      return ring.points.map((point, pointIndex) => {
+        const target = nextRing.points[(pointIndex + (ringIndex % 2 === 0 ? 1 : 0)) % 6];
+        return {
+          d: `M${point.x.toFixed(2)} ${point.y.toFixed(2)} L${target.x.toFixed(2)} ${target.y.toFixed(2)}`,
+        };
+      });
+    });
+
+    const nodes = rings.flatMap((ring, ringIndex) =>
+      ring.points
+        .filter((_, pointIndex) => (pointIndex + ringIndex) % 2 === 0)
+        .map((point, pointIndex) => ({
+          x: point.x,
+          y: point.y,
+          r: 2 + ringIndex * 0.16 + (pointIndex % 2) * 0.2,
+          opacity: clamp(0.18 + ringIndex * 0.04, 0.18, 0.34),
+        }))
+    );
+
+    const centerHex = polygonPath(
+      polygonPoints(
+        centerX,
+        centerY,
+        16 + Math.sin(frame.time * 0.9) * 2,
+        -baseRotation * 1.4
+      )
+    );
+
     return {
       fieldLines,
-      contourLoops,
-      fractalSegments,
-      stars,
+      rings,
+      spokes,
+      lattice,
+      nodes,
+      centerHex,
     };
   }, [activeIndex, frame.time, frame.x, frame.y]);
 
@@ -287,33 +216,33 @@ export default function WayfinderHero({
           ))}
         </g>
 
-        <g className="wayfinder-hero__contours">
-          {scene.contourLoops.map((path, index) => (
-            <path key={`contour-${index}`} d={path} />
+        <g className="wayfinder-hero__hexagons">
+          {scene.rings.map((ring, index) => (
+            <path key={`ring-${index}`} d={ring.path} />
+          ))}
+          <path d={scene.centerHex} />
+        </g>
+
+        <g className="wayfinder-hero__lattice">
+          {scene.lattice.map((segment, index) => (
+            <path key={`lattice-${index}`} d={segment.d} />
           ))}
         </g>
 
-        <g className="wayfinder-hero__fractal">
-          {scene.fractalSegments.map((segment, index) => (
-            <path
-              key={`fractal-${index}`}
-              d={segment.d}
-              style={{
-                opacity: segment.opacity,
-                strokeWidth: segment.width,
-              }}
-            />
+        <g className="wayfinder-hero__spokes">
+          {scene.spokes.map((segment, index) => (
+            <path key={`spoke-${index}`} d={segment.d} />
           ))}
         </g>
 
-        <g className="wayfinder-hero__stars">
-          {scene.stars.map((star, index) => (
+        <g className="wayfinder-hero__nodes">
+          {scene.nodes.map((node, index) => (
             <circle
-              key={`star-${index}`}
-              cx={star.x}
-              cy={star.y}
-              r={star.r}
-              style={{ opacity: star.opacity }}
+              key={`node-${index}`}
+              cx={node.x}
+              cy={node.y}
+              r={node.r}
+              style={{ opacity: node.opacity }}
             />
           ))}
         </g>

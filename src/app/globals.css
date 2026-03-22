@@ -240,36 +240,47 @@ img {
 
 .wayfinder-hero__field path {
   fill: none;
-  stroke: rgba(29, 26, 23, 0.08);
+  stroke: rgba(29, 26, 23, 0.12);
   stroke-linecap: round;
-  stroke-width: 1;
+  stroke-width: 1.45;
 }
 
-.wayfinder-hero__contours path {
+.wayfinder-hero__hexagons path {
   fill: none;
-  stroke: rgba(73, 92, 116, 0.18);
-  stroke-linecap: round;
-  stroke-width: 1;
-}
-
-.wayfinder-hero__fractal path {
-  fill: none;
-  stroke: rgba(29, 26, 23, 0.25);
-  stroke-linecap: round;
+  stroke: rgba(29, 26, 23, 0.34);
   stroke-linejoin: round;
+  stroke-width: 1.9;
 }
 
-.wayfinder-hero__stars circle {
-  fill: rgba(34, 31, 27, 0.2);
+.wayfinder-hero__lattice path {
+  fill: none;
+  stroke: rgba(73, 92, 116, 0.24);
+  stroke-linecap: round;
+  stroke-width: 1.35;
+}
+
+.wayfinder-hero__spokes path {
+  fill: none;
+  stroke: rgba(29, 26, 23, 0.22);
+  stroke-linecap: round;
+  stroke-width: 1.55;
+}
+
+.wayfinder-hero__nodes circle {
+  fill: rgba(29, 26, 23, 0.42);
 }
 
 .wayfinder-hero:hover .wayfinder-hero__field path {
-  stroke: rgba(29, 26, 23, 0.11);
+  stroke: rgba(29, 26, 23, 0.16);
 }
 
-.wayfinder-hero:hover .wayfinder-hero__fractal path,
-.wayfinder-hero:hover .wayfinder-hero__contours path {
-  stroke: rgba(73, 92, 116, 0.3);
+.wayfinder-hero:hover .wayfinder-hero__hexagons path,
+.wayfinder-hero:hover .wayfinder-hero__spokes path {
+  stroke: rgba(29, 26, 23, 0.42);
+}
+
+.wayfinder-hero:hover .wayfinder-hero__lattice path {
+  stroke: rgba(73, 92, 116, 0.32);
 }
 
 .directory-section {
