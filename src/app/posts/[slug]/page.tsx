@@ -91,15 +91,6 @@ export default async function PostPage({
       <div className="post-layout">
         <aside className="post-rail">
           <div className="post-rail-card">
-            <p className="post-rail-label">Reading Notes</p>
-            <p className="post-rail-copy">
-              A quieter layout for longer reading, with the entry number,
-              date, and adjacent posts kept in view.
-            </p>
-            <div className="post-rail-meta">
-              <span>Entry</span>
-              <strong>{String(post.index).padStart(2, '0')}</strong>
-            </div>
             <div className="post-rail-meta">
               <span>Date</span>
               <strong>{formatDisplayDate(post.date)}</strong>

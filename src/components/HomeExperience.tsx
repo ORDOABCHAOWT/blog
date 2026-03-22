@@ -57,20 +57,6 @@ export default function HomeExperience({ posts }: HomeExperienceProps) {
           </div>
         </div>
 
-        <div className="hero-copy">
-          <p className="hero-note">A slower, more editorial version of a personal blog.</p>
-          <p>
-            I wanted this site to read less like a feed and more like a shelf:
-            a place where entries can breathe, hold silence, and stay visible
-            long enough to be revisited.
-          </p>
-          <p>
-            Hover through the archive and the field on the right shifts with
-            each entry. The reading view keeps the same restraint, but adds more
-            structure once you open a piece.
-          </p>
-        </div>
-
         <div className="hero-art">
           <WayfinderHero activeIndex={activeIndex} />
         </div>
