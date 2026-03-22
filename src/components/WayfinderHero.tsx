@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 
-const SIZE = 420;
+const SIZE = 480;
 const TAU = Math.PI * 2;
 
 type FrameState = {
@@ -54,9 +54,9 @@ export default function WayfinderHero({
     const animate = (now: number) => {
       const elapsed = (now - startedAt) / 1000;
       pointerCurrent.current.x +=
-        (pointerTarget.current.x - pointerCurrent.current.x) * 0.065;
+        (pointerTarget.current.x - pointerCurrent.current.x) * 0.06;
       pointerCurrent.current.y +=
-        (pointerTarget.current.y - pointerCurrent.current.y) * 0.065;
+        (pointerTarget.current.y - pointerCurrent.current.y) * 0.06;
 
       setFrame({
         time: elapsed,
@@ -73,178 +73,155 @@ export default function WayfinderHero({
 
   const scene = useMemo(() => {
     const normalizedIndex =
-      activeIndex && activeIndex > 0 ? ((activeIndex - 1) % 12) / 11 : 0.36;
-    const centerX = 222 + frame.x * 24 + (normalizedIndex - 0.5) * 20;
-    const centerY = 208 + frame.y * 12 - Math.sin(frame.time * 0.55) * 5;
-    const cityHeight = 110 + normalizedIndex * 26;
-    const ringRadius = 62 + normalizedIndex * 18;
-    const shear = frame.x * 14;
-    const swell = frame.y * 10;
+      activeIndex && activeIndex > 0 ? ((activeIndex - 1) % 12) / 11 : 0.42;
+    const centerX = 264 + frame.x * 42 + (normalizedIndex - 0.5) * 26;
+    const centerY = 244 + frame.y * 18 + Math.sin(frame.time * 0.38) * 6;
+    const tilt = frame.x * 22;
+    const swell = frame.y * 16;
+    const rotation = frame.time * (0.15 + normalizedIndex * 0.04);
 
-    const wavePaths = Array.from({ length: 12 }, (_, layer) => {
-      const baseY = 146 + layer * 16;
-      const amplitude = 7 + layer * 0.95;
-      const speed = 0.24 + layer * 0.016;
-      const frequency = 0.014 + layer * 0.0019;
+    const gravityLines = Array.from({ length: 20 }, (_, layer) => {
+      const baseY = 78 + layer * 16.5;
+      const amplitude = 4.8 + layer * 0.58;
+      const frequency = 0.012 + layer * 0.0007;
+      const sinkDepth = 18 + layer * 1.9;
 
-      return pointPath(49, (step) => {
-        const x = (SIZE / 48) * step;
-        const xDelta = x - centerX;
-        const influence = Math.exp(-(xDelta * xDelta) / 18000);
-        const primary =
-          Math.sin(x * frequency + frame.time * (1.2 + speed) + layer * 0.58) *
-          amplitude;
-        const secondary =
-          Math.cos(x * (frequency * 0.64) - frame.time * (0.72 + speed) + layer) *
-          (4.8 + layer * 0.45);
-        const tide =
-          Math.sin(frame.time * 0.82 + layer * 0.7 + x * 0.006) * 2.8;
-        const lift =
-          influence *
-          (Math.sin(x * 0.03 - frame.time * 1.35 + layer) * (12 + layer * 1.1) +
-            shear * 0.4 -
-            swell * 0.55);
+      return pointPath(68, (step) => {
+        const t = step / 67;
+        const x = SIZE * t;
+        const distance = x - centerX;
+        const well = Math.exp(-(distance * distance) / (13000 + layer * 900));
+        const wave =
+          Math.sin(x * frequency + frame.time * (0.9 + layer * 0.03) + layer * 0.64) *
+            amplitude +
+          Math.cos(x * (frequency * 0.54) - frame.time * (0.52 + layer * 0.02)) *
+            (2.8 + layer * 0.22);
+        const draw =
+          well *
+          (sinkDepth +
+            Math.sin(frame.time * 1.12 + layer * 0.6 + x * 0.01) * (5 + layer * 0.18) +
+            tilt * 0.22 -
+            swell * 0.3);
 
         return {
           x,
-          y: baseY + primary + secondary + tide + lift,
+          y: baseY + wave + draw,
         };
       });
     });
 
-    const canopyPaths = Array.from({ length: 6 }, (_, layer) => {
-      const radius = ringRadius + layer * 12;
-      const height = 44 + layer * 8;
-      return pointPath(44, (step) => {
-        const t = step / 43;
-        const angle = -Math.PI + t * Math.PI;
+    const orbitPaths = Array.from({ length: 14 }, (_, orbitIndex) => {
+      const turns = 1.45 + orbitIndex * 0.06;
+      const spread = 18 + orbitIndex * 8.5;
+      const flatten = 0.58 + orbitIndex * 0.015;
+      const localRotation = rotation + orbitIndex * 0.16;
+
+      return pointPath(84, (step) => {
+        const t = step / 83;
+        const theta = -Math.PI * turns + t * TAU * turns;
+        const radius =
+          24 +
+          spread * t +
+          Math.sin(theta * 3 + frame.time * 1.2 + orbitIndex) * 3.2 +
+          Math.cos(theta * 1.5 - frame.time * 0.9) * 2.2;
         const x =
           centerX +
-          Math.cos(angle) * radius +
-          Math.sin(frame.time * 0.72 + layer + t * 4) * 5 +
-          frame.x * layer * 0.55;
+          Math.cos(theta + localRotation) * radius +
+          Math.sin(theta * 0.7 + frame.time + orbitIndex) * 6 +
+          frame.x * (18 - orbitIndex);
         const y =
-          centerY -
-          16 -
-          Math.sin(angle) * height +
-          Math.cos(frame.time * 0.6 + t * 6 + layer) * 3;
+          centerY +
+          Math.sin(theta + localRotation) * radius * flatten +
+          Math.cos(theta * 2.1 + frame.time * 0.8) * 5 +
+          frame.y * (8 - orbitIndex * 0.35);
+
         return { x, y };
       });
     });
 
-    const orbitalRings = Array.from({ length: 3 }, (_, ringIndex) => {
-      const radiusX = 42 + ringIndex * 18 + normalizedIndex * 8;
-      const radiusY = 14 + ringIndex * 8;
-      return pointPath(56, (step) => {
-        const t = step / 55;
+    const wellContours = Array.from({ length: 8 }, (_, index) => {
+      const radiusX = 38 + index * 16 + normalizedIndex * 8;
+      const radiusY = 18 + index * 8;
+      const localRotation = rotation * 0.8 + index * 0.1;
+
+      return pointPath(72, (step) => {
+        const t = step / 71;
         const angle = t * TAU;
-        const radialNoise =
-          Math.sin(frame.time * 0.9 + ringIndex * 1.7 + angle * 3) * 2.1;
+        const ripple =
+          Math.sin(angle * 4 + frame.time * 0.95 + index) * 2.6 +
+          Math.cos(angle * 2 - frame.time * 0.55 + index) * 1.4;
 
         return {
           x:
             centerX +
-            Math.cos(angle + frame.time * 0.08 + ringIndex * 0.16) *
-              (radiusX + radialNoise) +
-            frame.x * 5,
-          y:
-            centerY -
-            8 +
-            Math.sin(angle) * (radiusY + radialNoise * 0.5) +
-            Math.cos(angle * 2 + frame.time * 0.42) * 1.8,
-        };
-      });
-    });
-
-    const spires = Array.from({ length: 8 }, (_, index) => {
-      const offset = (index - 3.5) * 16 + Math.sin(frame.time + index) * 2.4;
-      const height =
-        cityHeight -
-        Math.abs(index - 3.5) * 13 +
-        Math.sin(frame.time * 1.1 + index * 0.9) * 8;
-      const x = centerX + offset + frame.x * index * 0.4;
-      const topY = centerY - height * 0.52;
-      const baseY = centerY + 54 + Math.cos(index + frame.time) * 3;
-
-      return {
-        shaft: `M${x.toFixed(2)} ${baseY.toFixed(2)} L${x.toFixed(2)} ${topY.toFixed(2)}`,
-        leftBrace: `M${(x - 5).toFixed(2)} ${(baseY - 12).toFixed(2)} L${x.toFixed(2)} ${(topY + 18).toFixed(2)}`,
-        rightBrace: `M${(x + 5).toFixed(2)} ${(baseY - 12).toFixed(2)} L${x.toFixed(2)} ${(topY + 18).toFixed(2)}`,
-      };
-    });
-
-    const terraces = Array.from({ length: 5 }, (_, level) => {
-      const width = 124 - level * 18 + normalizedIndex * 10;
-      const height = 10 + level * 13;
-      return pointPath(34, (step) => {
-        const t = step / 33;
-        const arc = Math.cos((t - 0.5) * Math.PI * 2) * 0.5 + 0.5;
-        return {
-          x:
-            centerX -
-            width / 2 +
-            t * width +
-            Math.sin(frame.time * 0.84 + level + t * 5) * 2,
+            Math.cos(angle + localRotation) * (radiusX + ripple) +
+            Math.sin(frame.time * 0.4 + index) * 2.4,
           y:
             centerY +
-            28 +
-            level * 12 +
-            arc * height +
-            Math.cos(frame.time * 0.65 + t * 7 + level) * 1.6,
+            Math.sin(angle + localRotation) * (radiusY + ripple * 0.65) +
+            Math.cos(angle * 3 + frame.time * 0.7) * 1.8,
         };
       });
     });
 
-    const particles = Array.from({ length: 164 }, (_, index) => {
-      const column = index % 12;
-      const band = Math.floor(index / 12);
-      const radius = 18 + column * 8 + noise(index + normalizedIndex * 11) * 6;
-      const spin = frame.time * (0.16 + column * 0.01) + band * 0.26;
-      const angle = spin + noise(index * 2.1) * TAU;
-      const drift = Math.sin(frame.time * 1.05 + index * 0.31) * 8;
+    const stars = Array.from({ length: 340 }, (_, index) => {
+      const arm = index % 5;
+      const band = Math.floor(index / 5);
+      const baseRadius =
+        16 +
+        band * 2.15 +
+        noise(index + normalizedIndex * 19) * 18 +
+        arm * 5;
+      const angle =
+        arm * (TAU / 5) +
+        baseRadius * 0.08 +
+        rotation * (1.8 + arm * 0.22) +
+        noise(index * 1.7) * 0.8;
+      const spiralDrift = Math.sin(frame.time * 0.92 + index * 0.12) * 5;
       const x =
         centerX +
-        Math.cos(angle) * (radius + drift * 0.24) +
-        Math.sin(frame.time * 0.6 + band) * 6 +
-        frame.x * (10 - column * 0.45);
+        Math.cos(angle) * (baseRadius + spiralDrift) * 1.08 +
+        Math.sin(frame.time * 0.6 + band) * 4 +
+        frame.x * (14 - arm * 1.6);
       const y =
-        centerY -
-        42 +
-        (band - 6) * 12 +
-        Math.sin(angle * 1.8 + frame.time * 0.94) * 8 +
-        Math.cos(frame.time * 0.52 + column) * 5 -
-        radius * 0.08 +
-        frame.y * (band - 5) * 0.9;
+        centerY +
+        Math.sin(angle) * (baseRadius + spiralDrift) * 0.56 +
+        Math.cos(frame.time * 0.5 + arm + band * 0.08) * 5 +
+        frame.y * (10 - arm);
+
       return {
         x,
         y,
-        r: 0.9 + (column % 4) * 0.28,
-        opacity: clamp(0.14 + band * 0.028 - column * 0.01, 0.08, 0.32),
+        r: 0.45 + (index % 7) * 0.12,
+        opacity: clamp(0.08 + band * 0.008 - arm * 0.01, 0.08, 0.34),
       };
     });
 
-    const atmosphere = Array.from({ length: 4 }, (_, index) => {
-      const y = 96 + index * 38;
-      return pointPath(30, (step) => {
-        const x = (SIZE / 29) * step;
+    const dustBands = Array.from({ length: 6 }, (_, index) => {
+      const height = 148 + index * 26;
+      return pointPath(52, (step) => {
+        const t = step / 51;
+        const x = SIZE * t;
+        const distance = x - centerX;
+        const influence = Math.exp(-(distance * distance) / 16000);
+
         return {
           x,
           y:
-            y +
-            Math.sin(frame.time * 0.22 + index + x * 0.012) * (8 + index * 2) -
-            Math.exp(-((x - centerX) * (x - centerX)) / 20000) * (8 + index * 2),
+            height +
+            Math.sin(x * 0.01 + frame.time * 0.26 + index * 0.5) * (4 + index) -
+            influence * (8 + index * 2.5) +
+            Math.cos(x * 0.021 - frame.time * 0.18) * 2.4,
         };
       });
     });
 
     return {
-      wavePaths,
-      canopyPaths,
-      orbitalRings,
-      spires,
-      terraces,
-      particles,
-      atmosphere,
+      gravityLines,
+      orbitPaths,
+      wellContours,
+      stars,
+      dustBands,
     };
   }, [activeIndex, frame.time, frame.x, frame.y]);
 
@@ -272,54 +249,38 @@ export default function WayfinderHero({
         fill="none"
         role="presentation"
       >
-        <g className="wayfinder-hero__atmosphere">
-          {scene.atmosphere.map((path, index) => (
-            <path key={`air-${index}`} d={path} />
+        <g className="wayfinder-hero__dust">
+          {scene.dustBands.map((path, index) => (
+            <path key={`dust-${index}`} d={path} />
           ))}
         </g>
 
-        <g className="wayfinder-hero__waves">
-          {scene.wavePaths.map((path, index) => (
-            <path key={`wave-${index}`} d={path} />
+        <g className="wayfinder-hero__gravity">
+          {scene.gravityLines.map((path, index) => (
+            <path key={`gravity-${index}`} d={path} />
           ))}
         </g>
 
-        <g className="wayfinder-hero__canopy">
-          {scene.canopyPaths.map((path, index) => (
-            <path key={`canopy-${index}`} d={path} />
+        <g className="wayfinder-hero__contours">
+          {scene.wellContours.map((path, index) => (
+            <path key={`contour-${index}`} d={path} />
           ))}
         </g>
 
-        <g className="wayfinder-hero__terraces">
-          {scene.terraces.map((path, index) => (
-            <path key={`terrace-${index}`} d={path} />
+        <g className="wayfinder-hero__orbits">
+          {scene.orbitPaths.map((path, index) => (
+            <path key={`orbit-${index}`} d={path} />
           ))}
         </g>
 
-        <g className="wayfinder-hero__spires">
-          {scene.spires.map((spire, index) => (
-            <g key={`spire-${index}`}>
-              <path d={spire.shaft} />
-              <path d={spire.leftBrace} />
-              <path d={spire.rightBrace} />
-            </g>
-          ))}
-        </g>
-
-        <g className="wayfinder-hero__rings">
-          {scene.orbitalRings.map((path, index) => (
-            <path key={`ring-${index}`} d={path} />
-          ))}
-        </g>
-
-        <g className="wayfinder-hero__particles">
-          {scene.particles.map((particle, index) => (
+        <g className="wayfinder-hero__stars">
+          {scene.stars.map((star, index) => (
             <circle
-              key={`particle-${index}`}
-              cx={particle.x}
-              cy={particle.y}
-              r={particle.r}
-              style={{ opacity: particle.opacity }}
+              key={`star-${index}`}
+              cx={star.x}
+              cy={star.y}
+              r={star.r}
+              style={{ opacity: star.opacity }}
             />
           ))}
         </g>
