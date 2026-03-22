@@ -219,69 +219,66 @@ img {
   display: flex;
   flex-direction: column;
   gap: 0.9rem;
-  width: min(100%, 23rem);
+  width: min(100%, 24rem);
   animation: rise-in 1050ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.wayfinder-hero__svg {
-  display: block;
+.wayfinder-hero__frame {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1;
   width: 100%;
-  height: auto;
-  overflow: visible;
-  filter: drop-shadow(0 18px 30px rgba(42, 36, 28, 0.08));
+  padding: 1rem;
+  border: 1px solid rgba(29, 26, 23, 0.12);
+  border-radius: 1.35rem;
+  background:
+    radial-gradient(circle at 50% 22%, rgba(73, 92, 116, 0.08), transparent 34%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.62), rgba(247, 242, 232, 0.88));
+  box-shadow:
+    0 20px 34px rgba(42, 36, 28, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  overflow: hidden;
 }
 
-.wayfinder-hero__halo {
-  fill: url(#wayfinder-glow);
+.wayfinder-hero__frame::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(73, 92, 116, 0.03), transparent 20%, transparent 80%, rgba(73, 92, 116, 0.03)),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.2), transparent 30%, transparent 70%, rgba(29, 26, 23, 0.03));
+  pointer-events: none;
 }
 
-.wayfinder-hero__drift,
-.wayfinder-hero__spinner,
-.wayfinder-hero__square-frame {
-  transform-origin: 160px 160px;
-  transition: transform 380ms cubic-bezier(0.22, 1, 0.36, 1);
+.wayfinder-hero__ascii {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  color: rgba(36, 32, 28, 0.84);
+  font-family: var(--font-editorial-mono), "SFMono-Regular", Consolas, monospace;
+  font-size: clamp(0.37rem, 0.74vw, 0.54rem);
+  line-height: 1;
+  letter-spacing: 0.02em;
+  user-select: none;
+  transform: translateX(0.15rem);
+  transition: color 220ms ease, transform 220ms ease;
+  text-shadow: 0 0 12px rgba(73, 92, 116, 0.08);
+  white-space: pre;
 }
 
-.wayfinder-hero__spinner {
-  animation: slow-spin 28s linear infinite;
-}
-
-.wayfinder-hero__outer-ring,
-.wayfinder-hero__inner-ring,
-.wayfinder-hero__void-ring,
-.wayfinder-hero__core,
-.wayfinder-hero__square-frame rect,
-.wayfinder-hero__spokes line,
-.wayfinder-hero__waves path {
-  fill: none;
-  stroke: rgba(29, 26, 23, 0.68);
-  stroke-width: 1;
-}
-
-.wayfinder-hero__inner-ring,
-.wayfinder-hero__square-frame rect:last-child,
-.wayfinder-hero__core {
-  stroke: rgba(73, 92, 116, 0.58);
-}
-
-.wayfinder-hero__spokes line {
-  opacity: 0.54;
-}
-
-.wayfinder-hero__waves path {
-  opacity: 0.44;
-}
-
-.wayfinder-hero__core {
-  fill: rgba(249, 245, 237, 0.78);
+.wayfinder-hero:hover .wayfinder-hero__ascii {
+  color: rgba(28, 25, 22, 0.92);
+  transform: translateX(0);
 }
 
 .wayfinder-hero__caption {
   color: var(--site-muted);
   font-family: var(--font-editorial-mono), "SFMono-Regular", Consolas, monospace;
-  font-size: 0.72rem;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  line-height: 1.6;
   text-align: center;
 }
 
@@ -776,15 +773,6 @@ img {
   }
 }
 
-@keyframes slow-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
 @keyframes rise-in {
   from {
     opacity: 0;
@@ -832,7 +820,7 @@ img {
 @media (max-width: 680px) {
   .home-page,
   .post-shell {
-    width: min(100% - 24px, 100%);
+    width: min(100% - 40px, 100%);
   }
 
   .home-page {
@@ -864,6 +852,47 @@ img {
     padding: 1rem 0;
   }
 
+  .post-hero {
+    padding: 1rem 0 2.4rem;
+  }
+
+  .post-layout {
+    gap: 2rem;
+    padding-top: 2rem;
+  }
+
+  .post-rail-card {
+    padding: 1.15rem 1rem;
+  }
+
+  .editorial-prose {
+    max-width: 100%;
+  }
+
+  .editorial-prose p,
+  .editorial-prose ul,
+  .editorial-prose ol,
+  .editorial-prose blockquote,
+  .editorial-prose pre,
+  .editorial-figure {
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  .editorial-prose blockquote {
+    padding-left: 1rem;
+  }
+
+  .editorial-prose ul,
+  .editorial-prose ol {
+    padding-left: 1.2rem;
+  }
+
+  .editorial-prose pre {
+    padding: 0.95rem 1rem;
+    border-radius: 0.9rem;
+  }
+
   .directory-content h2 {
     font-size: 1.35rem;
   }
@@ -880,6 +909,52 @@ img {
   .editorial-prose > p:first-of-type:first-letter {
     margin-right: 0.4rem;
     font-size: 4rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .home-page,
+  .post-shell {
+    width: min(100% - 48px, 100%);
+  }
+
+  .home-hero {
+    gap: 1.75rem;
+    padding: 2rem 0 2.5rem;
+  }
+
+  .identity-block {
+    gap: 0.85rem;
+  }
+
+  .post-hero-top {
+    margin-bottom: 2rem;
+  }
+
+  .post-title {
+    font-size: clamp(1.8rem, 9vw, 2.5rem);
+  }
+
+  .directory-item {
+    gap: 0.75rem 0.9rem;
+  }
+
+  .directory-content h2 {
+    font-size: 1.22rem;
+  }
+
+  .home-intro,
+  .post-description,
+  .editorial-prose p,
+  .editorial-prose li,
+  .editorial-prose blockquote {
+    font-size: 0.98rem;
+    line-height: 1.82;
+  }
+
+  .editorial-prose > p:first-of-type:first-letter {
+    margin-right: 0.32rem;
+    font-size: 3.35rem;
   }
 }
 

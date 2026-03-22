@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 type PointerState = {
   x: number;
@@ -8,15 +8,50 @@ type PointerState = {
   active: boolean;
 };
 
-const CENTER = 160;
-const OUTER_RADIUS = 112;
-const INNER_RADIUS = 34;
+const ROWS = 27;
+const COLS = 27;
 
-function polarToCartesian(radius: number, angle: number) {
-  return {
-    x: CENTER + Math.cos(angle) * radius,
-    y: CENTER + Math.sin(angle) * radius,
-  };
+function clamp(value: number, min: number, max: number) {
+  return Math.min(max, Math.max(min, value));
+}
+
+function createGrid() {
+  return Array.from({ length: ROWS }, () => Array(COLS).fill(' '));
+}
+
+function setGlyph(
+  grid: string[][],
+  x: number,
+  y: number,
+  glyph: string,
+  overwrite = true
+) {
+  if (x < 0 || x >= COLS || y < 0 || y >= ROWS) return;
+  if (!overwrite && grid[y][x] !== ' ') return;
+  grid[y][x] = glyph;
+}
+
+function plotLine(
+  grid: string[][],
+  x0: number,
+  y0: number,
+  x1: number,
+  y1: number,
+  glyph: string
+) {
+  const steps = Math.max(Math.abs(x1 - x0), Math.abs(y1 - y0));
+
+  for (let i = 0; i <= steps; i += 1) {
+    const t = steps === 0 ? 0 : i / steps;
+    const x = Math.round(x0 + (x1 - x0) * t);
+    const y = Math.round(y0 + (y1 - y0) * t);
+    setGlyph(grid, x, y, glyph);
+  }
+}
+
+function noise(x: number, y: number) {
+  const value = Math.sin(x * 12.9898 + y * 78.233) * 43758.5453;
+  return value - Math.floor(value);
 }
 
 export default function WayfinderHero({
@@ -29,46 +64,126 @@ export default function WayfinderHero({
     y: 0,
     active: false,
   });
+  const [time, setTime] = useState(0);
 
-  const normalizedIndex =
-    activeIndex && activeIndex > 0 ? ((activeIndex - 1) % 18) / 17 : 0.32;
-  const intensity = activeIndex ? (activeIndex % 9) / 8 : 0.35;
-  const altRingRadius = 62 + intensity * 28;
-  const spokeOpacity = 0.34 + intensity * 0.38;
-  const waveOpacity = 0.18 + intensity * 0.28;
+  useEffect(() => {
+    const startedAt = performance.now();
+    const intervalId = window.setInterval(() => {
+      setTime((performance.now() - startedAt) / 1000);
+    }, 80);
+
+    return () => {
+      window.clearInterval(intervalId);
+    };
+  }, []);
+
   const captionIndex = activeIndex ? String(activeIndex).padStart(2, '0') : '--';
-  const focusSpoke = normalizedIndex * 17;
-  const ambientOffsetX = (normalizedIndex - 0.5) * 10;
-  const ambientOffsetY = Math.sin(normalizedIndex * Math.PI * 2) * 5;
-  const ambientRotate = (normalizedIndex - 0.5) * 16;
 
-  const spokes = useMemo(
-    () =>
-      Array.from({ length: 18 }, (_, index) => {
-        const angle = (index / 18) * Math.PI * 2 - Math.PI / 2;
-        return {
-          inner: polarToCartesian(INNER_RADIUS, angle),
-          outer: polarToCartesian(OUTER_RADIUS, angle),
-        };
-      }),
-    []
-  );
+  const asciiArt = useMemo(() => {
+    const grid = createGrid();
+    const normalizedIndex =
+      activeIndex && activeIndex > 0 ? ((activeIndex - 1) % 10) / 9 : 0.35;
+    const cityCenterX = 13 + pointer.x * 2.4 + (normalizedIndex - 0.5) * 3;
+    const domeHeight = 4 + Math.round(normalizedIndex * 2);
+    const towerPulse = Math.sin(time * 1.4 + normalizedIndex * Math.PI) * 1.2;
+    const tideLift = pointer.y * 1.8 + Math.sin(time * 0.9 + normalizedIndex * 3) * 0.8;
+    const currentPush = pointer.x * 2.8;
 
-  const waveRows = useMemo(
-    () =>
-      Array.from({ length: 6 }, (_, index) => ({
-        y: 72 + index * 32,
-        amplitude: 8 + index * 1.4,
-        phase: index * 0.8,
-      })),
-    []
-  );
+    for (let y = 1; y < 10; y += 1) {
+      for (let x = 1; x < COLS - 1; x += 1) {
+        const sparkleChance =
+          0.028 + Math.max(0, (6 - y)) * 0.002 + normalizedIndex * 0.01;
+        const seed = noise(x + normalizedIndex * 13, y + time * 0.1);
+        if (seed < sparkleChance) {
+          setGlyph(grid, x, y, seed < sparkleChance * 0.3 ? '*' : '.');
+        }
+      }
+    }
 
-  const offsetX = pointer.x * 10 + ambientOffsetX;
-  const offsetY = pointer.y * 10 + ambientOffsetY;
-  const slowRotate = ambientRotate + (pointer.active ? pointer.x * 8 : 0);
-  const squareRotate =
-    ambientRotate * 0.85 + (pointer.active ? pointer.x * 12 + pointer.y * -8 : 0);
+    const horizon = 14;
+    for (let x = 0; x < COLS; x += 1) {
+      const arch = Math.cos(((x - cityCenterX) / 7) * Math.PI) * domeHeight;
+      const domeY = Math.round(horizon - arch - 2);
+
+      if (x > cityCenterX - 8 && x < cityCenterX + 8) {
+        setGlyph(grid, x, domeY, '_');
+      }
+
+      if (Math.abs(x - cityCenterX) < 7) {
+        const shellY = Math.round(horizon - Math.sqrt(Math.max(0, 46 - (x - cityCenterX) ** 2)) * 0.38);
+        setGlyph(grid, x, shellY, shellY < domeY ? '.' : '_', false);
+      }
+    }
+
+    plotLine(grid, Math.round(cityCenterX - 8), 13, Math.round(cityCenterX - 3), 8, '/');
+    plotLine(grid, Math.round(cityCenterX + 8), 13, Math.round(cityCenterX + 3), 8, '\\');
+    plotLine(grid, Math.round(cityCenterX - 3), 8, Math.round(cityCenterX + 3), 8, '_');
+
+    const towerHeights = [
+      { x: Math.round(cityCenterX - 5), h: 5 + Math.round(towerPulse) },
+      { x: Math.round(cityCenterX - 1), h: 7 + Math.round(normalizedIndex * 2) },
+      { x: Math.round(cityCenterX + 3), h: 6 + Math.round(Math.abs(towerPulse)) },
+      { x: Math.round(cityCenterX + 6), h: 4 + Math.round(normalizedIndex * 2) },
+    ];
+
+    towerHeights.forEach(({ x, h }, index) => {
+      const topY = clamp(horizon - h, 4, horizon - 2);
+      for (let y = topY; y <= horizon - 1; y += 1) {
+        setGlyph(grid, x, y, '|');
+      }
+
+      setGlyph(grid, x, topY - 1, index % 2 === 0 ? 'A' : '^');
+      setGlyph(grid, x - 1, horizon - 1, '[');
+      setGlyph(grid, x + 1, horizon - 1, ']');
+      setGlyph(grid, x, horizon - 2, ':', false);
+    });
+
+    const bridgeY = horizon - 1;
+    for (let x = Math.round(cityCenterX - 6); x <= Math.round(cityCenterX + 6); x += 1) {
+      setGlyph(grid, x, bridgeY, '=');
+      if ((x + Math.round(time * 2)) % 4 === 0) {
+        setGlyph(grid, x, bridgeY - 1, ':', false);
+      }
+    }
+
+    for (let row = 0; row < 8; row += 1) {
+      const y = horizon + row;
+      for (let x = 0; x < COLS; x += 1) {
+        const wave =
+          y -
+          (17 +
+            row * 0.58 +
+            Math.sin(x * 0.45 + time * 1.8 + currentPush) * (0.7 + row * 0.08) +
+            Math.cos(x * 0.22 - time * 1.1 + normalizedIndex * 5) * 0.75 +
+            tideLift);
+
+        if (wave > -0.45 && wave < 0.55) {
+          setGlyph(grid, x, y, row < 2 ? '~' : row < 5 ? '=' : '-');
+        } else if (wave >= 0.55) {
+          const glyph =
+            row < 2 ? '~' : row < 4 ? '=' : row < 6 ? '-' : '_';
+          setGlyph(grid, x, y, glyph, false);
+        } else if (wave > -1 && noise(x * 0.8 + time, y) < 0.08 + row * 0.01) {
+          setGlyph(grid, x, y, '`', false);
+        }
+      }
+    }
+
+    const reflectionBand = horizon + 2;
+    for (let x = Math.round(cityCenterX - 7); x <= Math.round(cityCenterX + 7); x += 1) {
+      if ((x + Math.round(time * 3)) % 2 === 0) {
+        setGlyph(
+          grid,
+          x + Math.round(Math.sin(time + x) * 0.6),
+          reflectionBand + Math.round(Math.cos(time * 1.4 + x) * 0.8),
+          '|',
+          false
+        );
+      }
+    }
+
+    return grid.map((row) => row.join('')).join('\n');
+  }, [activeIndex, pointer.x, pointer.y, time]);
 
   return (
     <div
@@ -93,103 +208,12 @@ export default function WayfinderHero({
       }
       aria-hidden="true"
     >
-      <svg viewBox="0 0 320 320" className="wayfinder-hero__svg" role="presentation">
-        <defs>
-          <radialGradient id="wayfinder-glow" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="rgba(255,255,255,0.78)" />
-            <stop offset="65%" stopColor="rgba(255,255,255,0.08)" />
-            <stop offset="100%" stopColor="rgba(255,255,255,0)" />
-          </radialGradient>
-          <mask id="wayfinder-void">
-            <rect width="320" height="320" fill="white" />
-            <circle cx={CENTER} cy={CENTER} r="28" fill="black" />
-          </mask>
-        </defs>
-
-        <circle cx={CENTER} cy={CENTER} r="126" className="wayfinder-hero__halo" />
-
-        <g
-          className="wayfinder-hero__drift"
-          style={{
-            transform: `translate(${offsetX}px, ${offsetY}px)`,
-          }}
-        >
-          <g
-            className="wayfinder-hero__spinner"
-            style={{
-              transform: `rotate(${slowRotate}deg)`,
-            }}
-          >
-            <circle cx={CENTER} cy={CENTER} r={OUTER_RADIUS} className="wayfinder-hero__outer-ring" />
-            <circle
-              cx={CENTER}
-              cy={CENTER}
-              r={altRingRadius}
-              className="wayfinder-hero__inner-ring"
-            />
-
-            <g mask="url(#wayfinder-void)" className="wayfinder-hero__spokes">
-              {spokes.map((spoke, index) => (
-                (() => {
-                  const circularDistance = Math.min(
-                    Math.abs(index - focusSpoke),
-                    spokes.length - Math.abs(index - focusSpoke)
-                  );
-                  const emphasis = Math.max(0, 1 - circularDistance / 5.5);
-
-                  return (
-                    <line
-                      key={index}
-                      x1={spoke.inner.x}
-                      y1={spoke.inner.y}
-                      x2={spoke.outer.x}
-                      y2={spoke.outer.y}
-                      style={{
-                        opacity: 0.12 + emphasis * spokeOpacity,
-                      }}
-                    />
-                  );
-                })()
-              ))}
-            </g>
-          </g>
-
-          <g
-            className="wayfinder-hero__square-frame"
-            style={{
-              transform: `rotate(${45 + squareRotate}deg)`,
-            }}
-          >
-            <rect x="92" y="92" width="136" height="136" rx="2" />
-            <rect x="116" y="116" width="88" height="88" rx="2" />
-          </g>
-
-          <g className="wayfinder-hero__waves" mask="url(#wayfinder-void)">
-            {waveRows.map((row) => (
-              <path
-                key={row.y}
-                d={[
-                  `M 42 ${row.y}`,
-                  `C 96 ${row.y - row.amplitude + row.phase * pointer.x * 3 - normalizedIndex * 6},`,
-                  `124 ${row.y + row.amplitude + normalizedIndex * 4},`,
-                  `160 ${row.y}`,
-                  `S 224 ${row.y - row.amplitude - normalizedIndex * 5},`,
-                  `278 ${row.y + row.amplitude - row.phase * pointer.y * 3 + normalizedIndex * 3}`,
-                ].join(' ')}
-                style={{
-                  opacity: waveOpacity + row.phase * 0.02,
-                }}
-              />
-            ))}
-          </g>
-
-          <circle cx={CENTER} cy={CENTER} r="30" className="wayfinder-hero__void-ring" />
-          <circle cx={CENTER} cy={CENTER} r="16" className="wayfinder-hero__core" />
-        </g>
-      </svg>
+      <div className="wayfinder-hero__frame">
+        <pre className="wayfinder-hero__ascii">{asciiArt}</pre>
+      </div>
 
       <div className="wayfinder-hero__caption">
-        <span>Entry {captionIndex} shifts the field. Move across it to disturb the geometry.</span>
+        <span>Entry {captionIndex} drifts the tide around the orbital city. Hover to bend the current.</span>
       </div>
     </div>
   );
