@@ -238,43 +238,36 @@ img {
   vector-effect: non-scaling-stroke;
 }
 
-.wayfinder-hero__dust path {
+.wayfinder-hero__field path {
   fill: none;
   stroke: rgba(29, 26, 23, 0.08);
   stroke-linecap: round;
   stroke-width: 1;
 }
 
-.wayfinder-hero__gravity path {
-  fill: none;
-  stroke: rgba(36, 32, 28, 0.18);
-  stroke-linecap: round;
-  stroke-width: 1.1;
-}
-
 .wayfinder-hero__contours path {
   fill: none;
-  stroke: rgba(73, 92, 116, 0.2);
+  stroke: rgba(73, 92, 116, 0.18);
   stroke-linecap: round;
   stroke-width: 1;
 }
 
-.wayfinder-hero__orbits path {
+.wayfinder-hero__fractal path {
   fill: none;
   stroke: rgba(29, 26, 23, 0.25);
   stroke-linecap: round;
-  stroke-width: 0.95;
+  stroke-linejoin: round;
 }
 
 .wayfinder-hero__stars circle {
-  fill: rgba(34, 31, 27, 0.28);
+  fill: rgba(34, 31, 27, 0.2);
 }
 
-.wayfinder-hero:hover .wayfinder-hero__gravity path {
-  stroke: rgba(36, 32, 28, 0.24);
+.wayfinder-hero:hover .wayfinder-hero__field path {
+  stroke: rgba(29, 26, 23, 0.11);
 }
 
-.wayfinder-hero:hover .wayfinder-hero__orbits path,
+.wayfinder-hero:hover .wayfinder-hero__fractal path,
 .wayfinder-hero:hover .wayfinder-hero__contours path {
   stroke: rgba(73, 92, 116, 0.3);
 }
