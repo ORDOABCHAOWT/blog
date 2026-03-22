@@ -94,12 +94,12 @@ img {
 }
 
 .home-page {
-  width: min(1080px, calc(100% - 88px));
+  width: min(1000px, calc(100% - 120px));
   margin: 0 auto;
 }
 
 .post-shell {
-  width: min(1040px, calc(100% - 104px));
+  width: min(960px, calc(100% - 136px));
   margin: 0 auto;
 }
 
