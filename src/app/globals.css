@@ -93,9 +93,13 @@ img {
   max-width: 100%;
 }
 
-.home-page,
+.home-page {
+  width: min(1080px, calc(100% - 88px));
+  margin: 0 auto;
+}
+
 .post-shell {
-  width: min(1180px, calc(100% - 48px));
+  width: min(1040px, calc(100% - 104px));
   margin: 0 auto;
 }
 
@@ -780,7 +784,7 @@ img {
 @media (max-width: 960px) {
   .home-page,
   .post-shell {
-    width: min(100% - 32px, 100%);
+    width: min(100% - 48px, 100%);
   }
 
   .home-hero,
