@@ -30,11 +30,17 @@ export default function WayfinderHero({
     active: false,
   });
 
+  const normalizedIndex =
+    activeIndex && activeIndex > 0 ? ((activeIndex - 1) % 18) / 17 : 0.32;
   const intensity = activeIndex ? (activeIndex % 9) / 8 : 0.35;
   const altRingRadius = 62 + intensity * 28;
-  const spokeOpacity = 0.4 + intensity * 0.35;
-  const waveOpacity = 0.24 + intensity * 0.32;
+  const spokeOpacity = 0.34 + intensity * 0.38;
+  const waveOpacity = 0.18 + intensity * 0.28;
   const captionIndex = activeIndex ? String(activeIndex).padStart(2, '0') : '--';
+  const focusSpoke = normalizedIndex * 17;
+  const ambientOffsetX = (normalizedIndex - 0.5) * 10;
+  const ambientOffsetY = Math.sin(normalizedIndex * Math.PI * 2) * 5;
+  const ambientRotate = (normalizedIndex - 0.5) * 16;
 
   const spokes = useMemo(
     () =>
@@ -58,10 +64,11 @@ export default function WayfinderHero({
     []
   );
 
-  const offsetX = pointer.x * 10;
-  const offsetY = pointer.y * 10;
-  const slowRotate = pointer.active ? pointer.x * 8 : 0;
-  const squareRotate = pointer.active ? pointer.x * 12 + pointer.y * -8 : 0;
+  const offsetX = pointer.x * 10 + ambientOffsetX;
+  const offsetY = pointer.y * 10 + ambientOffsetY;
+  const slowRotate = ambientRotate + (pointer.active ? pointer.x * 8 : 0);
+  const squareRotate =
+    ambientRotate * 0.85 + (pointer.active ? pointer.x * 12 + pointer.y * -8 : 0);
 
   return (
     <div
@@ -123,19 +130,26 @@ export default function WayfinderHero({
 
             <g mask="url(#wayfinder-void)" className="wayfinder-hero__spokes">
               {spokes.map((spoke, index) => (
-                <line
-                  key={index}
-                  x1={spoke.inner.x}
-                  y1={spoke.inner.y}
-                  x2={spoke.outer.x}
-                  y2={spoke.outer.y}
-                  style={{
-                    opacity:
-                      index <= ((activeIndex ?? 6) % spokes.length) + 6
-                        ? spokeOpacity
-                        : 0.16,
-                  }}
-                />
+                (() => {
+                  const circularDistance = Math.min(
+                    Math.abs(index - focusSpoke),
+                    spokes.length - Math.abs(index - focusSpoke)
+                  );
+                  const emphasis = Math.max(0, 1 - circularDistance / 5.5);
+
+                  return (
+                    <line
+                      key={index}
+                      x1={spoke.inner.x}
+                      y1={spoke.inner.y}
+                      x2={spoke.outer.x}
+                      y2={spoke.outer.y}
+                      style={{
+                        opacity: 0.12 + emphasis * spokeOpacity,
+                      }}
+                    />
+                  );
+                })()
               ))}
             </g>
           </g>
@@ -156,11 +170,11 @@ export default function WayfinderHero({
                 key={row.y}
                 d={[
                   `M 42 ${row.y}`,
-                  `C 96 ${row.y - row.amplitude + row.phase * pointer.x * 3},`,
-                  `124 ${row.y + row.amplitude},`,
+                  `C 96 ${row.y - row.amplitude + row.phase * pointer.x * 3 - normalizedIndex * 6},`,
+                  `124 ${row.y + row.amplitude + normalizedIndex * 4},`,
                   `160 ${row.y}`,
-                  `S 224 ${row.y - row.amplitude},`,
-                  `278 ${row.y + row.amplitude - row.phase * pointer.y * 3}`,
+                  `S 224 ${row.y - row.amplitude - normalizedIndex * 5},`,
+                  `278 ${row.y + row.amplitude - row.phase * pointer.y * 3 + normalizedIndex * 3}`,
                 ].join(' ')}
                 style={{
                   opacity: waveOpacity + row.phase * 0.02,
