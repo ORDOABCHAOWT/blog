@@ -16,6 +16,7 @@
   --site-shadow: rgba(42, 36, 28, 0.08);
   --site-wave: rgba(29, 26, 23, 0.16);
   --site-wave-strong: rgba(29, 26, 23, 0.24);
+  --site-dropcap: rgba(29, 26, 23, 0.82);
   --admin-bg: #eceff1;
   --admin-card-bg: rgba(255, 255, 255, 0.7);
   --admin-text: #212121;
@@ -53,6 +54,7 @@
     --site-shadow: rgba(0, 0, 0, 0.34);
     --site-wave: rgba(241, 235, 223, 0.18);
     --site-wave-strong: rgba(241, 235, 223, 0.28);
+    --site-dropcap: rgba(241, 235, 223, 0.2);
     --admin-bg: #1a1a1a;
     --admin-card-bg: rgba(30, 30, 30, 0.7);
     --admin-text: #e0e0e0;
@@ -570,7 +572,7 @@ img {
   font-family: var(--font-editorial-display), "Iowan Old Style", serif;
   font-size: 4.9rem;
   line-height: 0.8;
-  color: rgba(29, 26, 23, 0.82);
+  color: var(--site-dropcap);
 }
 
 .editorial-prose p {
