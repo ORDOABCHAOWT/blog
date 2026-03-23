@@ -63,13 +63,6 @@ export default function HomeExperience({ posts }: HomeExperienceProps) {
       </section>
 
       <section className="directory-section">
-        <div className="directory-header">
-          <p className="eyebrow">Writing Index</p>
-          <p className="directory-summary">
-            {posts.length.toString().padStart(2, '0')} entries in the archive
-          </p>
-        </div>
-
         <div className="directory-list">
           {posts.length === 0 ? (
             <p className="directory-empty">暂无文章</p>
