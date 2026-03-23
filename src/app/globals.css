@@ -266,11 +266,23 @@ img {
   fill: none;
   stroke: var(--site-wave);
   stroke-linecap: round;
-  stroke-width: 1.9;
+  stroke-width: 0.68;
+  transition: opacity 140ms ease;
 }
 
 .wayfinder-hero:hover .wayfinder-hero__ripples path {
   stroke: var(--site-wave-strong);
+}
+
+.wayfinder-hero__binary text {
+  fill: var(--site-wave-strong);
+  font-family: var(--font-editorial-mono), "SFMono-Regular", Consolas, monospace;
+  font-size: 8px;
+  letter-spacing: 0.04em;
+  dominant-baseline: middle;
+  text-anchor: middle;
+  user-select: none;
+  pointer-events: none;
 }
 
 .directory-section {
