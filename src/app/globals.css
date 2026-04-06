@@ -147,11 +147,14 @@ img {
   grid-template-columns: minmax(0, 0.9fr) minmax(360px, 1.16fr);
   gap: 2.5rem 2.75rem;
   align-items: start;
+  width: min(940px, 100%);
+  margin: 0 auto;
   padding: 3rem 0 3.5rem;
 }
 
 .identity-panel {
   max-width: 34rem;
+  margin-left: 0.8rem;
   animation: rise-in 900ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
@@ -243,6 +246,7 @@ img {
   align-self: start;
   width: 100%;
   padding-top: 0.35rem;
+  padding-right: 0.9rem;
 }
 
 .wayfinder-hero {
@@ -261,8 +265,8 @@ img {
 .wayfinder-hero__digit-wave text {
   fill: var(--site-wave-strong);
   font-family: var(--font-editorial-mono), "SFMono-Regular", Consolas, monospace;
-  font-size: 10px;
-  letter-spacing: 0.08em;
+  font-size: 9.2px;
+  letter-spacing: 0.06em;
   dominant-baseline: middle;
   text-anchor: middle;
   user-select: none;

@@ -3,8 +3,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 const SIZE = 480;
-const ROWS = 16;
-const COLUMNS = 34;
+const ROWS = 18;
+const COLUMNS = 40;
 
 type FrameState = {
   time: number;
