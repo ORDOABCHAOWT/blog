@@ -262,12 +262,29 @@ img {
   vector-effect: non-scaling-stroke;
 }
 
-.wayfinder-hero__ripples path {
+.wayfinder-hero__signals line {
+  stroke: color-mix(in srgb, var(--site-wave-strong) 36%, transparent);
+  stroke-width: 0.72;
+  stroke-linecap: round;
+}
+
+.wayfinder-hero__scanline {
+  fill: color-mix(in srgb, var(--site-accent) 7%, transparent);
+  opacity: 0.38;
+}
+
+.wayfinder-hero__ripples path,
+.wayfinder-hero__ripple {
   fill: none;
   stroke: var(--site-wave);
   stroke-linecap: round;
-  stroke-width: 0.68;
-  transition: opacity 140ms ease;
+  stroke-width: 0.56;
+  mix-blend-mode: multiply;
+  transition: opacity 260ms ease, stroke 260ms ease;
+}
+
+.wayfinder-hero__ripple--accent {
+  stroke: color-mix(in srgb, var(--site-wave-strong) 80%, var(--site-accent) 20%);
 }
 
 .wayfinder-hero:hover .wayfinder-hero__ripples path {
@@ -283,6 +300,17 @@ img {
   text-anchor: middle;
   user-select: none;
   pointer-events: none;
+  paint-order: stroke;
+  stroke: color-mix(in srgb, var(--site-background) 72%, transparent);
+  stroke-width: 0.28;
+}
+
+.wayfinder-hero__digit--zero {
+  fill: color-mix(in srgb, var(--site-wave-strong) 84%, var(--site-background));
+}
+
+.wayfinder-hero__digit--one {
+  fill: color-mix(in srgb, var(--site-wave-strong) 96%, var(--site-accent) 4%);
 }
 
 .directory-section {

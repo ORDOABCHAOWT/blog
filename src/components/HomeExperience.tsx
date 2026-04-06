@@ -38,23 +38,6 @@ export default function HomeExperience({ posts }: HomeExperienceProps) {
             Essays, project notes, and field observations on AI, work, images,
             travel, and the ordinary details worth holding onto.
           </p>
-
-          <div className="home-links">
-            <a
-              href="https://mp.weixin.qq.com/s/wOQdwQxXzu1bhL9DEM0HJQ"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              WeChat
-            </a>
-            <a
-              href="https://www.xiaohongshu.com/user/profile/5b1754d2e8ac2b75fc10347c?xsec_token=ABCMBJI0VByax_8-LBrE0odSfAubEeY4hAOFtZcdn2Xm0=&xsec_source=pc_search"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Xiaohongshu
-            </a>
-          </div>
         </div>
 
         <div className="hero-art">
