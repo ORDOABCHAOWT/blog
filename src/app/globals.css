@@ -248,7 +248,7 @@ img {
   width: min(100%, 38rem);
   aspect-ratio: 1;
   animation: rise-in 1050ms cubic-bezier(0.22, 1, 0.36, 1);
-  cursor: crosshair;
+  cursor: default;
 }
 
 .wayfinder-hero__svg {
@@ -257,60 +257,26 @@ img {
   overflow: visible;
 }
 
-.wayfinder-hero__svg path,
-.wayfinder-hero__svg circle {
-  vector-effect: non-scaling-stroke;
-}
-
-.wayfinder-hero__signals line {
-  stroke: color-mix(in srgb, var(--site-wave-strong) 36%, transparent);
-  stroke-width: 0.72;
-  stroke-linecap: round;
-}
-
-.wayfinder-hero__scanline {
-  fill: color-mix(in srgb, var(--site-accent) 7%, transparent);
-  opacity: 0.38;
-}
-
-.wayfinder-hero__ripples path,
-.wayfinder-hero__ripple {
-  fill: none;
-  stroke: var(--site-wave);
-  stroke-linecap: round;
-  stroke-width: 0.56;
-  mix-blend-mode: multiply;
-  transition: opacity 260ms ease, stroke 260ms ease;
-}
-
-.wayfinder-hero__ripple--accent {
-  stroke: color-mix(in srgb, var(--site-wave-strong) 80%, var(--site-accent) 20%);
-}
-
-.wayfinder-hero:hover .wayfinder-hero__ripples path {
-  stroke: var(--site-wave-strong);
-}
-
-.wayfinder-hero__binary text {
+.wayfinder-hero__digit-wave text {
   fill: var(--site-wave-strong);
   font-family: var(--font-editorial-mono), "SFMono-Regular", Consolas, monospace;
-  font-size: 8px;
-  letter-spacing: 0.04em;
+  font-size: 11px;
+  letter-spacing: 0.08em;
   dominant-baseline: middle;
   text-anchor: middle;
   user-select: none;
   pointer-events: none;
   paint-order: stroke;
   stroke: color-mix(in srgb, var(--site-background) 72%, transparent);
-  stroke-width: 0.28;
+  stroke-width: 0.36;
 }
 
-.wayfinder-hero__digit--zero {
-  fill: color-mix(in srgb, var(--site-wave-strong) 84%, var(--site-background));
+.wayfinder-hero__wave-digit {
+  fill: color-mix(in srgb, var(--site-wave-strong) 88%, var(--site-background));
 }
 
-.wayfinder-hero__digit--one {
-  fill: color-mix(in srgb, var(--site-wave-strong) 96%, var(--site-accent) 4%);
+.wayfinder-hero__wave-digit--accent {
+  fill: color-mix(in srgb, var(--site-wave-strong) 78%, var(--site-accent) 22%);
 }
 
 .directory-section {
@@ -343,8 +309,8 @@ img {
   display: grid;
   grid-template-columns: 4.5rem minmax(0, 1fr) auto;
   gap: 1.25rem;
-  align-items: baseline;
-  padding: 1.25rem 0;
+  align-items: start;
+  padding: 1.45rem 0 1.55rem;
   border-top: 1px solid var(--site-border);
   transition: transform 220ms ease, color 220ms ease, border-color 220ms ease;
 }
@@ -384,16 +350,18 @@ img {
 }
 
 .directory-content h2 {
-  margin: 0 0 0.4rem;
+  margin: 0 0 0.82rem;
   font-size: clamp(1.16rem, 1.75vw, 1.5rem);
   line-height: 1.14;
 }
 
 .directory-content p {
   margin: 0;
-  max-width: 38rem;
-  color: var(--site-muted);
-  line-height: 1.7;
+  max-width: 35rem;
+  color: color-mix(in srgb, var(--site-muted) 92%, transparent);
+  font-size: 0.92rem;
+  line-height: 1.95;
+  letter-spacing: 0.015em;
 }
 
 .directory-empty {
