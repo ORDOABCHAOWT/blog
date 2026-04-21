@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { memo, useCallback, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import type { PostSummary } from '@/lib/posts';
@@ -11,8 +11,53 @@ type HomeExperienceProps = {
   posts: PostSummary[];
 };
 
+type DirectoryItemProps = {
+  post: PostSummary;
+  isActive: boolean;
+  onActivate: (index: number) => void;
+};
+
+// Each list item is memoized so that when the active index changes,
+// only the two affected items (previous + next active) re-render,
+// instead of the entire list. This keeps the main thread free so that
+// clicks on <Link> are handled promptly.
+const DirectoryItem = memo(function DirectoryItem({
+  post,
+  isActive,
+  onActivate,
+}: DirectoryItemProps) {
+  const handleActivate = useCallback(() => {
+    onActivate(post.index);
+  }, [onActivate, post.index]);
+
+  return (
+    <Link
+      href={`/posts/${post.slug}`}
+      prefetch
+      className={`directory-item ${isActive ? 'is-active' : ''}`}
+      onPointerEnter={handleActivate}
+      onFocus={handleActivate}
+    >
+      <span className="directory-number">
+        {String(post.index).padStart(2, '0')}
+      </span>
+      <div className="directory-content">
+        <h2>{post.title}</h2>
+        <p>{post.description || 'Open the entry to read the full note.'}</p>
+      </div>
+      <span className="directory-date">{formatDisplayDate(post.date)}</span>
+    </Link>
+  );
+});
+
 export default function HomeExperience({ posts }: HomeExperienceProps) {
-  const [activeIndex, setActiveIndex] = useState<number | null>(posts[0]?.index ?? null);
+  const [activeIndex, setActiveIndex] = useState<number | null>(
+    posts[0]?.index ?? null
+  );
+
+  const handleActivate = useCallback((index: number) => {
+    setActiveIndex((current) => (current === index ? current : index));
+  }, []);
 
   return (
     <main className="home-page">
@@ -51,22 +96,12 @@ export default function HomeExperience({ posts }: HomeExperienceProps) {
             <p className="directory-empty">暂无文章</p>
           ) : (
             posts.map((post) => (
-              <Link
+              <DirectoryItem
                 key={post.slug}
-                href={`/posts/${post.slug}`}
-                className={`directory-item ${activeIndex === post.index ? 'is-active' : ''}`}
-                onPointerEnter={() => setActiveIndex(post.index)}
-                onFocus={() => setActiveIndex(post.index)}
-              >
-                <span className="directory-number">
-                  {String(post.index).padStart(2, '0')}
-                </span>
-                <div className="directory-content">
-                  <h2>{post.title}</h2>
-                  <p>{post.description || 'Open the entry to read the full note.'}</p>
-                </div>
-                <span className="directory-date">{formatDisplayDate(post.date)}</span>
-              </Link>
+                post={post}
+                isActive={activeIndex === post.index}
+                onActivate={handleActivate}
+              />
             ))
           )}
         </div>
