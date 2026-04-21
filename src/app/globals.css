@@ -144,10 +144,10 @@ img {
 .home-hero {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(0, 0.9fr) minmax(360px, 1.16fr);
-  gap: 2.5rem 2.75rem;
+  grid-template-columns: minmax(0, 0.84fr) minmax(392px, 1.24fr);
+  gap: 2.5rem 2.2rem;
   align-items: start;
-  width: min(940px, 100%);
+  width: min(980px, 100%);
   margin: 0 auto;
   padding: 3rem 0 3.5rem;
 }
@@ -246,14 +246,15 @@ img {
   align-self: start;
   width: 100%;
   padding-top: 0.35rem;
-  padding-right: 0.9rem;
+  padding-right: 0;
 }
 
 .wayfinder-hero {
-  width: min(100%, 33rem);
+  width: min(100%, 36rem);
   height: clamp(19rem, 28vw, 24rem);
   animation: rise-in 1050ms cubic-bezier(0.22, 1, 0.36, 1);
   cursor: crosshair;
+  margin-right: -0.15rem;
 }
 
 .wayfinder-hero__svg {
@@ -318,7 +319,7 @@ img {
   align-items: start;
   padding: 1.45rem 0 1.55rem;
   border-top: 1px solid var(--site-border);
-  transition: transform 220ms ease, color 220ms ease, border-color 220ms ease;
+  transition: color 220ms ease, border-color 220ms ease;
 }
 
 .directory-item:last-child {
@@ -326,13 +327,28 @@ img {
 }
 
 .directory-item:hover {
-  transform: translateX(10px);
   border-color: rgba(29, 26, 23, 0.28);
 }
 
 .directory-item.is-active {
-  transform: translateX(10px);
   border-color: rgba(29, 26, 23, 0.28);
+}
+
+.directory-item:hover .directory-content h2 {
+  transform: scale(1.018);
+}
+
+.directory-item.is-active .directory-content h2 {
+  transform: scale(1.018);
+}
+
+.directory-item:focus-visible {
+  outline: none;
+  border-color: rgba(29, 26, 23, 0.32);
+}
+
+.directory-item:focus-visible .directory-content h2 {
+  transform: scale(1.018);
 }
 
 .directory-item.is-active .directory-content h2,
@@ -359,6 +375,9 @@ img {
   margin: 0 0 0.82rem;
   font-size: clamp(1.16rem, 1.75vw, 1.5rem);
   line-height: 1.14;
+  transform-origin: left center;
+  transition: transform 220ms ease, color 220ms ease;
+  will-change: transform;
 }
 
 .directory-content p {
@@ -844,6 +863,7 @@ img {
 
   .wayfinder-hero {
     width: min(18rem, 100%);
+    margin-right: 0;
   }
 
   .directory-header,
@@ -1189,6 +1209,217 @@ img {
 .admin-link:hover {
   color: var(--admin-primary-hover);
   text-decoration: underline;
+}
+
+.ascii-demo-page {
+  min-height: 100vh;
+  padding: 2.2rem 0 3.2rem;
+  background:
+    radial-gradient(circle at 70% 35%, rgba(255, 255, 255, 0.04), transparent 22rem),
+    linear-gradient(180deg, #000 0%, #020202 100%);
+  color: #f3f5f8;
+}
+
+.ascii-demo-shell {
+  width: min(1320px, calc(100% - 56px));
+  margin: 0 auto;
+}
+
+.ascii-demo-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 2rem;
+  margin-bottom: 1.25rem;
+}
+
+.ascii-demo-copy {
+  max-width: 36rem;
+}
+
+.ascii-demo-kicker,
+.ascii-demo-scene-label,
+.ascii-demo-notes p {
+  margin: 0;
+  color: rgba(210, 220, 234, 0.72);
+  font-family: var(--font-editorial-mono), "SFMono-Regular", Consolas, monospace;
+  font-size: 0.78rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.ascii-demo-copy h1 {
+  margin: 0.5rem 0 0.7rem;
+  font-family: var(--font-editorial-display), "Iowan Old Style", serif;
+  font-size: clamp(2.2rem, 4.8vw, 4.25rem);
+  line-height: 0.94;
+  letter-spacing: 0.01em;
+}
+
+.ascii-demo-intro {
+  margin: 0;
+  max-width: 34rem;
+  color: rgba(233, 238, 244, 0.76);
+  font-size: 0.96rem;
+  line-height: 1.72;
+}
+
+.ascii-demo-back {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.8rem;
+  padding: 0 1.1rem;
+  border: 1px solid rgba(202, 214, 230, 0.18);
+  border-radius: 999px;
+  color: rgba(235, 242, 248, 0.84);
+  font-family: var(--font-editorial-mono), "SFMono-Regular", Consolas, monospace;
+  font-size: 0.76rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  transition: transform 180ms ease, border-color 180ms ease, color 180ms ease;
+}
+
+.ascii-demo-back:hover {
+  transform: translateY(-1px);
+  border-color: rgba(222, 232, 244, 0.34);
+  color: #f7fbff;
+}
+
+.ascii-demo-stage-shell {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.ascii-demo-stage {
+  position: relative;
+  overflow: hidden;
+  min-height: clamp(31rem, 72vh, 47rem);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 2.2rem;
+  background:
+    radial-gradient(circle at 72% 50%, rgba(255, 255, 255, 0.05), transparent 22rem),
+    linear-gradient(180deg, #000 0%, #010101 100%);
+  box-shadow:
+    0 28px 90px rgba(0, 0, 0, 0.46),
+    inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+.ascii-demo-stage::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.018) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.018) 1px, transparent 1px);
+  background-size: 24px 24px;
+  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.4), transparent 94%);
+  pointer-events: none;
+}
+
+.ascii-demo-stage::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at center, transparent 46%, rgba(8, 12, 18, 0.34) 100%);
+  pointer-events: none;
+}
+
+.ascii-demo-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  cursor: crosshair;
+}
+
+.ascii-demo-overlay {
+  position: absolute;
+  left: 1.35rem;
+  bottom: 1.3rem;
+  z-index: 1;
+  max-width: min(21rem, calc(100% - 3rem));
+  padding: 0.92rem 1rem 0.95rem;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 1.25rem;
+  background: rgba(6, 6, 6, 0.48);
+  backdrop-filter: blur(8px);
+}
+
+.ascii-demo-overlay h2 {
+  margin: 0.4rem 0 0.28rem;
+  font-family: var(--font-editorial-display), "Iowan Old Style", serif;
+  font-size: clamp(1.45rem, 2vw, 1.95rem);
+  line-height: 1.02;
+}
+
+.ascii-demo-overlay p {
+  margin: 0;
+  color: rgba(224, 230, 238, 0.74);
+  font-size: 0.88rem;
+  line-height: 1.56;
+}
+
+.ascii-demo-progress {
+  position: absolute;
+  right: 1.45rem;
+  bottom: 1.45rem;
+  z-index: 1;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.ascii-demo-progress span {
+  width: 2.8rem;
+  height: 0.28rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.16);
+  transition: transform 180ms ease, background-color 180ms ease;
+}
+
+.ascii-demo-progress span.is-active {
+  transform: scaleX(1.08);
+  background: rgba(240, 246, 252, 0.9);
+}
+
+.ascii-demo-notes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem 0.9rem;
+}
+
+.ascii-demo-notes p {
+  padding: 0.42rem 0.66rem;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 999px;
+  background: rgba(6, 6, 6, 0.58);
+}
+
+@media (max-width: 820px) {
+  .ascii-demo-shell {
+    width: min(100% - 40px, 100%);
+  }
+
+  .ascii-demo-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .ascii-demo-stage {
+    min-height: clamp(24rem, 88vw, 34rem);
+  }
+
+  .ascii-demo-overlay {
+    right: 1rem;
+    left: 1rem;
+    max-width: none;
+  }
+
+  .ascii-demo-progress {
+    right: 1rem;
+    bottom: 7.25rem;
+  }
 }
 
 

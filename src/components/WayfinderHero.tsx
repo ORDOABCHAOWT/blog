@@ -2,9 +2,10 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 
-const SIZE = 480;
-const ROWS = 18;
-const COLUMNS = 40;
+const SIZE = 560;
+const ROWS = 20;
+const COLUMNS = 46;
+const FRAME_INTERVAL = 1000 / 30;
 
 type FrameState = {
   time: number;
@@ -34,6 +35,7 @@ export default function WayfinderHero({
   const [pointerActive, setPointerActive] = useState(false);
   const pointerTarget = useRef({ x: 0, y: 0 });
   const pointerCurrent = useRef({ x: 0, y: 0 });
+  const lastCommittedAt = useRef(0);
 
   useEffect(() => {
     const startedAt = performance.now();
@@ -45,11 +47,14 @@ export default function WayfinderHero({
       pointerCurrent.current.y +=
         (pointerTarget.current.y - pointerCurrent.current.y) * 0.085;
 
-      setFrame({
-        time: (now - startedAt) / 1000,
-        x: pointerCurrent.current.x,
-        y: pointerCurrent.current.y,
-      });
+      if (now - lastCommittedAt.current >= FRAME_INTERVAL) {
+        lastCommittedAt.current = now;
+        setFrame({
+          time: (now - startedAt) / 1000,
+          x: pointerCurrent.current.x,
+          y: pointerCurrent.current.y,
+        });
+      }
 
       rafId = window.requestAnimationFrame(animate);
     };
@@ -66,7 +71,7 @@ export default function WayfinderHero({
 
     return Array.from({ length: ROWS }, (_, row) => {
       const rowProgress = row / (ROWS - 1);
-      const baseY = 46 + rowProgress * (SIZE - 92);
+      const baseY = 48 + rowProgress * (SIZE - 96);
       const amplitude =
         18 +
         Math.sin(rowProgress * Math.PI) * 34 +
@@ -78,7 +83,7 @@ export default function WayfinderHero({
 
       return Array.from({ length: COLUMNS }, (_, column) => {
         const columnProgress = column / (COLUMNS - 1);
-        const baseX = 22 + columnProgress * (SIZE - 44);
+        const baseX = 14 + columnProgress * (SIZE - 28);
         const primary = Math.sin(column * frequency + frame.time * speed + rowPhase);
         const secondary = Math.cos(
           column * (frequency * 0.62) - frame.time * (speed * 0.72) + row * 0.41
@@ -95,22 +100,38 @@ export default function WayfinderHero({
         const dx = baseX - pointerX;
         const dy = y - pointerY;
         const distance = Math.hypot(dx, dy);
-        const influence = pointerActive ? Math.exp(-(distance * distance) / 8800) : 0;
+        const radius = SIZE * 0.19;
+        const influence =
+          pointerActive && distance < radius
+            ? Math.pow(1 - distance / radius, 1.65)
+            : 0;
         const ripple =
-          Math.sin(distance * 0.12 - frame.time * 5.2 + row * 0.55) *
-          influence *
-          20;
-        const driftX =
-          Math.cos(frame.time * 2.2 + row * 0.42 + column * 0.18) *
-          influence *
-          7.5;
-        const pushY =
-          (dy / (distance + 32)) *
+          Math.sin(distance * 0.11 - frame.time * 4.8 + row * 0.55) *
           influence *
           18;
+        const driftX =
+          Math.cos(frame.time * 2.1 + row * 0.42 + column * 0.18) *
+          influence *
+          5.2;
+        const pushX =
+          (dx / (distance + 28)) *
+          influence *
+          34;
+        const pushY =
+          (dy / (distance + 28)) *
+          influence *
+          26;
+        const swirlX =
+          (-dy / (distance + 28)) *
+          influence *
+          8;
+        const swirlY =
+          (dx / (distance + 28)) *
+          influence *
+          8;
 
-        x += driftX;
-        y += ripple + pushY;
+        x += driftX + pushX + swirlX;
+        y += ripple + pushY + swirlY;
         const crest = (primary + 1) / 2;
         const shimmer = (Math.sin(frame.time * 2.4 + column * 0.35 + row * 0.8) + 1) / 2;
         const opacity = clamp(
