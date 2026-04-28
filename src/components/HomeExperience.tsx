@@ -73,7 +73,6 @@ export default function HomeExperience({ posts }: HomeExperienceProps) {
               priority
             />
             <div>
-              <p className="eyebrow">Personal Writing Archive</p>
               <h1 className="home-title">Taffy Wang</h1>
             </div>
           </div>

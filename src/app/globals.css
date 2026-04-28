@@ -1,10 +1,15 @@
 @import "tailwindcss";
 
 :root {
-  --font-editorial-display: "Baskerville", "Iowan Old Style", "Palatino Linotype",
-    "Book Antiqua", "Times New Roman", serif;
-  --font-editorial-mono: "Courier Prime", "IBM Plex Mono", "SFMono-Regular",
-    Consolas, monospace;
+  /* Editorial display = Fraunces (variable optical-size serif) with
+     time-tested fallbacks so the cascade stays elegant during font swap. */
+  --font-editorial-display: var(--font-fraunces), "Iowan Old Style",
+    "Palatino Linotype", "Book Antiqua", Palatino, "Times New Roman", serif;
+  --font-editorial-sans: var(--font-inter), -apple-system, BlinkMacSystemFont,
+    "Segoe UI", "Helvetica Neue", Arial, "PingFang SC", "Hiragino Sans GB",
+    "Microsoft YaHei", sans-serif;
+  --font-editorial-mono: var(--font-jetbrains), "JetBrains Mono",
+    "IBM Plex Mono", "SFMono-Regular", Consolas, monospace;
   --site-background: #f7f2e8;
   --site-background-soft: #efe8da;
   --site-panel: rgba(249, 245, 237, 0.82);
@@ -90,8 +95,14 @@ body {
     radial-gradient(circle at top left, rgba(100, 118, 143, 0.12), transparent 24rem),
     radial-gradient(circle at 85% 20%, rgba(170, 148, 120, 0.12), transparent 18rem),
     linear-gradient(180deg, #fbf7ef 0%, var(--site-background) 52%, #f0e8db 100%);
-  font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Palatino,
+  font-family: var(--font-editorial-display), "Iowan Old Style",
+    "Palatino Linotype", "Book Antiqua", Palatino,
     "Songti SC", "STSong", "Noto Serif CJK SC", serif;
+  font-optical-sizing: auto;
+  /* Common ligatures + kerning for refined body text. */
+  font-feature-settings: "liga" 1, "calt" 1, "kern" 1, "onum" 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
 }
 
@@ -179,21 +190,32 @@ img {
 .editorial-prose h3 {
   font-family: var(--font-editorial-display), "Iowan Old Style",
     "Palatino Linotype", serif;
+  /* Fraunces variable axes: opsz pulls in optical-size for crisper big
+     glyphs; small SOFT softens the joints just a touch. */
+  font-variation-settings: "opsz" 144, "SOFT" 30;
+  /* Modern OpenType features for elegant serif typography */
+  font-feature-settings: "liga" 1, "calt" 1, "dlig" 1, "kern" 1;
+  font-optical-sizing: auto;
 }
 
 .home-title {
   margin: 0;
-  font-size: clamp(2.4rem, 5.6vw, 4.8rem);
-  line-height: 0.98;
-  letter-spacing: 0.01em;
+  font-size: clamp(2.6rem, 6vw, 5.2rem);
+  font-weight: 380;
+  line-height: 1.02;
+  letter-spacing: -0.012em;
 }
 
 .home-deck {
   margin: 0 0 1rem;
   max-width: 24rem;
   color: var(--site-muted);
-  font-size: 1.1rem;
-  letter-spacing: 0.02em;
+  font-family: var(--font-editorial-display), serif;
+  font-size: 1.18rem;
+  font-style: italic;
+  font-weight: 360;
+  letter-spacing: 0.005em;
+  font-variation-settings: "opsz" 14, "SOFT" 80;
 }
 
 .home-intro,
