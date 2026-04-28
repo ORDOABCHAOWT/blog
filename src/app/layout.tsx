@@ -39,6 +39,7 @@ export default function RootLayout({
   return (
     <html
       lang="zh-CN"
+      data-scroll-behavior="smooth"
       className={`${fraunces.variable} ${inter.variable} ${jetbrainsMono.variable}`}
     >
       <body>

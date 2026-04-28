@@ -83,109 +83,108 @@
 }
 
 html {
-  scroll-behavior: smooth;
   color-scheme: light dark;
 }
 
-/* ---------- View Transitions (book-flip) ----------
-   Browsers that support the API will animate the old page out and the
-   new page in. We turn it into a subtle "page flip": the outgoing page
-   tilts and dims while the incoming page rises with a soft brightening.
-   No-VT browsers fall through to instant SSR transitions. */
-::view-transition-old(root),
-::view-transition-new(root) {
-  animation-duration: 540ms;
-  animation-timing-function: cubic-bezier(0.6, 0.01, 0.18, 1);
-  /* Render around a vertical "spine" on the left edge */
-  mix-blend-mode: normal;
+/* Scroll behavior moved here so Next route transitions can disable it
+   without us interfering. The `data-scroll-behavior="smooth"` attribute
+   on <html> opts in to smooth scrolling for the page itself. */
+html[data-scroll-behavior='smooth'] {
+  scroll-behavior: smooth;
 }
 
-::view-transition-old(root) {
-  animation-name: page-flip-out;
+/* ---------- Page-flip overlay (book transition) ----------
+   PageTransition component creates `.page-flip-overlay` containing a
+   visual clone of the current page. The overlay tilts about the spine
+   while the real <main> (underneath) navigates to the next route. */
+.page-flip-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  perspective: 1600px;
+  transform-style: preserve-3d;
+}
+
+.page-flip-overlay__page {
+  position: absolute;
+  inset: 0;
   transform-origin: left center;
+  transform-style: preserve-3d;
+  /* Initial state — sits flush over the page. */
+  transform: rotateY(0deg);
+  background: var(--site-background);
+  overflow: hidden;
+  will-change: transform, opacity, filter, box-shadow;
 }
 
-::view-transition-new(root) {
-  animation-name: page-flip-in;
-  transform-origin: left center;
-}
-
-/* Backward direction: when leaving a post, flip the other way */
-html[data-transition='backward']::view-transition-old(root) {
-  animation-name: page-flip-out-back;
+.page-flip-overlay[data-direction='backward'] .page-flip-overlay__page {
   transform-origin: right center;
 }
-html[data-transition='backward']::view-transition-new(root) {
-  animation-name: page-flip-in-back;
-  transform-origin: right center;
+
+/* Snapshot wrapper — body children are cloned in here. The wrapper
+   is translated by -scrollY at clone time so the visible portion of
+   the page lines up with what the user was looking at. */
+.page-flip-overlay__snapshot {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: auto;
+  width: 100%;
+  pointer-events: none;
+  user-select: none;
+  will-change: transform;
 }
 
-@keyframes page-flip-out {
+/* Fire the flip animation by adding `.is-flipping` (set from JS after
+   one reflow so the starting transform is committed first). */
+.page-flip-overlay.is-flipping .page-flip-overlay__page {
+  animation: page-flip-leave 700ms cubic-bezier(0.55, 0.02, 0.2, 1) forwards;
+}
+
+.page-flip-overlay.is-flipping[data-direction='backward'] .page-flip-overlay__page {
+  animation-name: page-flip-leave-back;
+}
+
+@keyframes page-flip-leave {
   0% {
+    transform: rotateY(0deg);
+    filter: brightness(1);
+    box-shadow: 0 0 0 rgba(0, 0, 0, 0);
     opacity: 1;
-    transform: perspective(1600px) rotateY(0deg) translateZ(0);
-    filter: brightness(1) saturate(1);
-  }
-  100% {
-    opacity: 0;
-    transform: perspective(1600px) rotateY(-14deg) translateZ(-40px);
-    filter: brightness(0.85) saturate(0.9);
-  }
-}
-
-@keyframes page-flip-in {
-  0% {
-    opacity: 0;
-    transform: perspective(1600px) rotateY(18deg) translateZ(-60px);
-    filter: brightness(1.04);
   }
   60% {
     opacity: 1;
   }
   100% {
-    opacity: 1;
-    transform: perspective(1600px) rotateY(0deg) translateZ(0);
-    filter: brightness(1);
+    transform: rotateY(-92deg);
+    filter: brightness(0.55);
+    box-shadow: 32px 0 80px rgba(0, 0, 0, 0.32);
+    opacity: 0;
   }
 }
 
-@keyframes page-flip-out-back {
+@keyframes page-flip-leave-back {
   0% {
-    opacity: 1;
-    transform: perspective(1600px) rotateY(0deg) translateZ(0);
+    transform: rotateY(0deg);
     filter: brightness(1);
-  }
-  100% {
-    opacity: 0;
-    transform: perspective(1600px) rotateY(14deg) translateZ(-40px);
-    filter: brightness(0.85);
-  }
-}
-
-@keyframes page-flip-in-back {
-  0% {
-    opacity: 0;
-    transform: perspective(1600px) rotateY(-18deg) translateZ(-60px);
+    box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+    opacity: 1;
   }
   60% {
     opacity: 1;
   }
   100% {
-    opacity: 1;
-    transform: perspective(1600px) rotateY(0deg) translateZ(0);
+    transform: rotateY(92deg);
+    filter: brightness(0.55);
+    box-shadow: -32px 0 80px rgba(0, 0, 0, 0.32);
+    opacity: 0;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  ::view-transition-old(root),
-  ::view-transition-new(root) {
-    animation-duration: 200ms;
-    animation-name: fade-only;
-  }
-  @keyframes fade-only {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
+  .page-flip-overlay { display: none; }
 }
 
 body {
