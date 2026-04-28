@@ -87,6 +87,107 @@ html {
   color-scheme: light dark;
 }
 
+/* ---------- View Transitions (book-flip) ----------
+   Browsers that support the API will animate the old page out and the
+   new page in. We turn it into a subtle "page flip": the outgoing page
+   tilts and dims while the incoming page rises with a soft brightening.
+   No-VT browsers fall through to instant SSR transitions. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 540ms;
+  animation-timing-function: cubic-bezier(0.6, 0.01, 0.18, 1);
+  /* Render around a vertical "spine" on the left edge */
+  mix-blend-mode: normal;
+}
+
+::view-transition-old(root) {
+  animation-name: page-flip-out;
+  transform-origin: left center;
+}
+
+::view-transition-new(root) {
+  animation-name: page-flip-in;
+  transform-origin: left center;
+}
+
+/* Backward direction: when leaving a post, flip the other way */
+html[data-transition='backward']::view-transition-old(root) {
+  animation-name: page-flip-out-back;
+  transform-origin: right center;
+}
+html[data-transition='backward']::view-transition-new(root) {
+  animation-name: page-flip-in-back;
+  transform-origin: right center;
+}
+
+@keyframes page-flip-out {
+  0% {
+    opacity: 1;
+    transform: perspective(1600px) rotateY(0deg) translateZ(0);
+    filter: brightness(1) saturate(1);
+  }
+  100% {
+    opacity: 0;
+    transform: perspective(1600px) rotateY(-14deg) translateZ(-40px);
+    filter: brightness(0.85) saturate(0.9);
+  }
+}
+
+@keyframes page-flip-in {
+  0% {
+    opacity: 0;
+    transform: perspective(1600px) rotateY(18deg) translateZ(-60px);
+    filter: brightness(1.04);
+  }
+  60% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+    transform: perspective(1600px) rotateY(0deg) translateZ(0);
+    filter: brightness(1);
+  }
+}
+
+@keyframes page-flip-out-back {
+  0% {
+    opacity: 1;
+    transform: perspective(1600px) rotateY(0deg) translateZ(0);
+    filter: brightness(1);
+  }
+  100% {
+    opacity: 0;
+    transform: perspective(1600px) rotateY(14deg) translateZ(-40px);
+    filter: brightness(0.85);
+  }
+}
+
+@keyframes page-flip-in-back {
+  0% {
+    opacity: 0;
+    transform: perspective(1600px) rotateY(-18deg) translateZ(-60px);
+  }
+  60% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+    transform: perspective(1600px) rotateY(0deg) translateZ(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 200ms;
+    animation-name: fade-only;
+  }
+  @keyframes fade-only {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+}
+
 body {
   margin: 0;
   min-height: 100vh;
@@ -455,14 +556,24 @@ img {
 
 .post-title {
   margin: 0;
-  font-size: clamp(1.95rem, 4vw, 3.35rem);
-  line-height: 1.06;
+  font-size: clamp(1.9rem, 3.8vw, 3.05rem);
+  font-weight: 380;
+  line-height: 1.12;
+  letter-spacing: -0.012em;
+  font-variation-settings: "opsz" 144, "SOFT" 30;
+  color: var(--site-ink);
 }
 
 .post-description {
   margin: 1.25rem 0 0;
   max-width: 42rem;
   color: var(--site-muted);
+  font-style: italic;
+  font-weight: 360;
+  font-size: 1.06rem;
+  line-height: 1.7;
+  letter-spacing: 0.005em;
+  font-variation-settings: "opsz" 14, "SOFT" 80;
 }
 
 .post-date {
@@ -629,8 +740,37 @@ img {
   color: var(--site-dropcap);
 }
 
+/* CJK opens with a square ideograph; a true Western dropcap looks heavy
+   and uneven. Skip it and lean on the post-title / lead paragraph rhythm
+   instead. The first paragraph also gets a slightly larger lead size so
+   the article still has a visible "opening note". */
+.editorial-prose[data-cjk] > p:first-of-type:first-letter {
+  float: none;
+  margin: 0;
+  font-size: inherit;
+  line-height: inherit;
+  color: inherit;
+}
+
+.editorial-prose[data-cjk] > p:first-of-type {
+  font-size: 1.16rem;
+  line-height: 1.95;
+  letter-spacing: 0.005em;
+}
+
 .editorial-prose p {
   margin: 0 0 1.5rem;
+  /* Comfortable Chinese reading: a touch more line-height and tracking
+     than Latin defaults; "halt" trims excess width on CJK punctuation. */
+  font-feature-settings: "liga" 1, "calt" 1, "kern" 1, "halt" 1;
+}
+
+.editorial-prose[data-cjk] p {
+  line-height: 1.94;
+  letter-spacing: 0.01em;
+  text-spacing: ideograph-numeric;
+  hanging-punctuation: allow-end;
+  margin-bottom: 1.7rem;
 }
 
 .editorial-prose h1,

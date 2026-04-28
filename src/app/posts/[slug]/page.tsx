@@ -140,7 +140,10 @@ export default async function PostPage({
         </aside>
 
         <article className="post-article">
-          <div className="editorial-prose">
+          <div
+            className="editorial-prose"
+            data-cjk={/^\s*[　-鿿＀-￯]/.test(post.content) ? 'true' : undefined}
+          >
             <ReactMarkdown
               remarkPlugins={[remarkGfm]}
               components={{

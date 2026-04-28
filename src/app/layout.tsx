@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Fraunces, Inter, JetBrains_Mono } from "next/font/google";
+import PageTransition from "@/components/PageTransition";
 import "./globals.css";
 
 // Display + body serif: Fraunces has variable optical sizing so big
@@ -40,7 +41,10 @@ export default function RootLayout({
       lang="zh-CN"
       className={`${fraunces.variable} ${inter.variable} ${jetbrainsMono.variable}`}
     >
-      <body>{children}</body>
+      <body>
+        <PageTransition />
+        {children}
+      </body>
     </html>
   );
 }
