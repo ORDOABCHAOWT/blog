@@ -321,7 +321,6 @@ img {
 .home-intro,
 .hero-copy p,
 .post-description,
-.post-rail-copy,
 .editorial-prose p,
 .editorial-prose li,
 .editorial-prose blockquote {
@@ -483,15 +482,7 @@ img {
 .directory-date,
 .post-stamp,
 .post-date,
-.post-rail-label,
-.post-rail-meta span,
-.post-pagination-link span {
-  color: var(--site-muted);
-  font-family: var(--font-editorial-mono), "SFMono-Regular", Consolas, monospace;
-  font-size: 0.76rem;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-}
+/* (Old rail label / meta typography rules removed.) */
 
 .directory-content h2 {
   margin: 0 0 0.82rem;
@@ -514,6 +505,80 @@ img {
 .directory-empty {
   margin: 1rem 0 0;
   color: var(--site-muted);
+}
+
+/* ---------- Article footer pager ----------
+   Two large facing "page turn" links, sitting at the bottom of every
+   article so the reader naturally lands on the previous / next entry
+   after finishing. The layout deliberately echoes a book's facing
+   pages: prev sits on the left (like the verso), next on the right. */
+.post-pager {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-top: 4rem;
+  padding-top: 2.4rem;
+  border-top: 1px solid var(--site-border);
+}
+
+.post-pager-link {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  padding: 0.4rem 0;
+  color: var(--site-ink);
+  transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1),
+    color 220ms ease;
+}
+
+.post-pager-link.is-prev {
+  align-items: flex-start;
+  text-align: left;
+}
+
+.post-pager-link.is-next {
+  align-items: flex-end;
+  text-align: right;
+}
+
+.post-pager-direction {
+  font-family: var(--font-editorial-mono), "SFMono-Regular", Consolas, monospace;
+  font-size: 0.74rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--site-muted);
+}
+
+.post-pager-title {
+  font-family: var(--font-editorial-display), "Iowan Old Style", serif;
+  font-size: clamp(1.15rem, 2vw, 1.55rem);
+  font-weight: 380;
+  line-height: 1.2;
+  letter-spacing: -0.005em;
+  color: var(--site-ink);
+  font-variation-settings: "opsz" 64, "SOFT" 30;
+}
+
+.post-pager-link:not(.is-muted):hover .post-pager-title {
+  color: var(--site-accent);
+}
+
+.post-pager-link.is-prev:not(.is-muted):hover {
+  transform: translateX(-4px);
+}
+
+.post-pager-link.is-next:not(.is-muted):hover {
+  transform: translateX(4px);
+}
+
+.post-pager-link.is-muted {
+  cursor: default;
+}
+
+.post-pager-link.is-muted .post-pager-title {
+  color: var(--site-muted);
+  font-style: italic;
+  opacity: 0.7;
 }
 
 .site-footer,
@@ -590,26 +655,23 @@ img {
   position: relative;
 }
 
-.post-rail-card {
+/* Side rail is now chrome-free: no card, no border, no shadow.
+   It quietly hosts the in-page outline if one exists. */
+.post-rail-stack {
   position: sticky;
   top: 2rem;
   display: flex;
   flex-direction: column;
-  gap: 1.1rem;
-  padding: 1.4rem 1.25rem;
-  background: var(--site-panel);
-  border: 1px solid rgba(29, 26, 23, 0.1);
-  border-radius: 1.5rem;
-  box-shadow: 0 24px 40px var(--site-shadow);
-  backdrop-filter: blur(10px);
+  gap: 1rem;
+  padding: 0;
 }
 
 .post-outline {
   display: flex;
   flex-direction: column;
-  gap: 0.85rem;
-  padding-top: 0.85rem;
-  border-top: 1px solid var(--site-border);
+  gap: 0.7rem;
+  padding: 0;
+  border-top: none;
 }
 
 .post-outline-label {
@@ -662,61 +724,9 @@ img {
   background: linear-gradient(90deg, rgba(73, 92, 116, 0.85), rgba(29, 26, 23, 0.72));
 }
 
-.post-rail-label {
-  margin: 0;
-}
-
-.post-rail-copy,
-.post-rail-meta strong,
-.post-pagination-link strong {
-  margin: 0;
-}
-
-.post-rail-copy {
-  color: var(--site-muted);
-  font-size: 0.98rem;
-}
-
-.post-rail-meta {
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-}
-
-.post-rail-meta strong,
-.post-pagination-link strong {
-  font-weight: 500;
-  line-height: 1.55;
-}
-
-.post-pagination {
-  display: flex;
-  flex-direction: column;
-  gap: 0.8rem;
-  padding-top: 0.6rem;
-  border-top: 1px solid var(--site-border);
-}
-
-.post-pagination-link {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  padding: 0.8rem 0;
-  border-bottom: 1px solid rgba(29, 26, 23, 0.08);
-  transition: color 180ms ease, transform 180ms ease;
-}
-
-.post-pagination-link:last-child {
-  border-bottom: 0;
-}
-
-.post-pagination-link:hover {
-  transform: translateX(6px);
-}
-
-.post-pagination-link.is-muted {
-  opacity: 0.55;
-}
+/* (Old `.post-rail-card` / `.post-rail-meta` / `.post-pagination`
+   styles removed — Prev/Next now lives in the article-footer
+   `.post-pager` block, and the side rail is chrome-free.) */
 
 .post-article {
   min-width: 0;
@@ -997,7 +1007,7 @@ img {
     grid-column: 2;
   }
 
-  .post-rail-card {
+  .post-rail-stack {
     position: static;
   }
 }
@@ -1047,8 +1057,19 @@ img {
     padding-top: 2rem;
   }
 
-  .post-rail-card {
-    padding: 1.15rem 1rem;
+  .post-rail-stack {
+    padding: 0;
+  }
+
+  .post-pager {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    margin-top: 3rem;
+  }
+
+  .post-pager-link.is-next {
+    align-items: flex-start;
+    text-align: left;
   }
 
   .editorial-prose {

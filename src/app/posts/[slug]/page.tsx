@@ -90,36 +90,7 @@ export default async function PostPage({
 
       <div className="post-layout">
         <aside className="post-rail">
-          <div className="post-rail-card">
-            <div className="post-rail-meta">
-              <span>Date</span>
-              <strong>{formatDisplayDate(post.date)}</strong>
-            </div>
-            <nav className="post-pagination" aria-label="Post navigation">
-              {previousPost ? (
-                <Link href={`/posts/${previousPost.slug}`} className="post-pagination-link">
-                  <span>Previous</span>
-                  <strong>{previousPost.title}</strong>
-                </Link>
-              ) : (
-                <div className="post-pagination-link is-muted">
-                  <span>Previous</span>
-                  <strong>Start of archive</strong>
-                </div>
-              )}
-
-              {nextPost ? (
-                <Link href={`/posts/${nextPost.slug}`} className="post-pagination-link">
-                  <span>Next</span>
-                  <strong>{nextPost.title}</strong>
-                </Link>
-              ) : (
-                <div className="post-pagination-link is-muted">
-                  <span>Next</span>
-                  <strong>Latest entry</strong>
-                </div>
-              )}
-            </nav>
+          <div className="post-rail-stack">
             {headings.length > 0 ? (
               <nav className="post-outline" aria-label="Table of contents">
                 <p className="post-outline-label">On this page</p>
@@ -205,6 +176,37 @@ export default async function PostPage({
           </div>
         </article>
       </div>
+
+      <nav className="post-pager" aria-label="Adjacent posts">
+        {previousPost ? (
+          <Link
+            href={`/posts/${previousPost.slug}`}
+            className="post-pager-link is-prev"
+          >
+            <span className="post-pager-direction">← Previous</span>
+            <span className="post-pager-title">{previousPost.title}</span>
+          </Link>
+        ) : (
+          <span className="post-pager-link is-prev is-muted" aria-disabled="true">
+            <span className="post-pager-direction">← Previous</span>
+            <span className="post-pager-title">Start of archive</span>
+          </span>
+        )}
+        {nextPost ? (
+          <Link
+            href={`/posts/${nextPost.slug}`}
+            className="post-pager-link is-next"
+          >
+            <span className="post-pager-direction">Next →</span>
+            <span className="post-pager-title">{nextPost.title}</span>
+          </Link>
+        ) : (
+          <span className="post-pager-link is-next is-muted" aria-disabled="true">
+            <span className="post-pager-direction">Next →</span>
+            <span className="post-pager-title">Latest entry</span>
+          </span>
+        )}
+      </nav>
 
       <footer className="post-footer">
         <Link href="/" className="post-footer-link">
