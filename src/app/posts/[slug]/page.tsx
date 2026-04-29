@@ -88,10 +88,12 @@ export default async function PostPage({
         <p className="post-date">{formatDisplayDate(post.date)}</p>
       </header>
 
-      <div className="post-layout">
-        <aside className="post-rail">
-          <div className="post-rail-stack">
-            {headings.length > 0 ? (
+      <div
+        className={`post-layout ${headings.length > 0 ? 'has-rail' : ''}`}
+      >
+        {headings.length > 0 ? (
+          <aside className="post-rail">
+            <div className="post-rail-stack">
               <nav className="post-outline" aria-label="Table of contents">
                 <p className="post-outline-label">On this page</p>
                 <div className="post-outline-links">
@@ -106,9 +108,9 @@ export default async function PostPage({
                   ))}
                 </div>
               </nav>
-            ) : null}
-          </div>
-        </aside>
+            </div>
+          </aside>
+        ) : null}
 
         <article className="post-article">
           <div

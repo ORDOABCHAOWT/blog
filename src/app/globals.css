@@ -93,98 +93,25 @@ html[data-scroll-behavior='smooth'] {
   scroll-behavior: smooth;
 }
 
-/* ---------- Page-flip overlay (book transition) ----------
-   PageTransition component creates `.page-flip-overlay` containing a
-   visual clone of the current page. The overlay tilts about the spine
-   while the real <main> (underneath) navigates to the next route. */
-.page-flip-overlay {
+/* ---------- Page-dust overlay (route transition) ----------
+   PageTransition mounts a fullscreen <canvas> on top of the page. JS
+   draws thousands of 0/1 particles drifting outward, then back inward
+   as the new route mounts beneath. Pure visual — pointer-events off. */
+.page-dust-overlay {
   position: fixed;
   inset: 0;
   z-index: 9999;
   pointer-events: none;
-  perspective: 1600px;
-  transform-style: preserve-3d;
+  /* Match the site background so the canvas's transparent regions
+     blend cleanly with the page underneath. */
+  background: transparent;
+  /* Slight upward fade as a hint of motion if drawing somehow stalls. */
+  animation: dust-fade-safety 1.2s ease forwards;
 }
 
-.page-flip-overlay__page {
-  position: absolute;
-  inset: 0;
-  transform-origin: left center;
-  transform-style: preserve-3d;
-  /* Initial state — sits flush over the page. */
-  transform: rotateY(0deg);
-  background: var(--site-background);
-  overflow: hidden;
-  will-change: transform, opacity, filter, box-shadow;
-}
-
-.page-flip-overlay[data-direction='backward'] .page-flip-overlay__page {
-  transform-origin: right center;
-}
-
-/* Snapshot wrapper — body children are cloned in here. The wrapper
-   is translated by -scrollY at clone time so the visible portion of
-   the page lines up with what the user was looking at. */
-.page-flip-overlay__snapshot {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: auto;
-  width: 100%;
-  pointer-events: none;
-  user-select: none;
-  will-change: transform;
-}
-
-/* Fire the flip animation by adding `.is-flipping` (set from JS after
-   one reflow so the starting transform is committed first). */
-.page-flip-overlay.is-flipping .page-flip-overlay__page {
-  animation: page-flip-leave 700ms cubic-bezier(0.55, 0.02, 0.2, 1) forwards;
-}
-
-.page-flip-overlay.is-flipping[data-direction='backward'] .page-flip-overlay__page {
-  animation-name: page-flip-leave-back;
-}
-
-@keyframes page-flip-leave {
-  0% {
-    transform: rotateY(0deg);
-    filter: brightness(1);
-    box-shadow: 0 0 0 rgba(0, 0, 0, 0);
-    opacity: 1;
-  }
-  60% {
-    opacity: 1;
-  }
-  100% {
-    transform: rotateY(-92deg);
-    filter: brightness(0.55);
-    box-shadow: 32px 0 80px rgba(0, 0, 0, 0.32);
-    opacity: 0;
-  }
-}
-
-@keyframes page-flip-leave-back {
-  0% {
-    transform: rotateY(0deg);
-    filter: brightness(1);
-    box-shadow: 0 0 0 rgba(0, 0, 0, 0);
-    opacity: 1;
-  }
-  60% {
-    opacity: 1;
-  }
-  100% {
-    transform: rotateY(92deg);
-    filter: brightness(0.55);
-    box-shadow: -32px 0 80px rgba(0, 0, 0, 0.32);
-    opacity: 0;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .page-flip-overlay { display: none; }
+@keyframes dust-fade-safety {
+  0%, 70% { opacity: 1; }
+  100% { opacity: 0; }
 }
 
 body {
@@ -646,9 +573,15 @@ img {
 
 .post-layout {
   display: grid;
-  grid-template-columns: minmax(180px, 240px) minmax(0, 1fr);
+  /* No outline → article gets full width; with outline → leave a slim
+     left column for the table of contents. */
+  grid-template-columns: minmax(0, 1fr);
   gap: 3rem;
   padding: 2.5rem 0 0;
+}
+
+.post-layout.has-rail {
+  grid-template-columns: minmax(180px, 220px) minmax(0, 1fr);
 }
 
 .post-rail {
@@ -730,6 +663,17 @@ img {
 
 .post-article {
   min-width: 0;
+  /* When there's no outline, center the article in its grid track so
+     the page reads as a single column instead of a left-pinned slab. */
+  width: 100%;
+}
+
+.post-layout:not(.has-rail) .post-article {
+  margin: 0 auto;
+}
+
+.post-layout:not(.has-rail) .editorial-prose {
+  max-width: 44rem;
 }
 
 .editorial-prose {
