@@ -4,29 +4,53 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
 /**
- * Bottom-up ash-burn route transition.
+ * Grayscale 0/1 ash route transition.
  *
- * Visual:
- *   1. Click captures internal navigation.
- *   2. A fullscreen canvas paints the viewport densely with 0/1 chars.
- *   3. A "burn line" sweeps from the bottom of the screen to the top
- *      over ~600ms. Anything below the line is its current state;
- *      anything just above the line is on fire (warm tint); anything
- *      farther above has been turned into ash that floats upward and
- *      fades.
- *   4. Once the burn line crosses the top, router.push() is called.
- *   5. The incoming page settles in with a quick descending coalesce:
- *      sparse 0/1 falls from the top to its resting position and fades
- *      out, revealing the freshly mounted page.
- *
- * No particle drift outward — strictly upward motion, like rising ash.
+ * Internal links burn away from the clicked row. The burned part is covered
+ * by the page's own background while grey 0/1 ash lifts off the two burn
+ * edges. No color tint, no radial bloom.
  */
-const TOTAL_MS = 1100;
-const BURN_END = 0.55;       // 0..1 — burn line reaches top of screen here
-const REVEAL_START = 0.55;   // incoming dust starts now
-const REVEAL_END = 1.0;
-const COL_WIDTH = 14;        // px between column anchors
-const ROW_HEIGHT = 16;
+const TOTAL_MS = 1120;
+const NAV_AT = 0.68;
+const REVEAL_START = 0.72;
+const BURN_BAND = 92;
+const ASH_GLYPH_COUNT = 360;
+const GREY_ASH = {
+  light: { r: 72, g: 72, b: 68 },
+  dark: { r: 198, g: 198, b: 190 },
+};
+
+type AshGlyph = {
+  x: number;
+  y: number;
+  ch: '0' | '1';
+  size: number;
+  seed: number;
+  sway: number;
+  lift: number;
+  delay: number;
+};
+
+const clamp01 = (value: number) => Math.max(0, Math.min(1, value));
+const easeInOutCubic = (value: number) => {
+  const t = clamp01(value);
+  return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+};
+const easeOutCubic = (value: number) => 1 - Math.pow(1 - clamp01(value), 3);
+
+function rgba(color: { r: number; g: number; b: number }, alpha: number) {
+  return `rgba(${color.r}, ${color.g}, ${color.b}, ${alpha})`;
+}
+
+function copyBodyBackground(target: HTMLElement) {
+  const bodyStyle = getComputedStyle(document.body);
+  target.style.backgroundColor = bodyStyle.backgroundColor;
+  target.style.backgroundImage = bodyStyle.backgroundImage;
+  target.style.backgroundPosition = bodyStyle.backgroundPosition;
+  target.style.backgroundSize = bodyStyle.backgroundSize;
+  target.style.backgroundRepeat = bodyStyle.backgroundRepeat;
+  target.style.backgroundAttachment = 'fixed';
+}
 
 export default function PageTransition() {
   const router = useRouter();
@@ -71,198 +95,124 @@ export default function PageTransition() {
         return;
       }
 
-      // Mount canvas
-      const canvas = document.createElement('canvas');
-      canvas.className = 'page-dust-overlay';
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      if (document.querySelector('.page-dust-overlay')) return;
+
       const w = window.innerWidth;
       const h = window.innerHeight;
+      const linkRect = anchor.getBoundingClientRect();
+      const originY = Math.max(
+        0,
+        Math.min(h, event.clientY || linkRect.top + linkRect.height * 0.5)
+      );
+      const darkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const ashColor = darkMode ? GREY_ASH.dark : GREY_ASH.light;
+
+      const overlay = document.createElement('div');
+      overlay.className = 'page-dust-overlay';
+      copyBodyBackground(overlay);
+      overlay.style.clipPath = `inset(${originY}px 0 ${Math.max(0, h - originY)}px 0)`;
+
+      const canvas = document.createElement('canvas');
+      canvas.className = 'page-dust-canvas';
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
       canvas.width = w * dpr;
       canvas.height = h * dpr;
       canvas.style.width = `${w}px`;
       canvas.style.height = `${h}px`;
+      overlay.appendChild(canvas);
+
       const ctx = canvas.getContext('2d');
       if (!ctx) {
         router.push(fullPath);
         return;
       }
       ctx.scale(dpr, dpr);
-      document.body.appendChild(canvas);
+      document.body.appendChild(overlay);
 
-      // Build a dense grid of particles. Each one has a "home" position
-      // on the page; its ignition time is determined by how high up it
-      // is (lower particles ignite first → fire sweeps upward).
-      type Particle = {
-        x: number;     // home x
-        y: number;     // home y
-        ch: '0' | '1';
-        size: number;
-        seed: number;  // 0..1 stable random
-        ignite: number; // 0..1 — fraction of TOTAL_MS at which it ignites
-      };
-      const particles: Particle[] = [];
-      const cols = Math.ceil(w / COL_WIDTH);
-      const rows = Math.ceil(h / ROW_HEIGHT);
-      for (let r = 0; r < rows; r++) {
-        for (let c = 0; c < cols; c++) {
-          const seed = Math.random();
-          // Slight jitter so the grid doesn't look too rigid
-          const jx = (Math.random() - 0.5) * (COL_WIDTH * 0.5);
-          const jy = (Math.random() - 0.5) * (ROW_HEIGHT * 0.4);
-          const x = c * COL_WIDTH + COL_WIDTH * 0.5 + jx;
-          const y = r * ROW_HEIGHT + ROW_HEIGHT * 0.5 + jy;
-          // Ignition: bottom-most rows ignite at t=0, top-most at t=BURN_END.
-          // Add small per-particle jitter so it's not a perfectly straight line.
-          const heightFrac = 1 - y / h;          // 0 at bottom, 1 at top
-          const jitter = (Math.random() - 0.5) * 0.06;
-          const ignite = Math.max(0, Math.min(BURN_END, heightFrac * BURN_END + jitter));
-          particles.push({
-            x,
-            y,
-            ch: Math.random() > 0.5 ? '1' : '0',
-            size: 10 + seed * 4,
-            seed,
-            ignite,
-          });
-        }
-      }
-
-      // Incoming dust (sparse, descends from top)
-      type InParticle = {
-        x: number;
-        y: number;       // resting y
-        ch: '0' | '1';
-        size: number;
-        seed: number;
-        appear: number;  // 0..1 within the reveal window
-      };
-      const incoming: InParticle[] = [];
-      const inCount = Math.round((cols * rows) * 0.35);
-      for (let i = 0; i < inCount; i++) {
+      const glyphs: AshGlyph[] = Array.from({ length: ASH_GLYPH_COUNT }, () => {
         const seed = Math.random();
-        incoming.push({
+
+        return {
           x: Math.random() * w,
           y: Math.random() * h,
           ch: Math.random() > 0.5 ? '1' : '0',
-          size: 9 + seed * 4,
+          size: 9 + seed * 5,
           seed,
-          appear: Math.random() * 0.85,
-        });
-      }
+          sway: (Math.random() - 0.5) * 24,
+          lift: 34 + Math.random() * 76,
+          delay: Math.random() * 0.12,
+        };
+      });
 
       const start = performance.now();
       let pushed = false;
       let raf = 0;
 
-      const darkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      const baseShade = darkMode ? 235 : 30;
-      const emberWarm = darkMode
-        ? { r: 255, g: 196, b: 130 }   // ember tint on dark bg
-        : { r: 180, g: 90, b: 40 };     // ember tint on light bg
-
       const draw = (now: number) => {
         const t = (now - start) / TOTAL_MS;
+        const burn = easeInOutCubic(t / NAV_AT);
+        const reveal =
+          t < REVEAL_START ? 0 : easeOutCubic((t - REVEAL_START) / (1 - REVEAL_START));
+        const overlayAlpha = 1 - reveal;
+        const topEdge = originY - burn * (originY + BURN_BAND);
+        const bottomEdge = originY + burn * (h - originY + BURN_BAND);
+        const clipTop = Math.max(0, topEdge);
+        const clipBottom = Math.max(0, h - bottomEdge);
+
+        overlay.style.clipPath = `inset(${clipTop}px 0 ${clipBottom}px 0)`;
+        overlay.style.opacity = `${overlayAlpha}`;
+
         ctx.clearRect(0, 0, w, h);
+        ctx.save();
+        ctx.globalAlpha = overlayAlpha;
 
-        // ---- Burn phase (0..BURN_END) ----
-        if (t < BURN_END + 0.05) {
-          ctx.font = 'bold 12px ui-monospace, "SF Mono", Menlo, monospace';
-          for (const p of particles) {
-            // Fraction of "burn life": -inf..1
-            //   < 0  → not yet ignited (still solid char)
-            //   0..1 → burning + ashing
-            //   > 1  → fully gone
-            const burnLife = (t - p.ignite) / 0.32; // 0.32s burn duration
-            if (burnLife < 0) {
-              // Solid: render as normal char
-              const a = 0.7 + p.seed * 0.25;
-              const shade = darkMode
-                ? Math.round(150 + p.seed * 70)
-                : Math.round(60 + p.seed * 70);
-              ctx.fillStyle = `rgba(${shade}, ${shade}, ${shade - 4}, ${a})`;
-              ctx.font = `${p.size}px ui-monospace, "SF Mono", Menlo, monospace`;
-              ctx.fillText(p.ch, p.x - p.size * 0.3, p.y);
-              continue;
-            }
-            if (burnLife > 1.4) continue; // gone
+        const edgeAlpha = Math.sin(clamp01(burn) * Math.PI) * 0.18;
+        if (edgeAlpha > 0.01) {
+          const topGradient = ctx.createLinearGradient(0, topEdge - BURN_BAND, 0, topEdge + 8);
+          topGradient.addColorStop(0, rgba(ashColor, 0));
+          topGradient.addColorStop(0.76, rgba(ashColor, edgeAlpha));
+          topGradient.addColorStop(1, rgba(ashColor, 0));
+          ctx.fillStyle = topGradient;
+          ctx.fillRect(0, topEdge - BURN_BAND, w, BURN_BAND + 12);
 
-            // Burning particle: rise, shrink, drift slightly sideways,
-            // fade through ember color to grey ash to transparent.
-            const k = burnLife;          // 0..1.4
-            const rise = -k * (60 + p.seed * 80);   // upward, varying speed
-            const sway = Math.sin(k * 4 + p.seed * 6) * 6 * k;
-            const x = p.x + sway;
-            const y = p.y + rise;
-            const sz = p.size * (1 - k * 0.55);
-            if (sz < 1) continue;
-
-            // First half: warm ember; second half: cooling grey ash.
-            let r: number, g: number, b: number;
-            if (k < 0.4) {
-              // Hot ember
-              const t2 = k / 0.4;
-              r = emberWarm.r;
-              g = emberWarm.g;
-              b = emberWarm.b;
-              // Slight brightening at the very moment of ignition
-              const flare = Math.max(0, 1 - t2);
-              r = Math.min(255, r + flare * 40);
-              g = Math.min(255, g + flare * 40);
-            } else {
-              // Cooling: lerp from ember to base shade
-              const t2 = (k - 0.4) / 1.0;
-              r = emberWarm.r + (baseShade - emberWarm.r) * t2;
-              g = emberWarm.g + (baseShade - emberWarm.g) * t2;
-              b = emberWarm.b + (baseShade - emberWarm.b) * t2;
-            }
-            const alpha = Math.max(0, 1 - k / 1.4) * (0.55 + p.seed * 0.45);
-            ctx.font = `${sz}px ui-monospace, "SF Mono", Menlo, monospace`;
-            ctx.fillStyle = `rgba(${r | 0}, ${g | 0}, ${b | 0}, ${alpha})`;
-            ctx.fillText(p.ch, x - sz * 0.3, y);
-          }
-
-          // Draw a thin glow line at the burn front for extra "fire" feel
-          const burnY = h * (1 - t / BURN_END); // y of the burn line
-          if (t < BURN_END) {
-            const grad = ctx.createLinearGradient(0, burnY - 30, 0, burnY + 4);
-            const warm = darkMode
-              ? 'rgba(255, 170, 80, '
-              : 'rgba(220, 110, 50, ';
-            grad.addColorStop(0, warm + '0)');
-            grad.addColorStop(0.7, warm + '0.10)');
-            grad.addColorStop(1, warm + '0.32)');
-            ctx.fillStyle = grad;
-            ctx.fillRect(0, burnY - 30, w, 34);
-          }
+          const bottomGradient = ctx.createLinearGradient(0, bottomEdge - 8, 0, bottomEdge + BURN_BAND);
+          bottomGradient.addColorStop(0, rgba(ashColor, 0));
+          bottomGradient.addColorStop(0.24, rgba(ashColor, edgeAlpha));
+          bottomGradient.addColorStop(1, rgba(ashColor, 0));
+          ctx.fillStyle = bottomGradient;
+          ctx.fillRect(0, bottomEdge - 8, w, BURN_BAND + 12);
         }
 
-        // ---- Reveal phase (REVEAL_START..1) ----
-        if (t > REVEAL_START) {
-          const tr = (t - REVEAL_START) / (REVEAL_END - REVEAL_START); // 0..1
-          for (const p of incoming) {
-            // Particle hasn't appeared yet
-            if (tr < p.appear) continue;
-            const local = (tr - p.appear) / Math.max(0.01, 1 - p.appear);
-            // Fall from a bit above its resting y, ease into place,
-            // then fade out so the page reads cleanly.
-            const ease = 1 - Math.pow(1 - local, 2.2);
-            const yOff = (1 - ease) * (-30 - p.seed * 80);
-            const x = p.x;
-            const y = p.y + yOff;
-            // Alpha: fade in then back out across local 0..1
-            const a = Math.sin(local * Math.PI) * (0.5 + p.seed * 0.4);
-            if (a < 0.04) continue;
-            const shade = darkMode
-              ? Math.round(120 + p.seed * 100)
-              : Math.round(150 - p.seed * 110);
-            ctx.font = `${p.size}px ui-monospace, "SF Mono", Menlo, monospace`;
-            ctx.fillStyle = `rgba(${shade}, ${shade}, ${shade - 4}, ${a})`;
-            ctx.fillText(p.ch, x, y);
-          }
+        for (const glyph of glyphs) {
+          const travel =
+            glyph.y < originY
+              ? (originY - glyph.y) / Math.max(1, originY + BURN_BAND)
+              : (glyph.y - originY) / Math.max(1, h - originY + BURN_BAND);
+          const life = (burn - travel - glyph.delay) / 0.28;
+          if (life <= 0 || life >= 1) continue;
+
+          const flicker = Math.sin((life + glyph.seed) * Math.PI * 2) * 0.5 + 0.5;
+          const alpha = Math.sin(life * Math.PI) * (0.24 + glyph.seed * 0.42);
+          if (alpha < 0.025) continue;
+
+          const lift = easeOutCubic(life) * glyph.lift;
+          const x =
+            glyph.x +
+            Math.sin(life * 5 + glyph.seed * 9) * glyph.sway +
+            (glyph.seed - 0.5) * life * 18;
+          const y = glyph.y - lift;
+          if (x < -20 || x > w + 20 || y < -20 || y > h + 20) continue;
+
+          const size = glyph.size * (1 - life * 0.32);
+          const ashAlpha = alpha * (0.82 + flicker * 0.18);
+          ctx.font = `${size}px ui-monospace, "SF Mono", Menlo, monospace`;
+          ctx.fillStyle = rgba(ashColor, ashAlpha);
+          ctx.fillText(glyph.ch, x, y);
         }
 
-        // Trigger navigation right at the moment the burn finishes.
-        if (!pushed && t >= BURN_END) {
+        ctx.restore();
+
+        if (!pushed && t >= NAV_AT) {
           pushed = true;
           router.push(fullPath);
         }
@@ -270,15 +220,15 @@ export default function PageTransition() {
         if (t < 1) {
           raf = requestAnimationFrame(draw);
         } else {
-          canvas.remove();
+          overlay.remove();
         }
       };
+
       raf = requestAnimationFrame(draw);
 
-      // Safety net
       window.setTimeout(() => {
         cancelAnimationFrame(raf);
-        if (canvas.isConnected) canvas.remove();
+        if (overlay.isConnected) overlay.remove();
         if (!pushed) {
           pushed = true;
           router.push(fullPath);

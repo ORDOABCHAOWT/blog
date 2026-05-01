@@ -60,7 +60,7 @@ test('homepage hero stays on WayfinderHero and extends further right', () => {
 test('wayfinder hero keeps pointer-driven digit avoidance', () => {
   assert.match(
     heroSource,
-    /pointerActive/,
+    /pointer\.current\.active|pointerActive/,
     'Expected the hero animation to track whether the pointer is active'
   );
   assert.match(
@@ -70,12 +70,12 @@ test('wayfinder hero keeps pointer-driven digit avoidance', () => {
   );
   assert.match(
     heroSource,
-    /distance\s*<\s*radius/,
+    /dist\s*<\s*avoidR|distance\s*<\s*radius/,
     'Expected the digit field to apply a local avoidance radius around the pointer'
   );
   assert.match(
     heroSource,
-    /driftX|pushX/,
+    /x\s*\+=\s*\(dx\s*\/\s*dist\)\s*\*\s*push|driftX|pushX/,
     'Expected the pointer interaction to displace digits horizontally'
   );
 });
