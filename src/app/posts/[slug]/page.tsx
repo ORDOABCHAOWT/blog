@@ -72,7 +72,7 @@ export default async function PostPage({
       <header className="post-hero">
         <div className="post-hero-top">
           <Link href="/" className="post-back">
-            Archive Index
+            首页
           </Link>
           <p className="post-stamp">Essay {String(post.index).padStart(2, '0')}</p>
         </div>
@@ -212,7 +212,7 @@ export default async function PostPage({
 
       <footer className="post-footer">
         <Link href="/" className="post-footer-link">
-          Back to archive
+          回到首页
         </Link>
       </footer>
     </main>
