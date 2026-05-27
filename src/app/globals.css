@@ -190,6 +190,8 @@ img {
 }
 
 .home-hero {
+  --home-art-height: clamp(19rem, 28vw, 24rem);
+
   position: relative;
   display: grid;
   grid-template-columns: minmax(0, 0.84fr) minmax(392px, 1.24fr);
@@ -201,6 +203,9 @@ img {
 }
 
 .identity-panel {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(var(--home-art-height) + 0.35rem);
   max-width: 34rem;
   margin-left: 0.8rem;
   animation: rise-in 900ms cubic-bezier(0.22, 1, 0.36, 1);
@@ -302,7 +307,8 @@ img {
   display: flex;
   flex-wrap: wrap;
   gap: 0.72rem;
-  margin-top: 1.85rem;
+  margin-top: auto;
+  padding-top: 1.85rem;
 }
 
 .home-social-link {
@@ -360,7 +366,7 @@ img {
 
 .wayfinder-hero {
   width: min(100%, 36rem);
-  height: clamp(19rem, 28vw, 24rem);
+  height: var(--home-art-height);
   animation: rise-in 1050ms cubic-bezier(0.22, 1, 0.36, 1);
   cursor: crosshair;
   margin-right: -0.15rem;
@@ -998,6 +1004,15 @@ img {
   .home-hero {
     gap: 2rem;
     padding-bottom: 3rem;
+  }
+
+  .identity-panel {
+    min-height: auto;
+  }
+
+  .home-social-links {
+    margin-top: 1.85rem;
+    padding-top: 0;
   }
 
   .hero-art {

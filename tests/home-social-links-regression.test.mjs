@@ -66,3 +66,26 @@ test('homepage social links are icon-only but accessible', () => {
     'Expected a reusable screen-reader-only utility'
   );
 });
+
+test('homepage social links align to the bottom of the hero art on desktop', () => {
+  assert.match(
+    globalsCss,
+    /--home-art-height\s*:\s*clamp\(19rem,\s*28vw,\s*24rem\)/,
+    'Expected the hero art height to be shared as a CSS variable'
+  );
+  assert.match(
+    globalsCss,
+    /\.identity-panel\s*{[^}]*display\s*:\s*flex;[^}]*min-height\s*:\s*calc\(var\(--home-art-height\) \+ 0\.35rem\)/s,
+    'Expected the identity panel to share the hero art height on desktop'
+  );
+  assert.match(
+    globalsCss,
+    /\.home-social-links\s*{[^}]*margin-top\s*:\s*auto;/s,
+    'Expected the social row to sit at the bottom of the identity panel'
+  );
+  assert.match(
+    globalsCss,
+    /@media \(max-width: 960px\)[\s\S]*?\.identity-panel\s*{[^}]*min-height\s*:\s*auto;/,
+    'Expected stacked layouts to return the identity panel to natural height'
+  );
+});
