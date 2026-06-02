@@ -22,7 +22,8 @@ type SocialLink = {
   href: string;
   iconSrc?: string;
   iconAlt?: string;
-  icon: 'image' | 'github';
+  glyph?: string;
+  icon: 'image' | 'github' | 'glyph';
 };
 
 const socialLinks: SocialLink[] = [
@@ -34,13 +35,6 @@ const socialLinks: SocialLink[] = [
     icon: 'image',
   },
   {
-    label: '小红书',
-    href: 'https://www.xiaohongshu.com',
-    iconSrc: '/xhs.png',
-    iconAlt: '',
-    icon: 'image',
-  },
-  {
     label: 'GitHub',
     href: 'https://github.com/ORDOABCHAOWT',
     icon: 'github',
@@ -48,9 +42,8 @@ const socialLinks: SocialLink[] = [
   {
     label: '个人作品集',
     href: '/posts/aboutMyProjects',
-    iconSrc: '/globe.svg',
-    iconAlt: '',
-    icon: 'image',
+    glyph: '作',
+    icon: 'glyph',
   },
 ];
 
@@ -151,6 +144,10 @@ export default function HomeExperience({ posts }: HomeExperienceProps) {
               >
                 {link.icon === 'github' ? (
                   <GitHubIcon />
+                ) : link.icon === 'glyph' ? (
+                  <span aria-hidden="true" className="home-social-glyph">
+                    {link.glyph}
+                  </span>
                 ) : (
                   <Image
                     src={link.iconSrc || ''}

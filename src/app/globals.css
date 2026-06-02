@@ -10,10 +10,10 @@
     "Microsoft YaHei", sans-serif;
   --font-editorial-mono: var(--font-jetbrains), "JetBrains Mono",
     "IBM Plex Mono", "SFMono-Regular", Consolas, monospace;
-  --site-background: #f7f2e8;
-  --site-background-soft: #efe8da;
-  --site-panel: rgba(249, 245, 237, 0.82);
-  --site-panel-strong: rgba(241, 234, 223, 0.94);
+  --site-background: #f7f7f5;
+  --site-background-soft: #eeeeec;
+  --site-panel: rgba(249, 249, 247, 0.82);
+  --site-panel-strong: rgba(242, 242, 240, 0.94);
   --site-ink: #1d1a17;
   --site-muted: #6f695f;
   --site-border: rgba(46, 39, 31, 0.14);
@@ -22,21 +22,6 @@
   --site-wave: rgba(29, 26, 23, 0.16);
   --site-wave-strong: rgba(29, 26, 23, 0.24);
   --site-dropcap: rgba(29, 26, 23, 0.82);
-  --admin-bg: #eceff1;
-  --admin-card-bg: rgba(255, 255, 255, 0.7);
-  --admin-text: #212121;
-  --admin-text-secondary: #5f6368;
-  --admin-border: #e0e0e0;
-  --admin-primary: #3b82f6;
-  --admin-primary-hover: #2563eb;
-  --admin-success: #4caf50;
-  --admin-success-hover: #388e3c;
-  --admin-danger: #f44336;
-  --admin-danger-hover: #d32f2f;
-  --admin-warning: #ffb300;
-  --admin-shadow: rgba(0, 0, 0, 0.12);
-  --admin-shadow-md: rgba(0, 0, 0, 0.24);
-  --admin-backdrop-blur: blur(16px);
 }
 
 @theme inline {
@@ -60,21 +45,6 @@
     --site-wave: rgba(241, 235, 223, 0.18);
     --site-wave-strong: rgba(241, 235, 223, 0.28);
     --site-dropcap: rgba(241, 235, 223, 0.2);
-    --admin-bg: #1a1a1a;
-    --admin-card-bg: rgba(30, 30, 30, 0.7);
-    --admin-text: #e0e0e0;
-    --admin-text-secondary: #9aa0a6;
-    --admin-border: #424242;
-    --admin-primary: #8ab4f8;
-    --admin-primary-hover: #aecbfa;
-    --admin-success: #81c784;
-    --admin-success-hover: #a5d6a7;
-    --admin-danger: #ef9a9a;
-    --admin-danger-hover: #ffcdd2;
-    --admin-warning: #ffd54f;
-    --admin-shadow: rgba(0, 0, 0, 0.3);
-    --admin-shadow-md: rgba(0, 0, 0, 0.5);
-    --admin-backdrop-blur: blur(20px);
   }
 }
 
@@ -117,9 +87,9 @@ body {
   min-height: 100vh;
   color: var(--site-ink);
   background:
-    radial-gradient(circle at top left, rgba(100, 118, 143, 0.12), transparent 24rem),
-    radial-gradient(circle at 85% 20%, rgba(170, 148, 120, 0.12), transparent 18rem),
-    linear-gradient(180deg, #fbf7ef 0%, var(--site-background) 52%, #f0e8db 100%);
+    radial-gradient(circle at top left, rgba(100, 118, 143, 0.05), transparent 24rem),
+    radial-gradient(circle at 85% 20%, rgba(170, 148, 120, 0.04), transparent 18rem),
+    linear-gradient(180deg, #fbfbfa 0%, var(--site-background) 52%, #f3f3f1 100%);
   font-family: var(--font-editorial-display), "Iowan Old Style",
     "Palatino Linotype", "Book Antiqua", Palatino,
     "Songti SC", "STSong", "Noto Serif CJK SC", serif;
@@ -306,9 +276,11 @@ img {
 .home-social-links {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.72rem;
+  align-items: center;
+  gap: 1.05rem;
   margin-top: auto;
-  padding-top: 1.85rem;
+  padding-top: 1.55rem;
+  transform: translateY(-1.1rem);
 }
 
 .home-social-link {
@@ -316,43 +288,47 @@ img {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 2.7rem;
-  height: 2.7rem;
+  width: 1.22rem;
+  height: 1.22rem;
   color: var(--site-muted);
-  border: 1px solid var(--site-border);
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--site-panel) 82%, transparent);
-  box-shadow: 0 12px 28px rgba(42, 36, 28, 0.05);
-  transition: border-color 180ms ease, color 180ms ease,
-    background-color 180ms ease, transform 180ms ease;
+  border-radius: 0;
+  transition: color 180ms ease, opacity 180ms ease, transform 180ms ease;
 }
 
 .home-social-link:hover {
   color: var(--site-ink);
-  border-color: rgba(46, 39, 31, 0.28);
-  background: var(--site-panel-strong);
+  opacity: 0.92;
   transform: translateY(-2px);
 }
 
 .home-social-link:focus-visible {
   outline: none;
   color: var(--site-ink);
-  border-color: var(--site-accent);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--site-accent) 22%, transparent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--site-accent) 24%, transparent);
 }
 
 .home-social-image,
-.home-social-svg {
-  width: 1.28rem;
-  height: 1.28rem;
+.home-social-svg,
+.home-social-glyph {
+  width: 1.12rem;
+  height: 1.12rem;
 }
 
 .home-social-image {
   object-fit: contain;
 }
 
-.home-social-svg {
+.home-social-svg,
+.home-social-glyph {
   display: block;
+}
+
+.home-social-glyph {
+  font-family: var(--font-editorial-display), "Songti SC", "STSong", serif;
+  font-size: 1.04rem;
+  font-weight: 520;
+  line-height: 1.12rem;
+  text-align: center;
 }
 
 .hero-art {
@@ -1013,6 +989,7 @@ img {
   .home-social-links {
     margin-top: 1.85rem;
     padding-top: 0;
+    transform: none;
   }
 
   .hero-art {
@@ -1185,166 +1162,687 @@ img {
   }
 }
 
-/* Admin Panel Material & Glassmorphism Styles */
-.admin-container {
-  background: var(--admin-bg);
-  color: var(--admin-text);
+/* ---------- Portfolio experience ----------
+   Dedicated rendering for /posts/aboutMyProjects. The first viewport mirrors
+   the Figma cover and uses scroll-linked motion to let every cover piece move
+   outward before the profile page arrives. */
+.portfolio-page {
+  --portfolio-orange: #f07a00;
+  --portfolio-ink: #5f5f62;
+  --portfolio-paper: #ffffff;
+  --portfolio-rule: rgba(31, 31, 31, 0.12);
+
   min-height: 100vh;
+  color: var(--portfolio-ink);
+  background: var(--portfolio-paper);
+  font-family: var(--font-editorial-sans), -apple-system, BlinkMacSystemFont,
+    "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+}
+
+.portfolio-cover-scroll {
   position: relative;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  min-height: 135vh;
+  background: var(--portfolio-paper);
 }
 
-.admin-container::before {
-  content: '';
-  position: fixed;
+.portfolio-cover-stage {
+  position: sticky;
   top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background:
-    radial-gradient(circle at 10% 20%, rgba(59, 130, 246, 0.05) 0%, transparent 40%),
-    radial-gradient(circle at 80% 70%, rgba(76, 175, 80, 0.05) 0%, transparent 40%);
-  pointer-events: none;
-  z-index: 0;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  width: 100%;
+  max-width: 100vw;
+  height: 100vh;
+  min-height: 100svh;
+  aspect-ratio: 16 / 9;
+  background: var(--portfolio-paper);
+  isolation: isolate;
 }
 
-@media (prefers-color-scheme: dark) {
-  .admin-container::before {
-    background:
-      radial-gradient(circle at 10% 20%, rgba(138, 180, 248, 0.06) 0%, transparent 40%),
-      radial-gradient(circle at 80% 70%, rgba(129, 199, 132, 0.06) 0%, transparent 40%);
+.portfolio-cover-image,
+.portfolio-cover-fragments {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.portfolio-cover-image {
+  object-fit: fill;
+  object-position: center;
+}
+
+.portfolio-cover-image {
+  z-index: 1;
+  animation-name: portfolio-cover-hold;
+}
+
+.portfolio-cover-fragments {
+  z-index: 2;
+  pointer-events: none;
+}
+
+.portfolio-cover-fragment {
+  position: absolute;
+  top: var(--letter-top);
+  left: var(--letter-left);
+  width: var(--letter-width);
+  height: var(--letter-height);
+  opacity: 0;
+  transform-origin: center;
+  will-change: transform, opacity, filter;
+}
+
+.portfolio-cover-fragment img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  object-position: center;
+}
+
+.portfolio-cover-fragment.is-w {
+  --letter-left: 0%;
+  --letter-top: 28%;
+  --letter-width: 19.375%;
+  --letter-height: 37.778%;
+  --letter-x: -15vw;
+  --letter-y: -7vh;
+  --letter-scale: 2.22;
+  animation-name: portfolio-letter-forward;
+}
+
+.portfolio-cover-fragment.is-a {
+  --letter-left: 19.063%;
+  --letter-top: 30.889%;
+  --letter-width: 11.875%;
+  --letter-height: 33.333%;
+  --letter-x: -9vw;
+  --letter-y: 3vh;
+  --letter-scale: 2.04;
+  animation-name: portfolio-letter-forward;
+}
+
+.portfolio-cover-fragment.is-n1 {
+  --letter-left: 27.625%;
+  --letter-top: 30.889%;
+  --letter-width: 14.063%;
+  --letter-height: 33.333%;
+  --letter-x: -4vw;
+  --letter-y: -4vh;
+  --letter-scale: 2.18;
+  animation-name: portfolio-letter-forward;
+}
+
+.portfolio-cover-fragment.is-g1 {
+  --letter-left: 38.75%;
+  --letter-top: 30.889%;
+  --letter-width: 15.625%;
+  --letter-height: 37.778%;
+  --letter-x: 0vw;
+  --letter-y: 8vh;
+  --letter-scale: 2.36;
+  animation-name: portfolio-letter-forward;
+}
+
+.portfolio-cover-fragment.is-t {
+  --letter-left: 54.688%;
+  --letter-top: 27.333%;
+  --letter-width: 15.625%;
+  --letter-height: 35.556%;
+  --letter-x: 4vw;
+  --letter-y: -9vh;
+  --letter-scale: 2.24;
+  animation-name: portfolio-letter-forward;
+}
+
+.portfolio-cover-fragment.is-e {
+  --letter-left: 67.375%;
+  --letter-top: 30.889%;
+  --letter-width: 13.438%;
+  --letter-height: 33.333%;
+  --letter-x: 8vw;
+  --letter-y: 2vh;
+  --letter-scale: 2.1;
+  animation-name: portfolio-letter-forward;
+}
+
+.portfolio-cover-fragment.is-n2 {
+  --letter-left: 78.125%;
+  --letter-top: 30.889%;
+  --letter-width: 14.375%;
+  --letter-height: 33.333%;
+  --letter-x: 13vw;
+  --letter-y: -3vh;
+  --letter-scale: 2.2;
+  animation-name: portfolio-letter-forward;
+}
+
+.portfolio-cover-fragment.is-g2 {
+  --letter-left: 88.625%;
+  --letter-top: 30.889%;
+  --letter-width: 11.375%;
+  --letter-height: 37.778%;
+  --letter-x: 18vw;
+  --letter-y: 8vh;
+  --letter-scale: 2.42;
+  animation-name: portfolio-letter-forward;
+}
+
+.portfolio-profile {
+  position: relative;
+  z-index: 5;
+  min-height: 100vh;
+  padding: clamp(4rem, 7vw, 7.2rem) min(7vw, 8.5rem);
+  background:
+    linear-gradient(90deg, rgba(240, 122, 0, 0.1) 0 18%, transparent 18%),
+    var(--portfolio-paper);
+  border-top: 1px solid rgba(240, 122, 0, 0.16);
+}
+
+.portfolio-profile-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 2rem;
+  max-width: 92rem;
+  margin: 0 auto clamp(3rem, 5vw, 4.8rem);
+}
+
+.portfolio-section-en {
+  margin: 0;
+  color: #202023;
+  font-family: var(--font-editorial-display), Georgia, serif;
+  font-size: clamp(3rem, 5vw, 4.5rem);
+  font-weight: 620;
+  line-height: 0.94;
+  letter-spacing: 0;
+}
+
+.portfolio-profile-header h2 {
+  margin: 0.55rem 0 0;
+  color: #404044;
+  font-family: var(--font-editorial-sans), "PingFang SC", sans-serif;
+  font-size: clamp(1.35rem, 1.65vw, 2rem);
+  font-weight: 650;
+  letter-spacing: 0;
+}
+
+.portfolio-home-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.4rem;
+  color: #777;
+  border-bottom: 1px solid currentColor;
+  font-family: var(--font-editorial-mono), "SFMono-Regular", Consolas, monospace;
+  font-size: 0.78rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  transition: color 180ms ease, transform 180ms ease;
+}
+
+.portfolio-home-link:hover {
+  color: #1d1d1d;
+  transform: translateY(-1px);
+}
+
+.portfolio-profile-grid {
+  display: grid;
+  grid-template-columns: minmax(11rem, 15rem) minmax(0, 1fr);
+  gap: 2.3rem clamp(2.2rem, 5vw, 5.8rem);
+  max-width: 92rem;
+  margin: 0 auto;
+}
+
+.portfolio-profile-block {
+  display: grid;
+  grid-template-columns: subgrid;
+  grid-column: 1 / -1;
+  align-items: start;
+  padding: 0 0 2.2rem;
+  border-bottom: 1px solid var(--portfolio-rule);
+}
+
+.portfolio-profile-block h3 {
+  margin: 0;
+  color: #2a2a2d;
+  font-family: var(--font-editorial-sans), "PingFang SC", sans-serif;
+  font-size: clamp(1.3rem, 1.55vw, 1.9rem);
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+.portfolio-career-list,
+.portfolio-skill-list {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.portfolio-profile-line {
+  display: grid;
+  grid-template-columns: minmax(14rem, 1.6fr) minmax(8rem, 0.72fr) minmax(7.2rem, 0.55fr);
+  gap: clamp(1rem, 3vw, 3rem);
+  align-items: baseline;
+  color: #56565a;
+  font-family: var(--font-editorial-sans), "PingFang SC", sans-serif;
+  font-size: clamp(1rem, 1.2vw, 1.45rem);
+  font-weight: 520;
+  line-height: 1.45;
+}
+
+.portfolio-profile-line span:first-child {
+  color: #38383c;
+}
+
+.portfolio-skill-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 9.4rem;
+  gap: 1.2rem;
+  align-items: center;
+}
+
+.portfolio-skill-item h4 {
+  margin: 0 0 0.2rem;
+  color: #38383c;
+  font-family: var(--font-editorial-sans), "PingFang SC", sans-serif;
+  font-size: clamp(1rem, 1.12vw, 1.35rem);
+  font-weight: 650;
+  letter-spacing: 0;
+}
+
+.portfolio-skill-item p {
+  margin: 0;
+  color: #737377;
+  font-size: clamp(0.9rem, 1vw, 1.05rem);
+  line-height: 1.55;
+}
+
+.portfolio-skill-item span {
+  height: 0.72rem;
+  border-radius: 999px;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      var(--portfolio-orange) 0 0.7rem,
+      rgba(240, 122, 0, 0.18) 0.7rem 1.06rem
+    );
+  opacity: 0.82;
+}
+
+@supports (animation-timeline: scroll()) {
+  .portfolio-cover-image,
+  .portfolio-cover-fragment {
+    animation-duration: 1ms;
+    animation-fill-mode: both;
+    animation-timing-function: linear;
+    animation-timeline: scroll(root);
+    animation-range: 0 72vh;
+  }
+
+  .portfolio-profile {
+    animation: portfolio-profile-rise 1ms linear both;
+    animation-timeline: scroll(root);
+    animation-range: 28vh 92vh;
   }
 }
 
-.admin-container > * {
-  position: relative;
-  z-index: 1;
+@keyframes portfolio-cover-hold {
+  0%,
+  20% {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0);
+  }
+  42% {
+    opacity: 0;
+    transform: scale(1.03);
+    filter: blur(4px);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.06);
+    filter: blur(10px);
+  }
 }
 
+@keyframes portfolio-letter-forward {
+  0%,
+  18% {
+    opacity: 0;
+    transform: translate3d(0, 0, 0) scale(1);
+    filter: blur(0);
+  }
+  26% {
+    opacity: 1;
+  }
+  48% {
+    opacity: 1;
+    filter: blur(3px);
+  }
+  to {
+    opacity: 0;
+    filter: blur(28px);
+    transform: translate3d(var(--letter-x), var(--letter-y), 0) scale(var(--letter-scale));
+  }
+}
+
+@keyframes portfolio-profile-rise {
+  from {
+    opacity: 0;
+    transform: translateY(18vh);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .portfolio-cover-piece,
+  .portfolio-cover-image,
+  .portfolio-cover-fragment,
+  .portfolio-profile {
+    animation: none;
+  }
+
+  .portfolio-cover-scroll {
+    min-height: 100vh;
+  }
+
+  .portfolio-cover-stage {
+    position: relative;
+  }
+}
+
+@media (max-width: 900px) {
+  .portfolio-cover-scroll {
+    min-height: 130vh;
+  }
+
+  .portfolio-cover-stage {
+    min-height: 100svh;
+  }
+
+  .portfolio-cover-wordmark {
+    font-size: clamp(6rem, 24vw, 11rem);
+  }
+
+  .portfolio-cover-title {
+    bottom: 18vh;
+    font-size: clamp(1.45rem, 6vw, 2.4rem);
+    white-space: normal;
+    width: min(82vw, 28rem);
+    text-align: center;
+  }
+
+  .portfolio-cover-subtitle {
+    bottom: 8vh;
+  }
+
+  .portfolio-profile {
+    padding: 4rem min(7vw, 2rem);
+    background: var(--portfolio-paper);
+  }
+
+  .portfolio-profile-header,
+  .portfolio-profile-grid,
+  .portfolio-profile-block {
+    display: block;
+  }
+
+  .portfolio-profile-header {
+    margin-bottom: 3rem;
+  }
+
+  .portfolio-home-link {
+    margin-top: 1.25rem;
+  }
+
+  .portfolio-profile-block {
+    padding-bottom: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  .portfolio-profile-block h3 {
+    margin-bottom: 1.1rem;
+  }
+
+  .portfolio-profile-line {
+    grid-template-columns: 1fr;
+    gap: 0.18rem;
+    padding: 0.65rem 0;
+  }
+
+  .portfolio-skill-item {
+    grid-template-columns: 1fr;
+    gap: 0.68rem;
+  }
+}
+
+/* ---------- Admin / CMS — editorial theme ----------
+   The CMS shares the blog's warm editorial palette so working "behind
+   the curtain" still feels like the same publication: soft cream paper,
+   Fraunces serif headings, mono eyebrows, slate-blue accent. */
+.admin-container {
+  background: transparent;
+  color: var(--site-ink);
+  min-height: 100vh;
+  position: relative;
+  font-family: var(--font-editorial-display), "Iowan Old Style",
+    "Palatino Linotype", "Book Antiqua", Palatino,
+    "Songti SC", "STSong", "Noto Serif CJK SC", serif;
+  font-feature-settings: "liga" 1, "calt" 1, "kern" 1, "onum" 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.admin-text-primary {
+  color: var(--site-ink);
+}
+
+.admin-text-secondary {
+  color: var(--site-muted);
+}
+
+/* Headings inside the CMS — same Fraunces variable axes as the blog. */
+.admin-container h1,
+.admin-container h2,
+.admin-container h3 {
+  font-family: var(--font-editorial-display), "Iowan Old Style",
+    "Palatino Linotype", serif;
+  font-variation-settings: "opsz" 96, "SOFT" 30;
+  font-feature-settings: "liga" 1, "calt" 1, "dlig" 1, "kern" 1;
+  font-weight: 380;
+  letter-spacing: -0.008em;
+  line-height: 1.12;
+}
+
+.admin-container h1 {
+  font-size: clamp(2rem, 3.4vw, 2.6rem);
+}
+
+/* Card = a warm sheet of paper, not frosted glass. */
 .admin-card {
-  background: var(--admin-card-bg);
-  backdrop-filter: var(--admin-backdrop-blur);
-  -webkit-backdrop-filter: var(--admin-backdrop-blur);
-  border: 1px solid var(--admin-border);
-  border-radius: 16px;
-  box-shadow: 0 2px 4px var(--admin-shadow);
-  transition: box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: var(--site-panel-strong);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid var(--site-border);
+  border-radius: 8px;
+  box-shadow: 0 18px 40px var(--site-shadow);
+  transition: box-shadow 240ms cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 240ms ease;
 }
 
 .admin-card:hover {
-  box-shadow: 0 8px 16px var(--admin-shadow-md);
+  border-color: rgba(46, 39, 31, 0.22);
+  box-shadow: 0 24px 56px rgba(42, 36, 28, 0.12);
 }
 
+@media (prefers-color-scheme: dark) {
+  .admin-card:hover {
+    border-color: rgba(233, 226, 214, 0.22);
+    box-shadow: 0 24px 56px rgba(0, 0, 0, 0.42);
+  }
+}
+
+/* Buttons — pill-shaped, mono label, low-key chrome. The ALL-CAPS
+   tracking matches the blog's `.eyebrow` / `.home-links` typography. */
 .admin-button {
-  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  border-radius: 999px;
+  font-family: var(--font-editorial-mono), "SFMono-Regular", Consolas, monospace;
+  font-size: 0.78rem;
   font-weight: 500;
-  letter-spacing: 0.5px;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 1px 3px var(--admin-shadow);
-  border: 1px solid transparent;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
+  border: 1px solid transparent;
+  box-shadow: none;
+  transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 220ms ease, background-color 220ms ease, color 220ms ease;
 }
 
 .admin-button:hover:not(:disabled) {
-  box-shadow: 0 4px 8px var(--admin-shadow-md);
   transform: translateY(-1px);
 }
 
 .admin-button:active:not(:disabled) {
   transform: translateY(0);
-  box-shadow: 0 1px 2px var(--admin-shadow);
 }
 
 .admin-button-primary {
-  background-color: var(--admin-primary);
-  color: white;
+  background: var(--site-ink);
+  color: var(--site-background);
+  border-color: var(--site-ink);
 }
 
 .admin-button-primary:hover:not(:disabled) {
-  background-color: var(--admin-primary-hover);
+  background: var(--site-accent);
+  border-color: var(--site-accent);
 }
 
 .admin-button-success {
-  background-color: var(--admin-success);
-  color: white;
+  background: var(--site-accent);
+  color: var(--site-background);
+  border-color: var(--site-accent);
 }
 
 .admin-button-success:hover:not(:disabled) {
-  background-color: var(--admin-success-hover);
+  background: color-mix(in srgb, var(--site-accent) 82%, var(--site-ink));
+  border-color: color-mix(in srgb, var(--site-accent) 82%, var(--site-ink));
 }
 
 .admin-button-danger {
-  background-color: var(--admin-danger);
-  color: white;
+  background: transparent;
+  color: var(--site-ink);
+  border-color: rgba(46, 39, 31, 0.32);
 }
 
 .admin-button-danger:hover:not(:disabled) {
-  background-color: var(--admin-danger-hover);
+  background: rgba(46, 39, 31, 0.06);
+  border-color: var(--site-ink);
+}
+
+@media (prefers-color-scheme: dark) {
+  .admin-button-danger {
+    color: var(--site-ink);
+    border-color: rgba(233, 226, 214, 0.28);
+  }
+  .admin-button-danger:hover:not(:disabled) {
+    background: rgba(233, 226, 214, 0.08);
+    border-color: var(--site-ink);
+  }
 }
 
 .admin-button-secondary {
   background: transparent;
-  color: var(--admin-primary);
-  border: 1.5px solid var(--admin-primary);
+  color: var(--site-muted);
+  border-color: var(--site-border);
 }
 
 .admin-button-secondary:hover:not(:disabled) {
-  background: rgba(59, 130, 246, 0.1);
+  color: var(--site-ink);
+  border-color: rgba(46, 39, 31, 0.32);
 }
 
 @media (prefers-color-scheme: dark) {
-  .admin-button-secondary {
-    color: var(--admin-primary);
-    border-color: var(--admin-primary);
-  }
   .admin-button-secondary:hover:not(:disabled) {
-    background: rgba(138, 180, 248, 0.1);
+    border-color: rgba(233, 226, 214, 0.32);
   }
 }
 
+/* Inputs — paper-coloured, calm focus ring in the blog's accent. */
 .admin-input {
-  background: var(--admin-card-bg);
-  color: var(--admin-text);
-  border: 1px solid var(--admin-border);
+  background: var(--site-panel);
+  color: var(--site-ink);
+  border: 1px solid var(--site-border);
   border-radius: 8px;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: var(--font-editorial-display), "Iowan Old Style", serif;
+  font-size: 1rem;
+  letter-spacing: 0.005em;
+  transition: border-color 200ms ease, box-shadow 200ms ease,
+    background-color 200ms ease;
+}
+
+.admin-input::placeholder {
+  color: var(--site-muted);
+  font-style: italic;
+  font-weight: 360;
+}
+
+.admin-input:hover {
+  border-color: rgba(46, 39, 31, 0.24);
 }
 
 .admin-input:focus {
   outline: none;
-  border-color: var(--admin-primary);
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+  border-color: var(--site-accent);
+  background: var(--site-panel-strong);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--site-accent) 22%, transparent);
 }
 
-@media (prefers-color-scheme: dark) {
-  .admin-input:focus {
-    box-shadow: 0 0 0 3px rgba(138, 180, 248, 0.2);
-  }
+/* Form labels — mono uppercase eyebrows, like blog's `.eyebrow`. */
+.admin-container label {
+  font-family: var(--font-editorial-mono), "SFMono-Regular", Consolas, monospace;
+  font-size: 0.74rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--site-muted);
 }
 
+/* Table — soft warm sheet, hairline rules. */
 .admin-table {
-  background: var(--admin-card-bg);
-  backdrop-filter: var(--admin-backdrop-blur);
-  -webkit-backdrop-filter: var(--admin-backdrop-blur);
-  border: 1px solid var(--admin-border);
-  border-radius: 16px;
+  background: var(--site-panel-strong);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid var(--site-border);
+  border-radius: 8px;
   overflow: hidden;
+  font-family: var(--font-editorial-display), "Iowan Old Style", serif;
 }
 
 .admin-table thead {
-  background: rgba(0, 0, 0, 0.03);
-  border-bottom: 1px solid var(--admin-border);
+  background: transparent;
+  border-bottom: 1px solid var(--site-border);
 }
 
-@media (prefers-color-scheme: dark) {
-  .admin-table thead {
-    background: rgba(255, 255, 255, 0.03);
-  }
+.admin-table thead th {
+  font-family: var(--font-editorial-mono), "SFMono-Regular", Consolas, monospace;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--site-muted);
 }
 
 .admin-table tbody tr {
-  border-bottom: 1px solid var(--admin-border);
-  transition: background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  border-bottom: 1px solid var(--site-border);
+  transition: background-color 220ms ease;
 }
 
 .admin-table tbody tr:last-child {
@@ -1352,65 +1850,59 @@ img {
 }
 
 .admin-table tbody tr:hover {
-  background: rgba(0, 0, 0, 0.03);
+  background: rgba(46, 39, 31, 0.04);
 }
 
 @media (prefers-color-scheme: dark) {
   .admin-table tbody tr:hover {
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(233, 226, 214, 0.04);
   }
 }
 
-.admin-text-primary {
-  color: var(--admin-text);
-}
-
-.admin-text-secondary {
-  color: var(--admin-text-secondary);
-}
-
+/* Alerts — quiet, no Material chip vibe. */
 .admin-alert {
   border-radius: 8px;
-  border: 1px solid transparent;
-  font-weight: 500;
+  border: 1px solid var(--site-border);
+  background: var(--site-panel);
+  color: var(--site-ink);
+  font-family: var(--font-editorial-display), serif;
+  font-size: 0.98rem;
+  font-weight: 380;
+  letter-spacing: 0.005em;
 }
 
 .admin-alert-success {
-  background: rgba(76, 175, 80, 0.15);
-  border-color: var(--admin-success);
-  color: #388e3c;
-}
-
-@media (prefers-color-scheme: dark) {
-  .admin-alert-success {
-    background: rgba(129, 199, 132, 0.15);
-    color: var(--admin-success);
-  }
+  border-left: 3px solid var(--site-accent);
 }
 
 .admin-alert-error {
-  background: rgba(244, 67, 54, 0.15);
-  border-color: var(--admin-danger);
-  color: #d32f2f;
+  border-left: 3px solid #b8584d;
+  color: #8a3a30;
 }
 
 @media (prefers-color-scheme: dark) {
   .admin-alert-error {
-    background: rgba(239, 154, 154, 0.15);
-    color: var(--admin-danger);
+    color: #e8a59a;
+    border-left-color: #d97a6c;
   }
 }
 
+/* Inline links — same accent + thin underline as the blog's article links. */
 .admin-link {
-  color: var(--admin-primary);
+  color: var(--site-muted);
   text-decoration: none;
+  font-family: var(--font-editorial-mono), "SFMono-Regular", Consolas, monospace;
+  font-size: 0.76rem;
   font-weight: 500;
-  transition: color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  transition: color 180ms ease, transform 180ms ease;
 }
 
 .admin-link:hover {
-  color: var(--admin-primary-hover);
-  text-decoration: underline;
+  color: var(--site-ink);
+  text-decoration: none;
+  transform: translateX(-2px);
 }
 
 .ascii-demo-page {
@@ -1625,300 +2117,5 @@ img {
 }
 
 
-:root {
-  --background: #f5f5f5;
-  --foreground: #212121;
-  --admin-bg: #eceff1;
-  --admin-card-bg: rgba(255, 255, 255, 0.7);
-  --admin-text: #212121;
-  --admin-text-secondary: #5f6368;
-  --admin-border: #e0e0e0;
-  --admin-primary: #3b82f6;
-  --admin-primary-hover: #2563eb;
-  --admin-success: #4caf50;
-  --admin-success-hover: #388e3c;
-  --admin-danger: #f44336;
-  --admin-danger-hover: #d32f2f;
-  --admin-warning: #ffb300;
-  --admin-shadow: rgba(0, 0, 0, 0.12);
-  --admin-shadow-md: rgba(0, 0, 0, 0.24);
-  --admin-backdrop-blur: blur(16px);
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: 'Roboto', var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #121212;
-    --foreground: #e0e0e0;
-    --admin-bg: #1a1a1a;
-    --admin-card-bg: rgba(30, 30, 30, 0.7);
-    --admin-text: #e0e0e0;
-    --admin-text-secondary: #9aa0a6;
-    --admin-border: #424242;
-    --admin-primary: #8ab4f8;
-    --admin-primary-hover: #aecbfa;
-    --admin-success: #81c784;
-    --admin-success-hover: #a5d6a7;
-    --admin-danger: #ef9a9a;
-    --admin-danger-hover: #ffcdd2;
-    --admin-warning: #ffd54f;
-    --admin-shadow: rgba(0, 0, 0, 0.3);
-    --admin-shadow-md: rgba(0, 0, 0, 0.5);
-    --admin-backdrop-blur: blur(20px);
-  }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: 'Roboto', 'SF Pro SC', 'SF Pro Display', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', Arial, Helvetica, sans-serif;
-}
-
-.prose {
-  line-height: 1.8;
-  font-size: 1.1rem;
-}
-
-.prose img {
-  margin-top: 1.2em;
-  margin-bottom: 1.2em;
-  border-radius: 8px;
-}
-
-.prose p {
-  margin-top: 1em;
-  margin-bottom: 1em;
-}
-
-/* Admin Panel Material & Glassmorphism Styles */
-.admin-container {
-  background: var(--admin-bg);
-  color: var(--admin-text);
-  min-height: 100vh;
-  position: relative;
-}
-
-.admin-container::before {
-  content: '';
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background:
-    radial-gradient(circle at 10% 20%, rgba(59, 130, 246, 0.05) 0%, transparent 40%),
-    radial-gradient(circle at 80% 70%, rgba(76, 175, 80, 0.05) 0%, transparent 40%);
-  pointer-events: none;
-  z-index: 0;
-}
-
-@media (prefers-color-scheme: dark) {
-  .admin-container::before {
-    background:
-      radial-gradient(circle at 10% 20%, rgba(138, 180, 248, 0.06) 0%, transparent 40%),
-      radial-gradient(circle at 80% 70%, rgba(129, 199, 132, 0.06) 0%, transparent 40%);
-  }
-}
-
-.admin-container > * {
-  position: relative;
-  z-index: 1;
-}
-
-.admin-card {
-  background: var(--admin-card-bg);
-  backdrop-filter: var(--admin-backdrop-blur);
-  -webkit-backdrop-filter: var(--admin-backdrop-blur);
-  border: 1px solid var(--admin-border);
-  border-radius: 16px;
-  box-shadow: 0 2px 4px var(--admin-shadow);
-  transition: box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.admin-card:hover {
-  box-shadow: 0 8px 16px var(--admin-shadow-md);
-}
-
-.admin-button {
-  border-radius: 8px;
-  font-weight: 500;
-  letter-spacing: 0.5px;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 1px 3px var(--admin-shadow);
-  border: 1px solid transparent;
-  text-transform: uppercase;
-}
-
-.admin-button:hover:not(:disabled) {
-  box-shadow: 0 4px 8px var(--admin-shadow-md);
-  transform: translateY(-1px);
-}
-
-.admin-button:active:not(:disabled) {
-  transform: translateY(0);
-  box-shadow: 0 1px 2px var(--admin-shadow);
-}
-
-.admin-button-primary {
-  background-color: var(--admin-primary);
-  color: white;
-}
-
-.admin-button-primary:hover:not(:disabled) {
-  background-color: var(--admin-primary-hover);
-}
-
-.admin-button-success {
-  background-color: var(--admin-success);
-  color: white;
-}
-
-.admin-button-success:hover:not(:disabled) {
-  background-color: var(--admin-success-hover);
-}
-
-.admin-button-danger {
-  background-color: var(--admin-danger);
-  color: white;
-}
-
-.admin-button-danger:hover:not(:disabled) {
-  background-color: var(--admin-danger-hover);
-}
-
-.admin-button-secondary {
-  background: transparent;
-  color: var(--admin-primary);
-  border: 1.5px solid var(--admin-primary);
-}
-
-.admin-button-secondary:hover:not(:disabled) {
-  background: rgba(59, 130, 246, 0.1);
-}
-
-@media (prefers-color-scheme: dark) {
-  .admin-button-secondary {
-    color: var(--admin-primary);
-    border-color: var(--admin-primary);
-  }
-  .admin-button-secondary:hover:not(:disabled) {
-    background: rgba(138, 180, 248, 0.1);
-  }
-}
-
-.admin-input {
-  background: var(--admin-card-bg);
-  color: var(--admin-text);
-  border: 1px solid var(--admin-border);
-  border-radius: 8px;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.admin-input:focus {
-  outline: none;
-  border-color: var(--admin-primary);
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
-}
-
-@media (prefers-color-scheme: dark) {
-  .admin-input:focus {
-    box-shadow: 0 0 0 3px rgba(138, 180, 248, 0.2);
-  }
-}
-
-.admin-table {
-  background: var(--admin-card-bg);
-  backdrop-filter: var(--admin-backdrop-blur);
-  -webkit-backdrop-filter: var(--admin-backdrop-blur);
-  border: 1px solid var(--admin-border);
-  border-radius: 16px;
-  overflow: hidden;
-}
-
-.admin-table thead {
-  background: rgba(0, 0, 0, 0.03);
-  border-bottom: 1px solid var(--admin-border);
-}
-
-@media (prefers-color-scheme: dark) {
-  .admin-table thead {
-    background: rgba(255, 255, 255, 0.03);
-  }
-}
-
-.admin-table tbody tr {
-  border-bottom: 1px solid var(--admin-border);
-  transition: background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.admin-table tbody tr:last-child {
-  border-bottom: none;
-}
-
-.admin-table tbody tr:hover {
-  background: rgba(0, 0, 0, 0.03);
-}
-
-@media (prefers-color-scheme: dark) {
-  .admin-table tbody tr:hover {
-    background: rgba(255, 255, 255, 0.05);
-  }
-}
-
-.admin-text-primary {
-  color: var(--admin-text);
-}
-
-.admin-text-secondary {
-  color: var(--admin-text-secondary);
-}
-
-.admin-alert {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  font-weight: 500;
-}
-
-.admin-alert-success {
-  background: rgba(76, 175, 80, 0.15);
-  border-color: var(--admin-success);
-  color: #388e3c;
-}
-
-@media (prefers-color-scheme: dark) {
-  .admin-alert-success {
-    background: rgba(129, 199, 132, 0.15);
-    color: var(--admin-success);
-  }
-}
-
-.admin-alert-error {
-  background: rgba(244, 67, 54, 0.15);
-  border-color: var(--admin-danger);
-  color: #d32f2f;
-}
-
-@media (prefers-color-scheme: dark) {
-  .admin-alert-error {
-    background: rgba(239, 154, 154, 0.15);
-    color: var(--admin-danger);
-  }
-}
-
-.admin-link {
-  color: var(--admin-primary);
-  text-decoration: none;
-  font-weight: 500;
-  transition: color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.admin-link:hover {
-  color: var(--admin-primary-hover);
-  text-decoration: underline;
-}
+/* (Legacy duplicate admin block removed. The single source of truth for
+   the editorial CMS theme lives further up in this file.) */

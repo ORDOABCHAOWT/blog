@@ -40,7 +40,12 @@ export async function POST(request: NextRequest) {
 
     // 上传到 OSS
     const client = getOSSClient();
-    const result = await client.put(fileName, buffer);
+    const result = await client.put(fileName, buffer, {
+      mime: file.type,
+      headers: {
+        'Cache-Control': 'public, max-age=31536000, immutable',
+      },
+    });
 
     if (result.res.status === 200) {
       const url = getFullUrl(fileName);

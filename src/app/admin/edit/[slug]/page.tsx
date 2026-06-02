@@ -120,79 +120,84 @@ export default function EditPostPage() {
   }
 
   return (
-    <div className="admin-container p-8">
+    <div className="admin-container px-8 py-12">
       <div className="max-w-5xl mx-auto">
-        <div className="mb-6">
-          <h1 className="text-3xl font-bold mb-2 admin-text-primary">编辑文章</h1>
-          <Link href="/admin" className="text-sm admin-link">
+        <div className="mb-10">
+          <p className="eyebrow">Editorial · CMS / Edit entry</p>
+          <h1 className="mb-3" style={{ fontSize: 'clamp(2.2rem, 3.6vw, 2.9rem)', margin: 0 }}>
+            编辑文章
+          </h1>
+          <Link href="/admin" className="admin-link">
             ← 返回管理后台
           </Link>
         </div>
 
         {error && (
-          <div className="admin-alert admin-alert-error mb-6 p-4">
+          <div className="admin-alert admin-alert-error mb-8 px-5 py-4">
             {error}
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="admin-card p-6 space-y-6">
+        <form onSubmit={handleSubmit} className="admin-card p-8 space-y-7">
           <div className="grid grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-medium mb-2 admin-text-primary">文章标题 *</label>
+              <label className="block mb-2">文章标题 *</label>
               <input
                 type="text"
                 required
                 value={formData.title}
                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                className="admin-input w-full px-4 py-2"
+                className="admin-input w-full px-4 py-2.5"
                 placeholder="输入文章标题"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2 admin-text-primary">文章别名（Slug）*</label>
+              <label className="block mb-2">文章别名 · Slug *</label>
               <input
                 type="text"
                 required
                 value={formData.slug}
                 onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
-                className="admin-input w-full px-4 py-2"
+                className="admin-input w-full px-4 py-2.5"
                 placeholder="article-slug"
               />
-              <p className="text-xs admin-text-secondary mt-1">用于URL，修改后会重命名文件</p>
+              <p className="admin-text-secondary mt-2" style={{ fontSize: '0.78rem', fontStyle: 'italic' }}>
+                用于 URL，修改后会重命名文件
+              </p>
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-medium mb-2 admin-text-primary">发布日期</label>
+              <label className="block mb-2">发布日期</label>
               <input
                 type="date"
                 value={formData.date}
                 onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                className="admin-input w-full px-4 py-2"
+                className="admin-input w-full px-4 py-2.5"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2 admin-text-primary">文章描述</label>
+              <label className="block mb-2">文章描述</label>
               <input
                 type="text"
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                className="admin-input w-full px-4 py-2"
+                className="admin-input w-full px-4 py-2.5"
                 placeholder="简短描述文章内容"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2 admin-text-primary">图片上传</label>
+            <label className="block mb-2">图片上传</label>
             <ImageUploader onUploadSuccess={handleImageUpload} />
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2 admin-text-primary">文章内容 *</label>
+            <label className="block mb-2">文章内容 *</label>
             <MarkdownEditor
               ref={editorRef}
               value={formData.content}
@@ -200,7 +205,7 @@ export default function EditPostPage() {
             />
           </div>
 
-          <div className="flex justify-end gap-3">
+          <div className="flex justify-end gap-3 pt-2">
             <Link
               href="/admin"
               className="admin-button admin-button-secondary px-6 py-2.5"
@@ -210,13 +215,9 @@ export default function EditPostPage() {
             <button
               type="submit"
               disabled={saving}
-              className={`admin-button px-6 py-2.5 ${
-                saving
-                  ? 'bg-gray-400 cursor-not-allowed opacity-60'
-                  : 'admin-button-primary'
-              }`}
+              className="admin-button admin-button-primary px-6 py-2.5 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {saving ? '保存中...' : '保存更改'}
+              {saving ? '保存中…' : '保存更改'}
             </button>
           </div>
         </form>

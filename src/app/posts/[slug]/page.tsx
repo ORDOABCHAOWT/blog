@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import Link from 'next/link';
+import PortfolioExperience from '@/components/PortfolioExperience';
 import ReadingProgress from '@/components/ReadingProgress';
 import { formatDisplayDate, slugifyHeading } from '@/lib/post-format';
 import {
@@ -62,6 +63,10 @@ export default async function PostPage({
   const post = getPostBySlug(resolvedParams.slug);
 
   if (!post) return notFound();
+
+  if (post.slug === 'aboutMyProjects') {
+    return <PortfolioExperience />;
+  }
 
   const { previousPost, nextPost } = getAdjacentPosts(post.slug);
   const headings = extractHeadings(post.content);
@@ -132,6 +137,7 @@ export default async function PostPage({
                         alt={altText}
                         className="editorial-image"
                         loading="lazy"
+                        decoding="async"
                       />
                     );
                   }
@@ -143,6 +149,7 @@ export default async function PostPage({
                         alt={altText}
                         className="editorial-image"
                         loading="lazy"
+                        decoding="async"
                       />
                       <figcaption>{caption}</figcaption>
                     </figure>

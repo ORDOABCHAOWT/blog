@@ -89,52 +89,97 @@ const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>(
         />
       <style jsx global>{`
         .markdown-editor .EasyMDEContainer {
-          border: 1px solid #e0e0e0;
-          border-radius: 0.5rem;
-          transition: all 0.2s ease-in-out;
+          border: 1px solid var(--site-border);
+          border-radius: 12px;
+          background: var(--site-panel-strong);
+          transition: border-color 220ms ease, box-shadow 220ms ease;
         }
         .markdown-editor .EasyMDEContainer:hover,
         .markdown-editor .EasyMDEContainer.active {
-          border-color: #3b82f6;
-          box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+          border-color: var(--site-accent);
+          box-shadow: 0 0 0 3px color-mix(in srgb, var(--site-accent) 18%, transparent);
         }
         .markdown-editor .CodeMirror {
-          min-height: 400px;
+          min-height: 420px;
           font-size: 16px;
-          line-height: 1.8;
-          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-          letter-spacing: 0.2px;
-          padding: 20px;
-          background-color: #ffffff;
-          color: #212121;
+          line-height: 1.85;
+          font-family: var(--font-editorial-display), "Iowan Old Style",
+            "Palatino Linotype", "Songti SC", "Noto Serif CJK SC", serif;
+          letter-spacing: 0.005em;
+          padding: 22px;
+          background: transparent;
+          color: var(--site-ink);
+          border: none;
+          border-radius: 0 0 12px 12px;
         }
         .markdown-editor .CodeMirror-scroll {
-          min-height: 400px;
+          min-height: 420px;
           padding: 8px 0;
         }
         .markdown-editor .CodeMirror-line {
           padding: 2px 0;
         }
         .markdown-editor .CodeMirror pre.CodeMirror-line {
-          line-height: 1.8;
-          letter-spacing: 0.2px;
+          line-height: 1.85;
+          letter-spacing: 0.005em;
         }
         .markdown-editor .editor-toolbar {
-          border-top-left-radius: 0.5rem;
-          border-top-right-radius: 0.5rem;
-          border-color: #e0e0e0;
-          background: #f9f9f9;
+          border: none;
+          border-bottom: 1px solid var(--site-border);
+          border-top-left-radius: 12px;
+          border-top-right-radius: 12px;
+          background: var(--site-panel);
+          padding: 0.4rem 0.5rem;
+        }
+        .markdown-editor .editor-toolbar button {
+          color: var(--site-muted) !important;
+          border-radius: 6px;
+        }
+        .markdown-editor .editor-toolbar button:hover,
+        .markdown-editor .editor-toolbar button.active {
+          background: rgba(46, 39, 31, 0.06);
+          border-color: transparent;
+          color: var(--site-ink) !important;
+        }
+        @media (prefers-color-scheme: dark) {
+          .markdown-editor .editor-toolbar button:hover,
+          .markdown-editor .editor-toolbar button.active {
+            background: rgba(233, 226, 214, 0.08);
+          }
+        }
+        .markdown-editor .editor-toolbar i.separator {
+          border-left: 1px solid var(--site-border);
+          border-right: none;
+        }
+        .markdown-editor .editor-statusbar {
+          color: var(--site-muted);
+          font-family: var(--font-editorial-mono), monospace;
+          font-size: 0.72rem;
+          letter-spacing: 0.06em;
+          padding: 6px 12px;
         }
         .markdown-editor .CodeMirror-cursor {
-          border-left: 2px solid #3b82f6;
+          border-left: 2px solid var(--site-accent);
         }
         .markdown-editor .cm-header {
-          font-weight: 600;
-          letter-spacing: 0.5px;
+          font-family: var(--font-editorial-display), serif;
+          font-variation-settings: "opsz" 96, "SOFT" 30;
+          font-weight: 500;
+          letter-spacing: -0.005em;
+          color: var(--site-ink);
+        }
+        .markdown-editor .cm-link,
+        .markdown-editor .cm-url {
+          color: var(--site-accent);
+        }
+        .markdown-editor .cm-quote,
+        .markdown-editor .cm-em {
+          color: var(--site-muted);
+          font-style: italic;
         }
         .markdown-editor .CodeMirror-placeholder {
-          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
-          color: #9e9e9e;
+          font-family: var(--font-editorial-display), serif;
+          color: var(--site-muted);
           font-style: italic;
         }
       `}</style>

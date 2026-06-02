@@ -4,10 +4,20 @@
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 PID_FILE="$SCRIPT_DIR/.cms-server.pid"
+LAUNCH_LABEL="com.taffy.blogcms.server"
+LAUNCH_DOMAIN="gui/$(id -u)"
+
+launchctl bootout "${LAUNCH_DOMAIN}/${LAUNCH_LABEL}" >/dev/null 2>&1
+launchctl remove "$LAUNCH_LABEL" >/dev/null 2>&1
 
 if [ -f "$PID_FILE" ]; then
     PID=$(cat "$PID_FILE")
-    if ps -p $PID > /dev/null 2>&1; then
+    if [ "$PID" = "$LAUNCH_LABEL" ]; then
+        echo "正在停止服务器 ($LAUNCH_LABEL)..."
+        launchctl remove "$LAUNCH_LABEL" >/dev/null 2>&1
+        rm "$PID_FILE"
+        echo "✅ 服务器已停止"
+    elif ps -p $PID > /dev/null 2>&1; then
         echo "正在停止服务器 (PID: $PID)..."
         kill $PID
         rm "$PID_FILE"
