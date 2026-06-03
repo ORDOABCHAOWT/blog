@@ -1,12 +1,20 @@
 
 > minimal-blog@0.1.0 dev
-> next dev --turbopack
+> next dev --turbopack -H 127.0.0.1
 
-   ▲ Next.js 16.0.7 (Turbopack)
-   - Local:         http://localhost:3000
-   - Network:       http://192.168.1.17:3000
-   - Environments: .env.local
-
- ✓ Starting...
- ⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
- ✓ Ready in 552ms
+⨯ Failed to start server
+Error: listen EPERM: operation not permitted 127.0.0.1:3000
+    at <unknown> (Error: listen EPERM: operation not permitted 127.0.0.1:3000) {
+  code: 'EPERM',
+  errno: -1,
+  syscall: 'listen',
+  address: '127.0.0.1',
+  port: 3000
+}
+[?25h
+No application knows how to open URL http://127.0.0.1:3000/admin (Error Domain=NSOSStatusErrorDomain Code=-10661 "kLSExecutableIncorrectFormat: No compatible executable was found" UserInfo={_LSLine=1970, _LSFunction=runEvaluator, _LSFile=LSBindingEvaluator.mm, _LSErrorMessage=kLSExecutableIncorrectFormat}).
+Unable to find application named 'Google Chrome'
+Unable to find application named 'Safari'
+Unable to find application named 'Microsoft Edge'
+Unable to find application named 'Arc'
+CMS 已启动，但无法自动打开浏览器。请手动访问：http://127.0.0.1:3000/admin
