@@ -40,7 +40,7 @@ export default function Page() {
           </p>
           <h1
             style={{
-              fontFamily: 'Georgia, "Times New Roman", serif',
+              fontFamily: 'var(--font-editorial-display)',
               fontSize: '72px',
               lineHeight: 1.05,
               margin: '12px 0 24px',

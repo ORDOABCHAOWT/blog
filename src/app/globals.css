@@ -1,15 +1,19 @@
 @import "tailwindcss";
 
 :root {
-  /* Editorial display = Fraunces (variable optical-size serif) with
-     time-tested fallbacks so the cascade stays elegant during font swap. */
-  --font-editorial-display: var(--font-fraunces), "Iowan Old Style",
-    "Palatino Linotype", "Book Antiqua", Palatino, "Times New Roman", serif;
-  --font-editorial-sans: var(--font-inter), -apple-system, BlinkMacSystemFont,
+  --font-editorial-display: var(--font-ibm-plex), var(--font-noto-sans-sc),
+    -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+    "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  --font-editorial-sans: var(--font-ibm-plex), var(--font-noto-sans-sc),
+    -apple-system, BlinkMacSystemFont,
     "Segoe UI", "Helvetica Neue", Arial, "PingFang SC", "Hiragino Sans GB",
     "Microsoft YaHei", sans-serif;
   --font-editorial-mono: var(--font-jetbrains), "JetBrains Mono",
     "IBM Plex Mono", "SFMono-Regular", Consolas, monospace;
+  --tracking-brand: -0.01em;
+  --tracking-heading: 0.035em;
+  --tracking-body: 0.04em;
+  --tracking-meta: 0.2em;
   --site-background: #f7f7f5;
   --site-background-soft: #eeeeec;
   --site-panel: rgba(249, 249, 247, 0.82);
@@ -90,11 +94,8 @@ body {
     radial-gradient(circle at top left, rgba(100, 118, 143, 0.05), transparent 24rem),
     radial-gradient(circle at 85% 20%, rgba(170, 148, 120, 0.04), transparent 18rem),
     linear-gradient(180deg, #fbfbfa 0%, var(--site-background) 52%, #f3f3f1 100%);
-  font-family: var(--font-editorial-display), "Iowan Old Style",
-    "Palatino Linotype", "Book Antiqua", Palatino,
-    "Songti SC", "STSong", "Noto Serif CJK SC", serif;
-  font-optical-sizing: auto;
-  /* Common ligatures + kerning for refined body text. */
+  font-family: var(--font-editorial-display);
+  letter-spacing: var(--tracking-body);
   font-feature-settings: "liga" 1, "calt" 1, "kern" 1, "onum" 1;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -200,14 +201,9 @@ img {
 .editorial-prose h1,
 .editorial-prose h2,
 .editorial-prose h3 {
-  font-family: var(--font-editorial-display), "Iowan Old Style",
-    "Palatino Linotype", serif;
-  /* Fraunces variable axes: opsz pulls in optical-size for crisper big
-     glyphs; small SOFT softens the joints just a touch. */
-  font-variation-settings: "opsz" 144, "SOFT" 30;
-  /* Modern OpenType features for elegant serif typography */
+  font-family: var(--font-editorial-display);
   font-feature-settings: "liga" 1, "calt" 1, "dlig" 1, "kern" 1;
-  font-optical-sizing: auto;
+  letter-spacing: var(--tracking-heading);
 }
 
 .home-title {
@@ -215,19 +211,18 @@ img {
   font-size: clamp(2.6rem, 6vw, 5.2rem);
   font-weight: 380;
   line-height: 1.02;
-  letter-spacing: -0.012em;
+  letter-spacing: var(--tracking-brand);
 }
 
 .home-deck {
   margin: 0 0 1rem;
   max-width: 24rem;
   color: var(--site-muted);
-  font-family: var(--font-editorial-display), serif;
+  font-family: var(--font-editorial-display);
   font-size: 1.18rem;
   font-style: italic;
   font-weight: 360;
-  letter-spacing: 0.005em;
-  font-variation-settings: "opsz" 14, "SOFT" 80;
+  letter-spacing: var(--tracking-body);
 }
 
 .home-intro,
@@ -324,7 +319,7 @@ img {
 }
 
 .home-social-glyph {
-  font-family: var(--font-editorial-display), "Songti SC", "STSong", serif;
+  font-family: var(--font-editorial-display);
   font-size: 1.04rem;
   font-weight: 520;
   line-height: 1.12rem;
@@ -451,13 +446,21 @@ img {
 .directory-number,
 .directory-date,
 .post-stamp,
-.post-date,
-/* (Old rail label / meta typography rules removed.) */
+.post-date {
+  color: var(--site-muted);
+  font-family: var(--font-editorial-mono), "SFMono-Regular", Consolas, monospace;
+  font-size: 0.78rem;
+  font-weight: 400;
+  letter-spacing: var(--tracking-meta);
+  line-height: 1.6;
+  white-space: nowrap;
+}
 
 .directory-content h2 {
   margin: 0 0 0.82rem;
   font-size: clamp(1.16rem, 1.75vw, 1.5rem);
   line-height: 1.14;
+  letter-spacing: var(--tracking-heading);
   transform-origin: left center;
   transition: transform 220ms ease, color 220ms ease;
   will-change: transform;
@@ -469,7 +472,7 @@ img {
   color: color-mix(in srgb, var(--site-muted) 92%, transparent);
   font-size: 0.92rem;
   line-height: 1.95;
-  letter-spacing: 0.015em;
+  letter-spacing: var(--tracking-body);
 }
 
 .directory-empty {
@@ -520,13 +523,12 @@ img {
 }
 
 .post-pager-title {
-  font-family: var(--font-editorial-display), "Iowan Old Style", serif;
+  font-family: var(--font-editorial-display);
   font-size: clamp(1.15rem, 2vw, 1.55rem);
   font-weight: 380;
   line-height: 1.2;
-  letter-spacing: -0.005em;
+  letter-spacing: var(--tracking-heading);
   color: var(--site-ink);
-  font-variation-settings: "opsz" 64, "SOFT" 30;
 }
 
 .post-pager-link:not(.is-muted):hover .post-pager-title {
@@ -593,8 +595,7 @@ img {
   font-size: clamp(1.9rem, 3.8vw, 3.05rem);
   font-weight: 380;
   line-height: 1.12;
-  letter-spacing: -0.012em;
-  font-variation-settings: "opsz" 144, "SOFT" 30;
+  letter-spacing: var(--tracking-heading);
   color: var(--site-ink);
 }
 
@@ -606,8 +607,7 @@ img {
   font-weight: 360;
   font-size: 1.06rem;
   line-height: 1.7;
-  letter-spacing: 0.005em;
-  font-variation-settings: "opsz" 14, "SOFT" 80;
+  letter-spacing: var(--tracking-body);
 }
 
 .post-date {
@@ -730,7 +730,7 @@ img {
 .editorial-prose > p:first-of-type:first-letter {
   float: left;
   margin: 0.12rem 0.55rem 0 0;
-  font-family: var(--font-editorial-display), "Iowan Old Style", serif;
+  font-family: var(--font-editorial-display);
   font-size: 4.9rem;
   line-height: 0.8;
   color: var(--site-dropcap);
@@ -751,7 +751,7 @@ img {
 .editorial-prose[data-cjk] > p:first-of-type {
   font-size: 1.16rem;
   line-height: 1.95;
-  letter-spacing: 0.005em;
+  letter-spacing: var(--tracking-body);
 }
 
 .editorial-prose p {
@@ -763,7 +763,7 @@ img {
 
 .editorial-prose[data-cjk] p {
   line-height: 1.94;
-  letter-spacing: 0.01em;
+  letter-spacing: var(--tracking-body);
   text-spacing: ideograph-numeric;
   hanging-punctuation: allow-end;
   margin-bottom: 1.7rem;
@@ -1354,7 +1354,7 @@ img {
 .portfolio-section-en {
   margin: 0;
   color: #202023;
-  font-family: var(--font-editorial-display), Georgia, serif;
+  font-family: var(--font-editorial-display);
   font-size: clamp(3rem, 5vw, 4.5rem);
   font-weight: 620;
   line-height: 0.94;
@@ -1624,15 +1624,13 @@ img {
 /* ---------- Admin / CMS — editorial theme ----------
    The CMS shares the blog's warm editorial palette so working "behind
    the curtain" still feels like the same publication: soft cream paper,
-   Fraunces serif headings, mono eyebrows, slate-blue accent. */
+   industrial sans headings, mono eyebrows, slate-blue accent. */
 .admin-container {
   background: transparent;
   color: var(--site-ink);
   min-height: 100vh;
   position: relative;
-  font-family: var(--font-editorial-display), "Iowan Old Style",
-    "Palatino Linotype", "Book Antiqua", Palatino,
-    "Songti SC", "STSong", "Noto Serif CJK SC", serif;
+  font-family: var(--font-editorial-display);
   font-feature-settings: "liga" 1, "calt" 1, "kern" 1, "onum" 1;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -1646,13 +1644,11 @@ img {
   color: var(--site-muted);
 }
 
-/* Headings inside the CMS — same Fraunces variable axes as the blog. */
+/* Headings inside the CMS — shared industrial sans system. */
 .admin-container h1,
 .admin-container h2,
 .admin-container h3 {
-  font-family: var(--font-editorial-display), "Iowan Old Style",
-    "Palatino Linotype", serif;
-  font-variation-settings: "opsz" 96, "SOFT" 30;
+  font-family: var(--font-editorial-display);
   font-feature-settings: "liga" 1, "calt" 1, "dlig" 1, "kern" 1;
   font-weight: 380;
   letter-spacing: -0.008em;
@@ -1781,7 +1777,7 @@ img {
   color: var(--site-ink);
   border: 1px solid var(--site-border);
   border-radius: 8px;
-  font-family: var(--font-editorial-display), "Iowan Old Style", serif;
+  font-family: var(--font-editorial-display);
   font-size: 1rem;
   letter-spacing: 0.005em;
   transition: border-color 200ms ease, box-shadow 200ms ease,
@@ -1823,7 +1819,7 @@ img {
   border: 1px solid var(--site-border);
   border-radius: 8px;
   overflow: hidden;
-  font-family: var(--font-editorial-display), "Iowan Old Style", serif;
+  font-family: var(--font-editorial-display);
 }
 
 .admin-table thead {
@@ -1865,7 +1861,7 @@ img {
   border: 1px solid var(--site-border);
   background: var(--site-panel);
   color: var(--site-ink);
-  font-family: var(--font-editorial-display), serif;
+  font-family: var(--font-editorial-display);
   font-size: 0.98rem;
   font-weight: 380;
   letter-spacing: 0.005em;
@@ -1944,7 +1940,7 @@ img {
 
 .ascii-demo-copy h1 {
   margin: 0.5rem 0 0.7rem;
-  font-family: var(--font-editorial-display), "Iowan Old Style", serif;
+  font-family: var(--font-editorial-display);
   font-size: clamp(2.2rem, 4.8vw, 4.25rem);
   line-height: 0.94;
   letter-spacing: 0.01em;
@@ -2043,7 +2039,7 @@ img {
 
 .ascii-demo-overlay h2 {
   margin: 0.4rem 0 0.28rem;
-  font-family: var(--font-editorial-display), "Iowan Old Style", serif;
+  font-family: var(--font-editorial-display);
   font-size: clamp(1.45rem, 2vw, 1.95rem);
   line-height: 1.02;
 }
@@ -2119,3 +2115,77 @@ img {
 
 /* (Legacy duplicate admin block removed. The single source of truth for
    the editorial CMS theme lives further up in this file.) */
+
+/* ---------- Industrial sans typography ----------
+   IBM Plex Sans supplies the technical Latin voice, Noto Sans SC keeps
+   Chinese copy calm and readable, and JetBrains Mono marks metadata. */
+body,
+input,
+textarea,
+select {
+  font-family: var(--font-editorial-display);
+}
+
+.home-title {
+  font-weight: 600;
+  letter-spacing: var(--tracking-brand);
+}
+
+.directory-content h2,
+.post-title,
+.post-pager-title,
+.editorial-prose h1,
+.editorial-prose h2,
+.editorial-prose h3,
+.portfolio-profile-header h2,
+.portfolio-profile-block h3,
+.admin-container h1,
+.admin-container h2,
+.admin-container h3,
+.ascii-demo-copy h1,
+.ascii-demo-overlay h2 {
+  font-family: var(--font-editorial-display);
+  font-weight: 500;
+  letter-spacing: var(--tracking-heading);
+}
+
+.home-deck,
+.home-intro,
+.directory-content p,
+.post-description,
+.editorial-prose p,
+.editorial-prose li,
+.editorial-prose blockquote,
+.post-outline-link,
+.portfolio-profile-line,
+.portfolio-skill-item p,
+.admin-container,
+.admin-input,
+.admin-table,
+.admin-alert,
+.ascii-demo-intro,
+.ascii-demo-overlay p {
+  letter-spacing: var(--tracking-body);
+}
+
+.eyebrow,
+.directory-summary,
+.directory-number,
+.directory-date,
+.post-stamp,
+.post-date,
+.post-pager-direction,
+.site-footer p,
+.post-footer-link,
+.post-outline-label,
+.editorial-figure figcaption,
+.admin-button,
+.admin-container label,
+.admin-table thead th,
+.admin-link,
+.ascii-demo-kicker,
+.ascii-demo-scene-label,
+.ascii-demo-notes p {
+  font-family: var(--font-editorial-mono), "SFMono-Regular", Consolas, monospace;
+  letter-spacing: var(--tracking-meta);
+}

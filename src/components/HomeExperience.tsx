@@ -110,7 +110,7 @@ export default function HomeExperience({ posts }: HomeExperienceProps) {
         <div className="identity-panel">
           <div className="identity-block">
             <Image
-              src="/avatar.png"
+              src="/avatar-2026.png"
               alt="Taffy Wang"
               width={104}
               height={104}

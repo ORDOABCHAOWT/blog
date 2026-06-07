@@ -145,7 +145,7 @@ export default function AdminPage() {
                     <td className="px-5 py-4 admin-text-primary" style={{ fontSize: '1.02rem' }}>
                       {post.title}
                     </td>
-                    <td className="px-5 py-4 admin-text-secondary" style={{ fontFamily: 'var(--font-editorial-mono), monospace', fontSize: '0.82rem', letterSpacing: '0.06em' }}>
+                    <td className="px-5 py-4 admin-text-secondary" style={{ fontFamily: 'var(--font-editorial-mono), monospace', fontSize: '0.82rem', letterSpacing: 'var(--tracking-meta)', whiteSpace: 'nowrap' }}>
                       {post.date}
                     </td>
                     <td className="px-5 py-4 admin-text-secondary truncate max-w-xs" style={{ fontSize: '0.92rem' }}>

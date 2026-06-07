@@ -42,3 +42,6 @@ next-env.d.ts
 
 # claude code workspace
 .claude/
+
+# local visual brainstorming workspace
+.superpowers/

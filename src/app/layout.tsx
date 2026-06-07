@@ -1,25 +1,21 @@
 import type { Metadata } from "next";
-import { Fraunces, Inter, JetBrains_Mono } from "next/font/google";
+import { IBM_Plex_Sans, JetBrains_Mono, Noto_Sans_SC } from "next/font/google";
 import PageTransition from "@/components/PageTransition";
 import "./globals.css";
 
-// Display + body serif: Fraunces has variable optical sizing so big
-// headings get crisper while paragraph text stays warm and round.
-const fraunces = Fraunces({
+const ibmPlexSans = IBM_Plex_Sans({
   subsets: ["latin"],
   display: "swap",
-  variable: "--font-fraunces",
-  axes: ["opsz", "SOFT"],
+  variable: "--font-ibm-plex",
 });
 
-// UI / sans
-const inter = Inter({
-  subsets: ["latin"],
+const notoSansSc = Noto_Sans_SC({
+  weight: "variable",
   display: "swap",
-  variable: "--font-inter",
+  variable: "--font-noto-sans-sc",
+  preload: false,
 });
 
-// Mono
 const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
   display: "swap",
@@ -41,7 +37,7 @@ export default function RootLayout({
       lang="zh-CN"
       data-scroll-behavior="smooth"
       suppressHydrationWarning
-      className={`${fraunces.variable} ${inter.variable} ${jetbrainsMono.variable}`}
+      className={`${ibmPlexSans.variable} ${notoSansSc.variable} ${jetbrainsMono.variable}`}
     >
       <body>
         <PageTransition />

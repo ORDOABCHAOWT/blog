@@ -103,9 +103,8 @@ const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>(
           min-height: 420px;
           font-size: 16px;
           line-height: 1.85;
-          font-family: var(--font-editorial-display), "Iowan Old Style",
-            "Palatino Linotype", "Songti SC", "Noto Serif CJK SC", serif;
-          letter-spacing: 0.005em;
+          font-family: var(--font-editorial-display);
+          letter-spacing: var(--tracking-body);
           padding: 22px;
           background: transparent;
           color: var(--site-ink);
@@ -121,7 +120,7 @@ const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>(
         }
         .markdown-editor .CodeMirror pre.CodeMirror-line {
           line-height: 1.85;
-          letter-spacing: 0.005em;
+          letter-spacing: var(--tracking-body);
         }
         .markdown-editor .editor-toolbar {
           border: none;
@@ -155,17 +154,16 @@ const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>(
           color: var(--site-muted);
           font-family: var(--font-editorial-mono), monospace;
           font-size: 0.72rem;
-          letter-spacing: 0.06em;
+          letter-spacing: var(--tracking-meta);
           padding: 6px 12px;
         }
         .markdown-editor .CodeMirror-cursor {
           border-left: 2px solid var(--site-accent);
         }
         .markdown-editor .cm-header {
-          font-family: var(--font-editorial-display), serif;
-          font-variation-settings: "opsz" 96, "SOFT" 30;
+          font-family: var(--font-editorial-display);
           font-weight: 500;
-          letter-spacing: -0.005em;
+          letter-spacing: var(--tracking-heading);
           color: var(--site-ink);
         }
         .markdown-editor .cm-link,
@@ -178,7 +176,7 @@ const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>(
           font-style: italic;
         }
         .markdown-editor .CodeMirror-placeholder {
-          font-family: var(--font-editorial-display), serif;
+          font-family: var(--font-editorial-display);
           color: var(--site-muted);
           font-style: italic;
         }

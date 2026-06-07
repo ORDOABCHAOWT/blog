@@ -245,13 +245,13 @@ export default function ImageUploader({ onUploadSuccess }: ImageUploaderProps) {
           color: var(--site-muted);
         }
         .image-uploader-copy {
-          font-family: var(--font-editorial-display), serif;
+          font-family: var(--font-editorial-display);
         }
         .image-uploader-cta {
           margin: 0;
           color: var(--site-ink);
           font-size: 1.02rem;
-          letter-spacing: 0.005em;
+          letter-spacing: var(--tracking-body);
         }
         .image-uploader-hint {
           margin: 0.2rem 0 0;
@@ -264,7 +264,7 @@ export default function ImageUploader({ onUploadSuccess }: ImageUploaderProps) {
           color: var(--site-muted);
           font-family: var(--font-editorial-mono), "SFMono-Regular", Consolas, monospace;
           font-size: 0.7rem;
-          letter-spacing: 0.16em;
+          letter-spacing: var(--tracking-meta);
           text-transform: uppercase;
         }
         .image-uploader-status {
@@ -272,7 +272,7 @@ export default function ImageUploader({ onUploadSuccess }: ImageUploaderProps) {
           color: var(--site-muted);
           font-family: var(--font-editorial-mono), monospace;
           font-size: 0.78rem;
-          letter-spacing: 0.18em;
+          letter-spacing: var(--tracking-meta);
           text-transform: uppercase;
         }
         .image-uploader-spinner {
