@@ -1,6 +1,6 @@
 'use client';
 
-import { memo, useCallback, useState } from 'react';
+import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import type { PostSummary } from '@/lib/posts';
@@ -99,10 +99,36 @@ export default function HomeExperience({ posts }: HomeExperienceProps) {
   const [activeIndex, setActiveIndex] = useState<number | null>(
     posts[0]?.index ?? null
   );
+  const [isWechatPinned, setIsWechatPinned] = useState(false);
+  const wechatPopoverRef = useRef<HTMLSpanElement>(null);
 
   const handleActivate = useCallback((index: number) => {
     setActiveIndex((current) => (current === index ? current : index));
   }, []);
+
+  useEffect(() => {
+    if (!isWechatPinned) return;
+
+    function handlePointerDown(event: PointerEvent) {
+      if (!wechatPopoverRef.current?.contains(event.target as Node)) {
+        setIsWechatPinned(false);
+      }
+    }
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === 'Escape') {
+        setIsWechatPinned(false);
+      }
+    }
+
+    document.addEventListener('pointerdown', handlePointerDown);
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.removeEventListener('pointerdown', handlePointerDown);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isWechatPinned]);
 
   return (
     <main className="home-page">
@@ -129,37 +155,72 @@ export default function HomeExperience({ posts }: HomeExperienceProps) {
           </p>
 
           <nav className="home-social-links" aria-label="Social links">
-            {socialLinks.map((link) => (
-              <a
-                key={link.label}
-                href={link.href}
-                aria-label={link.label}
-                className="home-social-link"
-                target={link.href.startsWith('http') ? '_blank' : undefined}
-                rel={
-                  link.href.startsWith('http')
-                    ? 'noopener noreferrer'
-                    : undefined
-                }
-              >
-                {link.icon === 'github' ? (
-                  <GitHubIcon />
-                ) : link.icon === 'glyph' ? (
-                  <span aria-hidden="true" className="home-social-glyph">
-                    {link.glyph}
+            {socialLinks.map((link) =>
+              link.label === '微信公众号' ? (
+                <span
+                  key={link.label}
+                  ref={wechatPopoverRef}
+                  className={`home-social-wechat ${isWechatPinned ? 'is-open' : ''}`}
+                >
+                  <button
+                    type="button"
+                    aria-label="显示微信公众号二维码"
+                    aria-expanded={isWechatPinned}
+                    aria-controls="home-social-wechat-qr"
+                    className="home-social-wechat-trigger"
+                    onClick={() => setIsWechatPinned((current) => !current)}
+                  >
+                    <Image
+                      src={link.iconSrc || ''}
+                      alt={link.iconAlt || ''}
+                      width={24}
+                      height={24}
+                      className="home-social-image"
+                    />
+                    <span className="sr-only">{link.label}</span>
+                  </button>
+                  <span
+                    id="home-social-wechat-qr"
+                    role="dialog"
+                    aria-label="微信公众号二维码"
+                    className="home-social-qr-popover"
+                  >
+                    <Image
+                      src="/wechat-official-account-qr.jpg"
+                      alt="微信公众号二维码"
+                      width={430}
+                      height={430}
+                      className="home-social-qr-image"
+                    />
+                    <span className="home-social-qr-caption">
+                      扫码关注微信公众号
+                    </span>
                   </span>
-                ) : (
-                  <Image
-                    src={link.iconSrc || ''}
-                    alt={link.iconAlt || ''}
-                    width={24}
-                    height={24}
-                    className="home-social-image"
-                  />
-                )}
-                <span className="sr-only">{link.label}</span>
-              </a>
-            ))}
+                </span>
+              ) : (
+                <a
+                  key={link.label}
+                  href={link.href}
+                  aria-label={link.label}
+                  className="home-social-link"
+                  target={link.href.startsWith('http') ? '_blank' : undefined}
+                  rel={
+                    link.href.startsWith('http')
+                      ? 'noopener noreferrer'
+                      : undefined
+                  }
+                >
+                  {link.icon === 'github' ? (
+                    <GitHubIcon />
+                  ) : (
+                    <span aria-hidden="true" className="home-social-glyph">
+                      {link.glyph}
+                    </span>
+                  )}
+                  <span className="sr-only">{link.label}</span>
+                </a>
+              )
+            )}
           </nav>
         </div>
 

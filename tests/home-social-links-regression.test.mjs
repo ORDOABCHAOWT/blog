@@ -88,6 +88,70 @@ test('homepage social links are icon-only but accessible', () => {
   );
 });
 
+test('WeChat social icon reveals an accessible QR popover and GitHub opens the requested profile', () => {
+  assert.match(
+    homeExperience,
+    /href: 'https:\/\/github\.com\/ORDOABCHAOWT'/,
+    'Expected the GitHub icon to open the requested profile'
+  );
+  assert.match(
+    homeExperience,
+    /className="home-social-wechat-trigger"/,
+    'Expected WeChat to render as an interactive button instead of navigating to the QR image'
+  );
+  assert.match(
+    homeExperience,
+    /aria-expanded=\{isWechatPinned\}/,
+    'Expected the WeChat trigger to expose pinned popover state'
+  );
+  assert.match(
+    homeExperience,
+    /className="home-social-qr-popover"/,
+    'Expected a dedicated QR popover'
+  );
+  assert.match(
+    homeExperience,
+    /src="\/wechat-official-account-qr\.jpg"/,
+    'Expected the approved QR asset to use a stable public path'
+  );
+  assert.match(
+    homeExperience,
+    /event\.key === 'Escape'/,
+    'Expected Escape to close a pinned QR popover'
+  );
+  assert.match(
+    homeExperience,
+    /wechatPopoverRef\.current\?\.contains\(event\.target as Node\)/,
+    'Expected outside pointer interaction to close a pinned QR popover'
+  );
+
+  assert.match(
+    globalsCss,
+    /\.home-social-wechat:hover \.home-social-qr-popover/,
+    'Expected pointer hover to reveal the QR popover'
+  );
+  assert.match(
+    globalsCss,
+    /\.home-social-wechat:has\(\.home-social-wechat-trigger:focus-visible\) \.home-social-qr-popover/,
+    'Expected keyboard-visible focus to reveal the QR popover'
+  );
+  assert.doesNotMatch(
+    globalsCss,
+    /\.home-social-wechat:focus-within \.home-social-qr-popover/,
+    'Mouse focus must not keep the QR popover visible after click-to-close'
+  );
+  assert.match(
+    globalsCss,
+    /\.home-social-wechat\.is-open \.home-social-qr-popover/,
+    'Expected click-pinned state to reveal the QR popover'
+  );
+  assert.match(
+    globalsCss,
+    /@media \(max-width: 680px\)[\s\S]*?\.home-social-qr-popover\s*{[^}]*left:\s*0;/,
+    'Expected narrow screens to keep the QR popover inside the viewport'
+  );
+});
+
 test('homepage social links sit just above the bottom of the hero art on desktop', () => {
   assert.match(
     globalsCss,

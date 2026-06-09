@@ -6,7 +6,12 @@
     "dev": "next dev --turbopack -H 127.0.0.1",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "eslint .",
+    "test": "node --test tests/*.test.mjs",
+    "typecheck": "tsc --noEmit",
+    "validate": "node scripts/validate-repository.mjs",
+    "check:agentic": "node scripts/check-agentic-docs.mjs",
+    "check": "npm run validate && npm run check:agentic && npm run build"
   },
   "dependencies": {
     "ali-oss": "^6.23.0",

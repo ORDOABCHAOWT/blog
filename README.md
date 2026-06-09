@@ -125,6 +125,22 @@ npm run dev
 - **部署**：Vercel
 - **版本控制**：Git + GitHub
 
+### 工程验证
+
+稳定的提交前检查：
+
+```bash
+npm run check
+```
+
+以下诊断命令当前会暴露项目中已经记录的技术债，修复相关区域时应单独运行：
+
+```bash
+npm test
+npm run typecheck
+npm run lint
+```
+
 ---
 
 ## 📁 项目结构

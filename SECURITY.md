@@ -2,6 +2,8 @@
 
 This document outlines the security features and configuration guidelines for this blog CMS.
 
+> **Current implementation note (2026-06-09):** The repository currently contains an explicit regression test requiring `/admin` to load without Basic Auth middleware. Admin pages and mutating API routes should therefore be treated as trusted-local-only until an explicit access-control redesign is approved and implemented. See `docs/agentic/SECURITY.md` for the current operational security contract. The Basic Auth sections below describe older or aspirational guidance, not the behavior currently enforced by the codebase.
+
 ## Overview
 
 This project implements multiple security layers to protect against common web vulnerabilities:
