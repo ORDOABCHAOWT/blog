@@ -105,7 +105,7 @@ const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>(
       const rootRect = root.getBoundingClientRect();
       const wrapperRect = cm.getWrapperElement().getBoundingClientRect();
       const cursor = doc.getCursor();
-      const cursorCoords = cm.cursorCoords(cursor, 'page');
+      const cursorCoords = cm.cursorCoords(cursor, 'window');
       const selection = doc.getSelection();
 
       setLineActionPosition({
@@ -115,7 +115,7 @@ const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>(
 
       if (selection) {
         const start = doc.getCursor('start');
-        const selectionCoords = cm.charCoords(start, 'page');
+        const selectionCoords = cm.charCoords(start, 'window');
         setSelectionToolbarPosition({
           top: selectionCoords.top - rootRect.top - 42,
           left: Math.max(8, selectionCoords.left - rootRect.left),
