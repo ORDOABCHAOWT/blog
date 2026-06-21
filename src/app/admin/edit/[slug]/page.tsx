@@ -5,6 +5,7 @@ import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import MarkdownEditor, { MarkdownEditorRef } from '@/components/MarkdownEditor';
 import ImageUploader from '@/components/ImageUploader';
+import { toSafePostSlug } from '@/lib/slug';
 
 export default function EditPostPage() {
   const router = useRouter();
@@ -158,7 +159,7 @@ export default function EditPostPage() {
                 type="text"
                 required
                 value={formData.slug}
-                onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
+                onChange={(e) => setFormData({ ...formData, slug: toSafePostSlug(e.target.value, formData.date) })}
                 className="admin-input w-full px-4 py-2.5"
                 placeholder="article-slug"
               />

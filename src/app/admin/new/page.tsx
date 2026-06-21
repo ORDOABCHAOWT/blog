@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import MarkdownEditor, { MarkdownEditorRef } from '@/components/MarkdownEditor';
 import ImageUploader from '@/components/ImageUploader';
+import { toSafePostSlug } from '@/lib/slug';
 
 export default function NewPostPage() {
   const router = useRouter();
@@ -29,12 +30,17 @@ export default function NewPostPage() {
     setError('');
 
     try {
+      const payload = {
+        ...formData,
+        slug: toSafePostSlug(formData.slug || formData.title, formData.date),
+      };
+
       const res = await fetch('/api/posts', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(payload),
       });
 
       const data = await res.json();
@@ -56,10 +62,7 @@ export default function NewPostPage() {
 
     // 自动生成 slug
     if (field === 'title' && !formData.slug) {
-      const slug = value
-        .toLowerCase()
-        .replace(/[^\w\s-]/g, '')
-        .replace(/\s+/g, '-');
+      const slug = toSafePostSlug(value, formData.date);
       setFormData((prev) => ({ ...prev, slug }));
     }
   };
@@ -114,12 +117,12 @@ export default function NewPostPage() {
                 type="text"
                 required
                 value={formData.slug}
-                onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
+                onChange={(e) => setFormData({ ...formData, slug: toSafePostSlug(e.target.value, formData.date) })}
                 className="admin-input w-full px-4 py-2.5"
                 placeholder="article-slug"
               />
               <p className="admin-text-secondary mt-2" style={{ fontSize: '0.78rem', fontStyle: 'italic' }}>
-                用于 URL，只能包含字母、数字和连字符
+                用于 URL，只能包含字母、数字、连字符和下划线
               </p>
             </div>
           </div>
