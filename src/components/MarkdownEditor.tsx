@@ -10,6 +10,7 @@ import {
   useEffect,
 } from 'react';
 import dynamic from 'next/dynamic';
+import type EasyMDE from 'easymde';
 import { uploadImageFile } from '@/lib/client-image-upload';
 import 'easymde/dist/easymde.min.css';
 
@@ -258,7 +259,7 @@ const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>(
       insertAtCursor,
     }), [insertAtCursor]);
 
-    const editorOptions = useMemo(() => ({
+    const editorOptions = useMemo<EasyMDE.Options>(() => ({
       spellChecker: false,
       placeholder: '在这里输入文章内容（支持Markdown）...',
       autofocus: false,
