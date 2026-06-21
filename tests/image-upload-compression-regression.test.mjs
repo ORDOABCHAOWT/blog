@@ -6,6 +6,10 @@ const imageUploader = fs.readFileSync(
   new URL('../src/components/ImageUploader.tsx', import.meta.url),
   'utf8'
 );
+const uploadHelper = fs.readFileSync(
+  new URL('../src/lib/client-image-upload.ts', import.meta.url),
+  'utf8'
+);
 const uploadRoute = fs.readFileSync(
   new URL('../src/app/api/upload/route.ts', import.meta.url),
   'utf8'
@@ -13,35 +17,35 @@ const uploadRoute = fs.readFileSync(
 
 test('admin image uploads are compressed before being sent to OSS', () => {
   assert.match(
-    imageUploader,
+    uploadHelper,
     /MAX_IMAGE_UPLOAD_DIMENSION\s*=\s*1600/,
     'Expected uploads to be resized to a bounded long edge'
   );
   assert.match(
-    imageUploader,
+    uploadHelper,
     /IMAGE_UPLOAD_MIME_TYPE\s*=\s*'image\/webp'/,
     'Expected compressible uploads to be converted to WebP'
   );
   assert.match(
-    imageUploader,
+    uploadHelper,
     /async function compressImageForUpload\(file: File\)/,
     'Expected a dedicated compression step before upload'
   );
   assert.match(
-    imageUploader,
+    uploadHelper,
     /canvas\.toBlob/,
     'Expected browser canvas encoding to reduce image payload size'
   );
   assert.match(
     imageUploader,
-    /formData\.append\('file', uploadFile\)/,
-    'Expected the compressed file, not the raw selected file, to be uploaded'
+    /uploadImageFile\(file\)/,
+    'Expected the drop zone to delegate compression and upload to the shared helper'
   );
 });
 
 test('animated GIF uploads are preserved instead of being flattened by compression', () => {
   assert.match(
-    imageUploader,
+    uploadHelper,
     /if \(file\.type === 'image\/gif'\) \{\s*return file;\s*\}/,
     'Expected GIF files to bypass canvas compression'
   );

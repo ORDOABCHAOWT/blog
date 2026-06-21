@@ -1,88 +1,10 @@
 'use client';
 
 import { useState, useRef } from 'react';
+import { uploadImageFile } from '@/lib/client-image-upload';
 
 interface ImageUploaderProps {
   onUploadSuccess: (markdown: string) => void;
-}
-
-const MAX_IMAGE_UPLOAD_DIMENSION = 1600;
-const IMAGE_UPLOAD_QUALITY = 0.78;
-const IMAGE_UPLOAD_MIME_TYPE = 'image/webp';
-
-function getCompressedFileName(fileName: string) {
-  const dotIndex = fileName.lastIndexOf('.');
-  const baseName = dotIndex > 0 ? fileName.slice(0, dotIndex) : fileName;
-  return `${baseName}.webp`;
-}
-
-function loadImage(file: File): Promise<HTMLImageElement> {
-  return new Promise((resolve, reject) => {
-    const objectUrl = URL.createObjectURL(file);
-    const image = new Image();
-
-    image.onload = () => {
-      URL.revokeObjectURL(objectUrl);
-      resolve(image);
-    };
-    image.onerror = () => {
-      URL.revokeObjectURL(objectUrl);
-      reject(new Error('Image decode failed'));
-    };
-    image.src = objectUrl;
-  });
-}
-
-function encodeCanvas(
-  canvas: HTMLCanvasElement,
-  type: string,
-  quality: number
-): Promise<Blob | null> {
-  return new Promise((resolve) => {
-    canvas.toBlob(resolve, type, quality);
-  });
-}
-
-async function compressImageForUpload(file: File) {
-  if (file.type === 'image/gif') {
-    return file;
-  }
-
-  if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
-    return file;
-  }
-
-  const image = await loadImage(file);
-  const longestEdge = Math.max(image.naturalWidth, image.naturalHeight);
-  const scale =
-    longestEdge > MAX_IMAGE_UPLOAD_DIMENSION
-      ? MAX_IMAGE_UPLOAD_DIMENSION / longestEdge
-      : 1;
-  const width = Math.max(1, Math.round(image.naturalWidth * scale));
-  const height = Math.max(1, Math.round(image.naturalHeight * scale));
-  const canvas = document.createElement('canvas');
-  canvas.width = width;
-  canvas.height = height;
-
-  const context = canvas.getContext('2d');
-  if (!context) return file;
-
-  context.drawImage(image, 0, 0, width, height);
-
-  const blob = await encodeCanvas(
-    canvas,
-    IMAGE_UPLOAD_MIME_TYPE,
-    IMAGE_UPLOAD_QUALITY
-  );
-
-  if (!blob || blob.size >= file.size) {
-    return file;
-  }
-
-  return new File([blob], getCompressedFileName(file.name), {
-    type: IMAGE_UPLOAD_MIME_TYPE,
-    lastModified: Date.now(),
-  });
 }
 
 export default function ImageUploader({ onUploadSuccess }: ImageUploaderProps) {
@@ -93,41 +15,14 @@ export default function ImageUploader({ onUploadSuccess }: ImageUploaderProps) {
   const handleUpload = async (file: File) => {
     if (!file) return;
 
-    // 验证文件类型
-    if (!file.type.startsWith('image/')) {
-      alert('请选择图片文件！');
-      return;
-    }
-
-    // 验证文件大小 (10MB)
-    if (file.size > 10 * 1024 * 1024) {
-      alert('图片大小不能超过 10MB！');
-      return;
-    }
-
     setUploading(true);
 
     try {
-      const uploadFile = await compressImageForUpload(file);
-      const formData = new FormData();
-      formData.append('file', uploadFile);
-
-      const response = await fetch('/api/upload', {
-        method: 'POST',
-        body: formData,
-      });
-
-      const data = await response.json();
-
-      if (response.ok && data.success) {
-        onUploadSuccess(data.markdown);
-        alert('✅ 图片上传成功！');
-      } else {
-        alert(`上传失败: ${data.error || '未知错误'}`);
-      }
+      const data = await uploadImageFile(file);
+      onUploadSuccess(data.markdown);
+      alert('✅ 图片上传成功！');
     } catch (error) {
-      console.error('Upload error:', error);
-      alert('上传失败，请重试');
+      alert(`上传失败: ${error instanceof Error ? error.message : '请重试'}`);
     } finally {
       setUploading(false);
     }
