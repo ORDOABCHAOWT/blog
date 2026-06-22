@@ -45,6 +45,7 @@ test('Markdown editor exposes a line-following insert menu tied to CodeMirror cu
 
 test('Markdown editor provides nearby Markdown formatting commands', () => {
   for (const command of [
+    'paragraph',
     'bold',
     'italic',
     'link',
@@ -83,6 +84,7 @@ test('Markdown editor replaces the legacy toolbar with a full plus formatting me
   assert.ok(lineMenuMatch, 'Expected a line-following plus menu');
 
   for (const command of [
+    'paragraph',
     'bold',
     'italic',
     'link',
@@ -101,6 +103,51 @@ test('Markdown editor replaces the legacy toolbar with a full plus formatting me
       `Expected + menu to include ${command}`
     );
   }
+});
+
+test('Markdown editor plus menu can reset a line to body text and uses a two-column palette', () => {
+  const lineMenuMatch = markdownEditor.match(
+    /<div className="markdown-line-command-menu">([\s\S]*?)<\/div>/
+  );
+  assert.ok(lineMenuMatch, 'Expected a line-following plus menu');
+  assert.match(
+    lineMenuMatch[1],
+    /data-command="paragraph"[\s\S]*>正文</,
+    'Expected + menu to include a body text option for undoing accidental headings'
+  );
+  assert.match(
+    markdownEditor,
+    /command === 'paragraph'[\s\S]*replaceCurrentLine/,
+    'Expected paragraph command to normalize the current block back to body text'
+  );
+  assert.match(
+    markdownEditor,
+    /grid-template-columns:\s*repeat\(2,/,
+    'Expected the + menu to be a compact two-column palette'
+  );
+});
+
+test('Markdown editor lets mouse clicks in blank editor space create and select a next line', () => {
+  assert.match(
+    markdownEditor,
+    /handleEditorBlankMouseDown/,
+    'Expected a mouse handler for blank editor space'
+  );
+  assert.match(
+    markdownEditor,
+    /lineCount\(\)/,
+    'Expected blank-space clicks to inspect the final CodeMirror line'
+  );
+  assert.match(
+    markdownEditor,
+    /replaceRange\('\\n'\.repeat\(linesToAdd\)/,
+    'Expected blank-space clicks below the last line to append selectable empty lines'
+  );
+  assert.match(
+    markdownEditor,
+    /setEditorFocused\(true\);[\s\S]*updateFloatingControls\(\);/,
+    'Expected mouse activation inside the editor to show the following plus control reliably'
+  );
 });
 
 test('Inline image insertion reuses the shared upload helper instead of duplicating upload rules', () => {

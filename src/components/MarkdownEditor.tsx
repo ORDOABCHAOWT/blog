@@ -28,6 +28,7 @@ export interface MarkdownEditorRef {
 }
 
 type MarkdownCommand =
+  | 'paragraph'
   | 'bold'
   | 'italic'
   | 'link'
@@ -55,6 +56,7 @@ type CodeMirrorDoc = {
   replaceSelection: (text: string) => void;
   replaceRange: (text: string, from: EditorPosition, to?: EditorPosition) => void;
   getLine: (line: number) => string;
+  lineCount: () => number;
   setCursor: (cursor: EditorPosition) => void;
 };
 
@@ -272,6 +274,13 @@ const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>(
       updateFloatingControls();
     }, [updateFloatingControls]);
 
+    const normalizeParagraphLine = useCallback((line: string) => {
+      return line
+        .replace(/^#{1,6}\s*/, '')
+        .replace(/^>\s?/, '')
+        .replace(/^(\s*)([-*+]|\d+\.)\s+/, '$1');
+    }, []);
+
     const applyMarkdownCommand = useCallback((command: MarkdownCommand) => {
       const cm = instanceRef.current?.codemirror;
       if (!cm) return;
@@ -279,7 +288,9 @@ const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>(
       const doc = cm.getDoc();
       const selection = doc.getSelection();
 
-      if (command === 'bold') {
+      if (command === 'paragraph') {
+        replaceCurrentLine(normalizeParagraphLine);
+      } else if (command === 'bold') {
         doc.replaceSelection(selection ? `**${selection}**` : '**粗体文字**');
       } else if (command === 'italic') {
         doc.replaceSelection(selection ? `*${selection}*` : '*斜体文字*');
@@ -304,7 +315,7 @@ const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>(
       setLineMenuOpen(false);
       cm.focus();
       updateFloatingControls();
-    }, [insertAtCursor, replaceCurrentLine, updateFloatingControls]);
+    }, [insertAtCursor, normalizeParagraphLine, replaceCurrentLine, updateFloatingControls]);
 
     const handleInlineImageSelect = useCallback(async (
       event: React.ChangeEvent<HTMLInputElement>
@@ -385,6 +396,44 @@ const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>(
       await uploadAndInsertImage(files[0], dropPosition);
     }, [getImageFiles, updateFloatingControls, uploadAndInsertImage]);
 
+    const handleEditorBlankMouseDown = useCallback((
+      event: React.MouseEvent<HTMLDivElement>
+    ) => {
+      const cm = instanceRef.current?.codemirror;
+      if (!cm || event.button !== 0) return;
+      if ((event.target as Element).closest('.markdown-following-line-action, .markdown-selection-toolbar')) {
+        return;
+      }
+
+      setEditorFocused(true);
+      updateFloatingControls();
+
+      const doc = cm.getDoc();
+      const lastLine = doc.lineCount() - 1;
+      const lastLineText = doc.getLine(lastLine);
+      const lastLineEnd = cm.cursorCoords(
+        { line: lastLine, ch: lastLineText.length },
+        'window'
+      );
+      if (event.clientY <= lastLineEnd.bottom + 6) return;
+
+      const wrapperLine = cm.getWrapperElement().querySelector('.CodeMirror-line');
+      const lineHeight = wrapperLine?.getBoundingClientRect().height || 30;
+      const linesToAdd = Math.max(
+        1,
+        Math.floor((event.clientY - lastLineEnd.bottom) / lineHeight) + 1
+      );
+
+      event.preventDefault();
+      doc.replaceRange('\n'.repeat(linesToAdd), {
+        line: lastLine,
+        ch: lastLineText.length,
+      });
+      doc.setCursor({ line: lastLine + linesToAdd, ch: 0 });
+      cm.focus();
+      updateFloatingControls();
+    }, [updateFloatingControls]);
+
     const handleRootBlur = useCallback((event: React.FocusEvent<HTMLDivElement>) => {
       const nextTarget = event.relatedTarget;
       if (nextTarget instanceof Node && event.currentTarget.contains(nextTarget)) {
@@ -420,6 +469,7 @@ const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>(
         onDragOver={handleEditorDragOver}
         onDragLeave={handleEditorDragLeave}
         onDrop={handleEditorDrop}
+        onMouseDown={handleEditorBlankMouseDown}
       >
         <input
           ref={fileInputRef}
@@ -450,6 +500,7 @@ const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>(
 
             {lineMenuOpen && (
               <div className="markdown-line-command-menu">
+                <button type="button" data-command="paragraph" onMouseDown={(event) => event.preventDefault()} onClick={() => applyMarkdownCommand('paragraph')}>正文</button>
                 <button type="button" data-command="bold" onMouseDown={(event) => event.preventDefault()} onClick={() => applyMarkdownCommand('bold')}>加粗</button>
                 <button type="button" data-command="italic" onMouseDown={(event) => event.preventDefault()} onClick={() => applyMarkdownCommand('italic')}>斜体</button>
                 <button type="button" data-command="link" onMouseDown={(event) => event.preventDefault()} onClick={() => applyMarkdownCommand('link')}>链接</button>
@@ -537,7 +588,9 @@ const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>(
         }
         .markdown-line-command-menu {
           display: grid;
-          min-width: 132px;
+          grid-template-columns: repeat(2, minmax(92px, 1fr));
+          gap: 4px;
+          min-width: 224px;
           padding: 6px;
         }
         .markdown-line-command-menu button {
@@ -681,6 +734,10 @@ const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>(
         @media (max-width: 720px) {
           .markdown-following-line-action {
             left: 8px !important;
+          }
+          .markdown-line-command-menu {
+            grid-template-columns: 1fr;
+            min-width: 148px;
           }
           .markdown-selection-toolbar {
             left: 8px !important;
