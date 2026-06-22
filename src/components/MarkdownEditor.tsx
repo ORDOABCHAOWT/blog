@@ -82,11 +82,19 @@ type EasyMdeInstance = {
   codemirror?: CodeMirrorInstance;
 };
 
+const positionsEqual = (
+  first: FloatingPosition | null,
+  second: FloatingPosition | null
+) => first?.top === second?.top && first?.left === second?.left;
+
 const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>(
   ({ value, onChange }, ref) => {
     const rootRef = useRef<HTMLDivElement>(null);
     const instanceRef = useRef<EasyMdeInstance | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const floatingUpdateFrameRef = useRef<number | null>(null);
+    const lastLineActionPositionRef = useRef<FloatingPosition | null>(null);
+    const lastSelectionToolbarPositionRef = useRef<FloatingPosition | null>(null);
     const [editorReadyTick, setEditorReadyTick] = useState(0);
     const [lineActionPosition, setLineActionPosition] =
       useState<FloatingPosition | null>(null);
@@ -102,7 +110,7 @@ const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>(
       setEditorReadyTick((tick) => tick + 1);
     }, []);
 
-    const updateFloatingControls = useCallback(() => {
+    const measureFloatingControls = useCallback(() => {
       const cm = instanceRef.current?.codemirror;
       const root = rootRef.current;
       if (!cm || !root) return;
@@ -114,22 +122,44 @@ const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>(
       const cursorCoords = cm.cursorCoords(cursor, 'window');
       const selection = doc.getSelection();
 
-      setLineActionPosition({
-        top: cursorCoords.top - rootRect.top + 2,
-        left: wrapperRect.left - rootRect.left + 10,
-      });
+      const nextLineActionPosition = {
+        top: Math.round(cursorCoords.top - rootRect.top + 2),
+        left: Math.round(wrapperRect.left - rootRect.left + 10),
+      };
+
+      if (!positionsEqual(lastLineActionPositionRef.current, nextLineActionPosition)) {
+        lastLineActionPositionRef.current = nextLineActionPosition;
+        setLineActionPosition(nextLineActionPosition);
+      }
 
       if (selection) {
         const start = doc.getCursor('start');
         const selectionCoords = cm.charCoords(start, 'window');
-        setSelectionToolbarPosition({
-          top: selectionCoords.top - rootRect.top - 42,
-          left: Math.max(8, selectionCoords.left - rootRect.left),
-        });
+        const nextSelectionToolbarPosition = {
+          top: Math.round(selectionCoords.top - rootRect.top - 42),
+          left: Math.round(Math.max(8, selectionCoords.left - rootRect.left)),
+        };
+
+        if (!positionsEqual(lastSelectionToolbarPositionRef.current, nextSelectionToolbarPosition)) {
+          lastSelectionToolbarPositionRef.current = nextSelectionToolbarPosition;
+          setSelectionToolbarPosition(nextSelectionToolbarPosition);
+        }
       } else {
-        setSelectionToolbarPosition(null);
+        if (lastSelectionToolbarPositionRef.current !== null) {
+          lastSelectionToolbarPositionRef.current = null;
+          setSelectionToolbarPosition(null);
+        }
       }
     }, []);
+
+    const updateFloatingControls = useCallback(() => {
+      if (floatingUpdateFrameRef.current !== null) return;
+
+      floatingUpdateFrameRef.current = window.requestAnimationFrame(() => {
+        floatingUpdateFrameRef.current = null;
+        measureFloatingControls();
+      });
+    }, [measureFloatingControls]);
 
     useEffect(() => {
       const cm = instanceRef.current?.codemirror;
@@ -152,6 +182,10 @@ const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>(
         cm.off('scroll', update);
         cm.off('focus', markFocused);
         window.removeEventListener('resize', update);
+        if (floatingUpdateFrameRef.current !== null) {
+          window.cancelAnimationFrame(floatingUpdateFrameRef.current);
+          floatingUpdateFrameRef.current = null;
+        }
       };
     }, [editorReadyTick, updateFloatingControls]);
 
@@ -359,6 +393,7 @@ const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>(
 
       setEditorFocused(false);
       setLineMenuOpen(false);
+      lastSelectionToolbarPositionRef.current = null;
       setSelectionToolbarPosition(null);
     }, []);
 

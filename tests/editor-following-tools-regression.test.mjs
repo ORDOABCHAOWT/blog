@@ -179,3 +179,49 @@ test('Markdown editor keeps the plus menu lightweight and dismissible from blank
     'Expected the editor shell to use a cleaner borderless treatment'
   );
 });
+
+test('CMS article forms keep editor typing out of React form state hot path', () => {
+  for (const [label, source] of [
+    ['new post form', newPostPage],
+    ['edit post form', editPostPage],
+  ]) {
+    assert.match(
+      source,
+      /const contentRef = useRef/,
+      `Expected ${label} to store draft body in a ref while typing`
+    );
+    assert.doesNotMatch(
+      source,
+      /handleContentChange[\s\S]*setFormData\(\(prev\) => \(\{ \.\.\.prev, content: value \}\)\)/,
+      `Expected ${label} not to re-render the whole form on every editor keystroke`
+    );
+    assert.match(
+      source,
+      /content:\s*contentRef\.current/,
+      `Expected ${label} submit payload to read the latest editor body from the ref`
+    );
+  }
+});
+
+test('Markdown editor batches floating control measurement and skips identical positions', () => {
+  assert.match(
+    markdownEditor,
+    /floatingUpdateFrameRef/,
+    'Expected cursor/scroll updates to be coalesced through requestAnimationFrame'
+  );
+  assert.match(
+    markdownEditor,
+    /requestAnimationFrame/,
+    'Expected high-frequency CodeMirror events to be batched per frame'
+  );
+  assert.match(
+    markdownEditor,
+    /lastLineActionPositionRef/,
+    'Expected line action position updates to compare against the last measured position'
+  );
+  assert.match(
+    markdownEditor,
+    /positionsEqual/,
+    'Expected identical floating positions to skip React state updates'
+  );
+});

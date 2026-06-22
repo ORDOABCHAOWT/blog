@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import MarkdownEditor from '@/components/MarkdownEditor';
@@ -10,6 +10,7 @@ export default function EditPostPage() {
   const router = useRouter();
   const params = useParams();
   const slug = params.slug as string;
+  const contentRef = useRef('');
 
   const [formData, setFormData] = useState({
     slug: '',
@@ -37,6 +38,7 @@ export default function EditPostPage() {
       const res = await fetch(`/api/posts/${slug}`);
       if (res.ok) {
         const data = await res.json();
+        contentRef.current = data.content;
         setFormData({
           slug: data.slug,
           title: data.title,
@@ -67,6 +69,7 @@ export default function EditPostPage() {
         },
         body: JSON.stringify({
           ...formData,
+          content: contentRef.current,
           newSlug: formData.slug !== slug ? formData.slug : undefined,
         }),
       });
@@ -86,7 +89,7 @@ export default function EditPostPage() {
   };
 
   const handleContentChange = useCallback((value: string) => {
-    setFormData((prev) => ({ ...prev, content: value }));
+    contentRef.current = value;
   }, []);
 
   if (loading) {

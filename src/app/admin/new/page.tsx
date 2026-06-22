@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import MarkdownEditor from '@/components/MarkdownEditor';
@@ -8,6 +8,7 @@ import { toSafePostSlug } from '@/lib/slug';
 
 export default function NewPostPage() {
   const router = useRouter();
+  const contentRef = useRef('');
   const [formData, setFormData] = useState({
     slug: '',
     title: '',
@@ -30,6 +31,7 @@ export default function NewPostPage() {
     try {
       const payload = {
         ...formData,
+        content: contentRef.current,
         slug: toSafePostSlug(formData.slug || formData.title, formData.date),
       };
 
@@ -66,7 +68,7 @@ export default function NewPostPage() {
   };
 
   const handleContentChange = useCallback((value: string) => {
-    setFormData((prev) => ({ ...prev, content: value }));
+    contentRef.current = value;
   }, []);
 
   return (
