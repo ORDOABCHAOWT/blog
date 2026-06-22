@@ -1,17 +1,15 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
-import MarkdownEditor, { MarkdownEditorRef } from '@/components/MarkdownEditor';
-import ImageUploader from '@/components/ImageUploader';
+import MarkdownEditor from '@/components/MarkdownEditor';
 import { toSafePostSlug } from '@/lib/slug';
 
 export default function EditPostPage() {
   const router = useRouter();
   const params = useParams();
   const slug = params.slug as string;
-  const editorRef = useRef<MarkdownEditorRef>(null);
 
   const [formData, setFormData] = useState({
     slug: '',
@@ -84,13 +82,6 @@ export default function EditPostPage() {
       setError('保存失败，请重试');
     } finally {
       setSaving(false);
-    }
-  };
-
-  const handleImageUpload = (markdown: string) => {
-    // 在光标位置插入图片链接
-    if (editorRef.current) {
-      editorRef.current.insertAtCursor(markdown);
     }
   };
 
@@ -193,14 +184,8 @@ export default function EditPostPage() {
           </div>
 
           <div>
-            <label className="block mb-2">图片上传</label>
-            <ImageUploader onUploadSuccess={handleImageUpload} />
-          </div>
-
-          <div>
             <label className="block mb-2">文章内容 *</label>
             <MarkdownEditor
-              ref={editorRef}
               value={formData.content}
               onChange={handleContentChange}
             />

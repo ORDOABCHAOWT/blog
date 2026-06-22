@@ -60,6 +60,10 @@ type CodeMirrorDoc = {
 
 type CodeMirrorInstance = {
   getDoc: () => CodeMirrorDoc;
+  coordsChar: (
+    coords: { left: number; top: number },
+    mode?: 'local' | 'page' | 'window'
+  ) => EditorPosition;
   cursorCoords: (
     where?: EditorPosition,
     mode?: 'local' | 'page' | 'window'
@@ -91,6 +95,7 @@ const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>(
     const [lineMenuOpen, setLineMenuOpen] = useState(false);
     const [editorFocused, setEditorFocused] = useState(false);
     const [inlineUploading, setInlineUploading] = useState(false);
+    const [dragUploadActive, setDragUploadActive] = useState(false);
 
     const getMdeInstance = useCallback((instance: EasyMdeInstance) => {
       instanceRef.current = instance;
@@ -111,7 +116,7 @@ const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>(
 
       setLineActionPosition({
         top: cursorCoords.top - rootRect.top + 2,
-        left: wrapperRect.left - rootRect.left - 38,
+        left: wrapperRect.left - rootRect.left + 10,
       });
 
       if (selection) {
@@ -150,7 +155,28 @@ const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>(
       };
     }, [editorReadyTick, updateFloatingControls]);
 
-    const insertAtCursor = useCallback((text: string) => {
+    useEffect(() => {
+      if (!lineMenuOpen) return;
+
+      const handleDocumentPointerDown = (event: PointerEvent) => {
+        const target = event.target;
+        const root = rootRef.current;
+        if (!(target instanceof Node) || !root) return;
+
+        const menu = root.querySelector('.markdown-line-command-menu');
+        const plus = root.querySelector('.markdown-following-plus');
+        if (menu?.contains(target) || plus?.contains(target)) return;
+
+        setLineMenuOpen(false);
+      };
+
+      document.addEventListener('pointerdown', handleDocumentPointerDown);
+      return () => {
+        document.removeEventListener('pointerdown', handleDocumentPointerDown);
+      };
+    }, [lineMenuOpen]);
+
+    const insertAtPosition = useCallback((text: string, position?: EditorPosition) => {
       const cm = instanceRef.current?.codemirror;
       if (!cm) {
         onChange(`${value}\n${text}\n`);
@@ -158,7 +184,7 @@ const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>(
       }
 
       const doc = cm.getDoc();
-      const cursor = doc.getCursor();
+      const cursor = position ?? doc.getCursor();
       const textToInsert = `\n${text}\n`;
       doc.replaceRange(textToInsert, cursor);
       const lines = textToInsert.split('\n');
@@ -169,6 +195,28 @@ const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>(
       cm.focus();
       updateFloatingControls();
     }, [onChange, updateFloatingControls, value]);
+
+    const insertAtCursor = useCallback((text: string) => {
+      insertAtPosition(text);
+    }, [insertAtPosition]);
+
+    const uploadAndInsertImage = useCallback(async (
+      file: File,
+      position?: EditorPosition
+    ) => {
+      setInlineUploading(true);
+      setLineMenuOpen(false);
+
+      try {
+        const data = await uploadImageFile(file);
+        insertAtPosition(data.markdown, position);
+      } catch (error) {
+        alert(`上传失败: ${error instanceof Error ? error.message : '请重试'}`);
+      } finally {
+        setInlineUploading(false);
+        setDragUploadActive(false);
+      }
+    }, [insertAtPosition]);
 
     const replaceCurrentLine = useCallback((
       transform: (line: string) => string
@@ -231,18 +279,77 @@ const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>(
       event.target.value = '';
       if (!file) return;
 
-      setInlineUploading(true);
-      setLineMenuOpen(false);
+      await uploadAndInsertImage(file);
+    }, [uploadAndInsertImage]);
 
-      try {
-        const data = await uploadImageFile(file);
-        insertAtCursor(data.markdown);
-      } catch (error) {
-        alert(`上传失败: ${error instanceof Error ? error.message : '请重试'}`);
-      } finally {
-        setInlineUploading(false);
+    const getImageFiles = useCallback((dataTransfer: DataTransfer) => {
+      return Array.from(dataTransfer.files).filter((file) =>
+        file.type.startsWith('image/')
+      );
+    }, []);
+
+    const hasImageDrag = useCallback((dataTransfer: DataTransfer) => {
+      if (dataTransfer.files.length > 0) {
+        return getImageFiles(dataTransfer).length > 0;
       }
-    }, [insertAtCursor]);
+
+      return Array.from(dataTransfer.items).some((item) =>
+        item.kind === 'file' && item.type.startsWith('image/')
+      );
+    }, [getImageFiles]);
+
+    const handleEditorDragEnter = useCallback((
+      event: React.DragEvent<HTMLDivElement>
+    ) => {
+      if (!hasImageDrag(event.dataTransfer)) return;
+
+      event.preventDefault();
+      setDragUploadActive(true);
+    }, [hasImageDrag]);
+
+    const handleEditorDragOver = useCallback((
+      event: React.DragEvent<HTMLDivElement>
+    ) => {
+      if (!hasImageDrag(event.dataTransfer)) return;
+
+      event.preventDefault();
+      event.dataTransfer.dropEffect = 'copy';
+      setDragUploadActive(true);
+    }, [hasImageDrag]);
+
+    const handleEditorDragLeave = useCallback((
+      event: React.DragEvent<HTMLDivElement>
+    ) => {
+      const nextTarget = event.relatedTarget;
+      if (nextTarget instanceof Node && event.currentTarget.contains(nextTarget)) {
+        return;
+      }
+
+      setDragUploadActive(false);
+    }, []);
+
+    const handleEditorDrop = useCallback(async (
+      event: React.DragEvent<HTMLDivElement>
+    ) => {
+      const files = getImageFiles(event.dataTransfer);
+      if (files.length === 0) return;
+
+      event.preventDefault();
+      event.stopPropagation();
+      setDragUploadActive(false);
+
+      const cm = instanceRef.current?.codemirror;
+      const dropPosition = cm?.coordsChar(
+        { left: event.clientX, top: event.clientY },
+        'window'
+      );
+      if (dropPosition && cm) {
+        cm.getDoc().setCursor(dropPosition);
+        updateFloatingControls();
+      }
+
+      await uploadAndInsertImage(files[0], dropPosition);
+    }, [getImageFiles, updateFloatingControls, uploadAndInsertImage]);
 
     const handleRootBlur = useCallback((event: React.FocusEvent<HTMLDivElement>) => {
       const nextTarget = event.relatedTarget;
@@ -289,8 +396,12 @@ const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>(
     return (
       <div
         ref={rootRef}
-        className="markdown-editor markdown-editor-with-following-tools"
+        className={`markdown-editor markdown-editor-with-following-tools${dragUploadActive ? ' is-drag-upload-active' : ''}`}
         onBlur={handleRootBlur}
+        onDragEnter={handleEditorDragEnter}
+        onDragOver={handleEditorDragOver}
+        onDragLeave={handleEditorDragLeave}
+        onDrop={handleEditorDrop}
       >
         <input
           ref={fileInputRef}
@@ -367,21 +478,28 @@ const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>(
           z-index: 12;
           display: flex;
           align-items: flex-start;
-          gap: 8px;
+          gap: 10px;
         }
         .markdown-following-plus,
         .markdown-selection-toolbar button,
         .markdown-line-command-menu button {
-          border: 1px solid var(--site-border);
-          background: var(--site-panel-strong);
+          border: none;
+          background: color-mix(in srgb, var(--site-panel-strong) 78%, transparent);
           color: var(--site-ink);
           cursor: pointer;
         }
         .markdown-following-plus {
-          width: 28px;
-          height: 28px;
+          width: 24px;
+          height: 24px;
           border-radius: 999px;
           font-family: var(--font-editorial-mono), monospace;
+          font-size: 0.88rem;
+          line-height: 1;
+          opacity: 0.76;
+          box-shadow: 0 8px 28px rgba(31, 28, 24, 0.12);
+          backdrop-filter: blur(10px);
+          -webkit-backdrop-filter: blur(10px);
+          transition: opacity 180ms ease, transform 180ms ease, background-color 180ms ease;
         }
         .markdown-following-plus:disabled {
           cursor: wait;
@@ -389,10 +507,12 @@ const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>(
         }
         .markdown-line-command-menu,
         .markdown-selection-toolbar {
-          border: 1px solid var(--site-border);
-          border-radius: 10px;
-          background: var(--site-panel-strong);
-          box-shadow: 0 18px 50px rgba(31, 28, 24, 0.14);
+          border: none;
+          border-radius: 14px;
+          background: color-mix(in srgb, var(--site-panel-strong) 92%, transparent);
+          box-shadow: 0 24px 70px rgba(31, 28, 24, 0.16);
+          backdrop-filter: blur(18px);
+          -webkit-backdrop-filter: blur(18px);
         }
         .markdown-line-command-menu {
           display: grid;
@@ -401,7 +521,7 @@ const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>(
         }
         .markdown-line-command-menu button {
           border: none;
-          border-radius: 7px;
+          border-radius: 10px;
           padding: 8px 10px;
           text-align: left;
           font-family: var(--font-editorial-display);
@@ -416,38 +536,40 @@ const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>(
         .markdown-selection-toolbar button {
           min-width: 30px;
           height: 28px;
-          border-radius: 7px;
+          border-radius: 10px;
           font-family: var(--font-editorial-mono), monospace;
           font-size: 0.72rem;
         }
         .markdown-line-command-menu button:hover,
         .markdown-selection-toolbar button:hover,
         .markdown-following-plus:hover {
-          border-color: var(--site-accent);
           background: color-mix(in srgb, var(--site-accent) 10%, var(--site-panel-strong));
+          opacity: 1;
+          transform: translateY(-1px);
         }
         .markdown-editor .EasyMDEContainer {
-          border: 1px solid var(--site-border);
-          border-radius: 12px;
-          background: var(--site-panel-strong);
-          transition: border-color 220ms ease, box-shadow 220ms ease;
+          border: none;
+          border-radius: 0;
+          background: transparent;
+          box-shadow: none;
+          transition: background-color 220ms ease;
         }
         .markdown-editor .EasyMDEContainer:hover,
         .markdown-editor .EasyMDEContainer.active {
-          border-color: var(--site-accent);
-          box-shadow: 0 0 0 3px color-mix(in srgb, var(--site-accent) 18%, transparent);
+          box-shadow: none;
         }
         .markdown-editor .CodeMirror {
+          position: relative;
           min-height: 420px;
           font-size: 16px;
           line-height: 1.85;
           font-family: var(--font-editorial-display);
           letter-spacing: var(--tracking-body);
-          padding: 22px;
+          padding: 24px 26px 24px 48px;
           background: transparent;
           color: var(--site-ink);
           border: none;
-          border-radius: 0 0 12px 12px;
+          border-radius: 0;
         }
         .markdown-editor .CodeMirror-scroll {
           min-height: 420px;
@@ -462,11 +584,9 @@ const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>(
         }
         .markdown-editor .editor-toolbar {
           border: none;
-          border-bottom: 1px solid var(--site-border);
-          border-top-left-radius: 12px;
-          border-top-right-radius: 12px;
-          background: var(--site-panel);
-          padding: 0.4rem 0.5rem;
+          border-radius: 0;
+          background: transparent;
+          padding: 0 0 0.55rem;
         }
         .markdown-editor .editor-toolbar button {
           color: var(--site-muted) !important;
@@ -485,7 +605,7 @@ const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>(
           }
         }
         .markdown-editor .editor-toolbar i.separator {
-          border-left: 1px solid var(--site-border);
+          border-left: 1px solid color-mix(in srgb, var(--site-border) 55%, transparent);
           border-right: none;
         }
         .markdown-editor .editor-statusbar {
@@ -517,6 +637,25 @@ const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>(
           font-family: var(--font-editorial-display);
           color: var(--site-muted);
           font-style: italic;
+        }
+        .markdown-editor.is-drag-upload-active .CodeMirror {
+          background:
+            linear-gradient(
+              135deg,
+              color-mix(in srgb, var(--site-accent) 7%, transparent),
+              transparent 48%
+            );
+        }
+        .markdown-editor.is-drag-upload-active .CodeMirror::after {
+          content: '释放图片即可上传到当前位置';
+          position: absolute;
+          right: 18px;
+          bottom: 14px;
+          color: var(--site-muted);
+          font-family: var(--font-editorial-mono), monospace;
+          font-size: 0.68rem;
+          letter-spacing: var(--tracking-meta);
+          pointer-events: none;
         }
         @media (max-width: 720px) {
           .markdown-following-line-action {
