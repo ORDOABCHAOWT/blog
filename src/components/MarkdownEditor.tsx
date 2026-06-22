@@ -371,24 +371,7 @@ const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>(
       placeholder: '在这里输入文章内容（支持Markdown）...',
       autofocus: false,
       status: ['lines', 'words', 'cursor'],
-      toolbar: [
-        'bold',
-        'italic',
-        'heading',
-        '|',
-        'quote',
-        'unordered-list',
-        'ordered-list',
-        '|',
-        'link',
-        'image',
-        '|',
-        'preview',
-        'side-by-side',
-        'fullscreen',
-        '|',
-        'guide',
-      ],
+      toolbar: false,
       inputStyle: 'textarea' as const,
       lineWrapping: true,
     }), []);
@@ -432,6 +415,9 @@ const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>(
 
             {lineMenuOpen && (
               <div className="markdown-line-command-menu">
+                <button type="button" data-command="bold" onMouseDown={(event) => event.preventDefault()} onClick={() => applyMarkdownCommand('bold')}>加粗</button>
+                <button type="button" data-command="italic" onMouseDown={(event) => event.preventDefault()} onClick={() => applyMarkdownCommand('italic')}>斜体</button>
+                <button type="button" data-command="link" onMouseDown={(event) => event.preventDefault()} onClick={() => applyMarkdownCommand('link')}>链接</button>
                 <button type="button" data-command="image" onMouseDown={(event) => event.preventDefault()} onClick={() => fileInputRef.current?.click()}>图片</button>
                 <button type="button" data-command="heading-2" onMouseDown={(event) => event.preventDefault()} onClick={() => applyMarkdownCommand('heading-2')}>H2</button>
                 <button type="button" data-command="heading-3" onMouseDown={(event) => event.preventDefault()} onClick={() => applyMarkdownCommand('heading-3')}>H3</button>

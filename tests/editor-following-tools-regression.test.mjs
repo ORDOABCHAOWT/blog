@@ -70,6 +70,39 @@ test('Markdown editor provides nearby Markdown formatting commands', () => {
   );
 });
 
+test('Markdown editor replaces the legacy toolbar with a full plus formatting menu', () => {
+  assert.match(
+    markdownEditor,
+    /toolbar:\s*false/,
+    'Expected the legacy EasyMDE toolbar row to be hidden'
+  );
+
+  const lineMenuMatch = markdownEditor.match(
+    /<div className="markdown-line-command-menu">([\s\S]*?)<\/div>/
+  );
+  assert.ok(lineMenuMatch, 'Expected a line-following plus menu');
+
+  for (const command of [
+    'bold',
+    'italic',
+    'link',
+    'image',
+    'heading-2',
+    'heading-3',
+    'quote',
+    'bulleted-list',
+    'numbered-list',
+    'divider',
+    'code-block',
+  ]) {
+    assert.match(
+      lineMenuMatch[1],
+      new RegExp(`data-command="${command}"`),
+      `Expected + menu to include ${command}`
+    );
+  }
+});
+
 test('Inline image insertion reuses the shared upload helper instead of duplicating upload rules', () => {
   assert.equal(
     fs.existsSync(uploadHelperPath),
