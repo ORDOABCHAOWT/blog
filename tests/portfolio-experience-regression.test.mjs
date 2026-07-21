@@ -162,6 +162,11 @@ test('blog proxies the scoped notebook shell and API without caching stale PWA f
   );
   assert.match(
     notebookProxy,
+    /X-Notebook-Upstream-Bytes/,
+    'The proxy should expose a safe byte-count diagnostic for deployment verification'
+  );
+  assert.match(
+    notebookProxy,
     /`\/notebook\/\$\{path\.map/,
     'Expected the proxy to preserve the notebook path scope'
   );
