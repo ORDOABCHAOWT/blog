@@ -150,6 +150,11 @@ test('blog proxies the scoped notebook shell and API without caching stale PWA f
     /Cache-Control', 'no-cache, no-store, must-revalidate'/,
     'Expected notebook responses to prevent stale PWA shell caching'
   );
+  assert.doesNotMatch(
+    notebookProxy,
+    /delete\('content-encoding'\)/,
+    'The proxy must preserve the upstream compression header for browser decoding'
+  );
   assert.match(
     notebookProxy,
     /`\/notebook\/\$\{path\.map/,
