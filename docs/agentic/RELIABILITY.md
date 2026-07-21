@@ -13,6 +13,7 @@
 - Port 3000 or LaunchAgent state can break the desktop CMS launcher.
 - `/api/deploy` can commit or push unintended working-tree changes.
 - Next builds can succeed while independent type checking fails because type errors are skipped.
+- A static external rewrite can leave `/notebook/sw.js` stale at Vercel even after the Cloudflare Worker deploys. The dedicated notebook route must keep both upstream fetch caching and downstream browser caching disabled for the PWA shell.
 
 ## Debugging
 
@@ -25,6 +26,7 @@
 ## Recovery
 
 - Use Git history to restore posts or implementation changes.
+- If the installed notebook does not update, compare `/notebook/sw.js` with the direct Worker response and confirm both report the same cache version before troubleshooting the iPhone.
 - Rotate OSS credentials if exposed.
 - Stop the CMS with `./stop-blog-cms.sh` if its LaunchAgent or port is stuck.
 - Never use `/api/deploy` as a verification step.

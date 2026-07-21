@@ -22,6 +22,10 @@ const nextConfig = fs.readFileSync(
   new URL('../next.config.ts', import.meta.url),
   'utf8'
 );
+const notebookProxy = fs.readFileSync(
+  new URL('../src/app/notebook/[[...path]]/route.ts', import.meta.url),
+  'utf8'
+);
 
 test('aboutMyProjects uses the dedicated portfolio experience', () => {
   assert.match(
@@ -130,20 +134,30 @@ test('portfolio page presents Word Notebook as a responsive project entry', () =
   );
 });
 
-test('blog proxies the scoped notebook shell and API without taking over blog routes', () => {
+test('blog proxies the scoped notebook shell and API without caching stale PWA files', () => {
   assert.match(
-    nextConfig,
-    /source: '\/notebook\/:path\*'/,
-    'Expected a dedicated notebook proxy path'
+    notebookProxy,
+    /NOTEBOOK_ORIGIN = 'https:\/\/word-notebook\.ordoabchao-wt\.workers\.dev'/,
+    'Expected the notebook route to target the Cloudflare Worker'
   );
   assert.match(
-    nextConfig,
-    /destination: 'https:\/\/word-notebook\.ordoabchao-wt\.workers\.dev\/notebook\/:path\*'/,
+    notebookProxy,
+    /cache: 'no-store'/,
+    'Expected the notebook proxy to bypass the Vercel fetch cache'
+  );
+  assert.match(
+    notebookProxy,
+    /Cache-Control', 'no-cache, no-store, must-revalidate'/,
+    'Expected notebook responses to prevent stale PWA shell caching'
+  );
+  assert.match(
+    notebookProxy,
+    /`\/notebook\/\$\{path\.map/,
     'Expected the proxy to preserve the notebook path scope'
   );
   assert.doesNotMatch(
     nextConfig,
-    /source: '\/api\/:path\*'/,
+    /\/api\/:path\*/,
     'Notebook proxy must not intercept the blog CMS API'
   );
 });

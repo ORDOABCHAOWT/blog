@@ -17,6 +17,7 @@
 - External object-storage behavior belongs in `src/lib/oss.ts` and `/api/upload`.
 - Process execution belongs only in `/api/deploy` and must use parameterized `execFile`.
 - Markdown posts and public assets are user content, not implementation scratch space.
+- `/notebook/[[...path]]` is a narrowly scoped dynamic proxy to the Word Notebook Worker. It forwards shell and API methods with `no-store` so Vercel cannot pin an old PWA Service Worker; it must never claim the blog's `/api/*` routes.
 
 ## Known Architectural Exceptions
 
