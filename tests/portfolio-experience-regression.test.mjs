@@ -134,46 +134,26 @@ test('portfolio page presents Word Notebook as a responsive project entry', () =
   );
 });
 
-test('blog proxies the scoped notebook shell and API without caching stale PWA files', () => {
+test('blog decodes the scoped notebook proxy without taking over blog routes', () => {
   assert.match(
     notebookProxy,
-    /NOTEBOOK_ORIGIN = 'https:\/\/word-notebook\.ordoabchao-wt\.workers\.dev'/,
-    'Expected the notebook route to target the Cloudflare Worker'
+    /requestHeaders\.delete\('accept-encoding'\)/,
+    'Expected the proxy to request an identity-encoded upstream response'
   );
   assert.match(
     notebookProxy,
-    /cache: 'no-store'/,
-    'Expected the notebook proxy to bypass the Vercel fetch cache'
+    /new TextDecoder\(\)\.decode\(bytes\)/,
+    'Expected text and JSON responses to be decoded before Vercel returns them'
   );
   assert.match(
     notebookProxy,
-    /Cache-Control', 'no-cache, no-store, must-revalidate'/,
-    'Expected notebook responses to prevent stale PWA shell caching'
-  );
-  assert.doesNotMatch(
-    notebookProxy,
-    /delete\('content-(?:encoding|length)'\)/,
-    'The proxy must preserve upstream compression and stream length headers'
+    /new Uint8Array\(bytes\)/,
+    'Expected binary icons to be returned as an explicit byte array'
   );
   assert.match(
     notebookProxy,
-    /await upstream\.arrayBuffer\(\)/,
-    'The Vercel proxy must buffer the upstream body instead of dropping a passthrough stream'
-  );
-  assert.match(
-    notebookProxy,
-    /return new Response\(responseBody/,
-    'The proxy must use the standard Response implementation for buffered bodies'
-  );
-  assert.match(
-    notebookProxy,
-    /X-Notebook-Upstream-Bytes/,
-    'The proxy should expose a safe byte-count diagnostic for deployment verification'
-  );
-  assert.match(
-    notebookProxy,
-    /`\/notebook\/\$\{path\.map/,
-    'Expected the proxy to preserve the notebook path scope'
+    /X-Notebook-Proxy-Version', 'decoded-v2'/,
+    'Expected a safe proxy-version diagnostic'
   );
   assert.doesNotMatch(
     nextConfig,

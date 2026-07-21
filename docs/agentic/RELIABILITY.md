@@ -13,7 +13,7 @@
 - Port 3000 or LaunchAgent state can break the desktop CMS launcher.
 - `/api/deploy` can commit or push unintended working-tree changes.
 - Next builds can succeed while independent type checking fails because type errors are skipped.
-- A static external rewrite can leave `/notebook/sw.js` stale at Vercel even after the Cloudflare Worker deploys. The dedicated notebook route must keep both upstream fetch caching and downstream browser caching disabled for the PWA shell.
+- A static Vercel external rewrite can leave `/notebook/sw.js` stale after the Worker deploys. The dynamic notebook proxy disables caching and content encoding, then materializes text or binary responses before returning them.
 
 ## Debugging
 

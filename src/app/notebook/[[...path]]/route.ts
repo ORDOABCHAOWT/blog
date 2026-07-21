@@ -7,6 +7,10 @@ export const revalidate = 0;
 
 type RouteContext = { params: Promise<{ path?: string[] }> };
 
+const isTextual = (contentType: string) =>
+  contentType.startsWith('text/')
+  || /(?:json|javascript|xml|manifest)/i.test(contentType);
+
 async function proxyNotebook(request: NextRequest, context: RouteContext) {
   const { path = [] } = await context.params;
   const upstreamUrl = new URL(
@@ -18,6 +22,7 @@ async function proxyNotebook(request: NextRequest, context: RouteContext) {
   const requestHeaders = new Headers(request.headers);
   requestHeaders.delete('host');
   requestHeaders.delete('connection');
+  requestHeaders.delete('accept-encoding');
 
   const upstream = await fetch(upstreamUrl, {
     method: request.method,
@@ -28,11 +33,20 @@ async function proxyNotebook(request: NextRequest, context: RouteContext) {
   });
 
   const responseHeaders = new Headers(upstream.headers);
+  const contentType = responseHeaders.get('content-type') || '';
+  const bytes = request.method === 'HEAD' ? new ArrayBuffer(0) : await upstream.arrayBuffer();
+  const responseBody = request.method === 'HEAD'
+    ? null
+    : isTextual(contentType)
+      ? new TextDecoder().decode(bytes)
+      : new Uint8Array(bytes);
+
   responseHeaders.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+  responseHeaders.set('X-Notebook-Proxy-Version', 'decoded-v2');
+  responseHeaders.set('X-Notebook-Upstream-Bytes', String(bytes.byteLength));
+  responseHeaders.delete('content-encoding');
+  responseHeaders.delete('content-length');
   if (path.join('/') === 'sw.js') responseHeaders.set('Service-Worker-Allowed', '/notebook/');
-  const responseBody = request.method === 'HEAD' ? null : await upstream.arrayBuffer();
-  responseHeaders.set('X-Notebook-Proxy-Version', 'buffer-v1');
-  responseHeaders.set('X-Notebook-Upstream-Bytes', String(responseBody?.byteLength ?? 0));
 
   return new Response(responseBody, {
     status: upstream.status,
