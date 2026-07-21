@@ -152,8 +152,8 @@ test('blog proxies the scoped notebook shell and API without caching stale PWA f
   );
   assert.doesNotMatch(
     notebookProxy,
-    /delete\('content-encoding'\)/,
-    'The proxy must preserve the upstream compression header for browser decoding'
+    /delete\('content-(?:encoding|length)'\)/,
+    'The proxy must preserve upstream compression and stream length headers'
   );
   assert.match(
     notebookProxy,
