@@ -92,3 +92,36 @@ test('portfolio post metadata names the portfolio link correctly', () => {
     'Expected a portfolio-specific description'
   );
 });
+
+test('portfolio page presents Word Notebook as a responsive project entry', () => {
+  assert.match(
+    portfolioComponent,
+    /id="selected-projects"/,
+    'Expected a stable anchor for the projects section'
+  );
+  assert.match(
+    portfolioComponent,
+    /Word Notebook/,
+    'Expected the Word Notebook project title'
+  );
+  assert.match(
+    portfolioComponent,
+    /https:\/\/word-notebook\.ordoabchao-wt\.workers\.dev/,
+    'Expected the project entry to open the deployed app'
+  );
+  assert.match(
+    portfolioComponent,
+    /aria-label="打开 Word Notebook 网页应用（新窗口）"/,
+    'Expected an accessible external-link label'
+  );
+  assert.match(
+    globalsCss,
+    /\.portfolio-project-card\s*{/,
+    'Expected the product-focused project card styling'
+  );
+  assert.match(
+    globalsCss,
+    /@media \(max-width: 900px\)[\s\S]*\.portfolio-project-card/,
+    'Expected the project card to collapse for mobile screens'
+  );
+});

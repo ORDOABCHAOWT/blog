@@ -17,6 +17,8 @@ Provide a personal editorial blog, portfolio experience, and locally operated CM
 - Homepage uses the Wayfinder hero, neutral light background, approved social links, and portrait avatar.
 - Route transitions use grayscale `0/1` ash rather than colored bloom effects.
 - The portfolio post uses a dedicated portfolio experience.
+- The portfolio experience ends with a responsive selected-projects section;
+  each project uses a large, accessible product card with a visual interface preview.
 - Admin currently opens without a Basic Auth prompt.
 
 ## Acceptance
