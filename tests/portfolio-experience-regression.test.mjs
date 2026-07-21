@@ -18,6 +18,10 @@ const portfolioComponent = fs.readFileSync(
   new URL('../src/components/PortfolioExperience.tsx', import.meta.url),
   'utf8'
 );
+const nextConfig = fs.readFileSync(
+  new URL('../next.config.ts', import.meta.url),
+  'utf8'
+);
 
 test('aboutMyProjects uses the dedicated portfolio experience', () => {
   assert.match(
@@ -106,8 +110,8 @@ test('portfolio page presents Word Notebook as a responsive project entry', () =
   );
   assert.match(
     portfolioComponent,
-    /https:\/\/word-notebook\.ordoabchao-wt\.workers\.dev/,
-    'Expected the project entry to open the deployed app'
+    /https:\/\/www\.taffy\.wang\/notebook\//,
+    'Expected the project entry to use the mainland-friendly blog route'
   );
   assert.match(
     portfolioComponent,
@@ -123,5 +127,23 @@ test('portfolio page presents Word Notebook as a responsive project entry', () =
     globalsCss,
     /@media \(max-width: 900px\)[\s\S]*\.portfolio-project-card/,
     'Expected the project card to collapse for mobile screens'
+  );
+});
+
+test('blog proxies the scoped notebook shell and API without taking over blog routes', () => {
+  assert.match(
+    nextConfig,
+    /source: '\/notebook\/:path\*'/,
+    'Expected a dedicated notebook proxy path'
+  );
+  assert.match(
+    nextConfig,
+    /destination: 'https:\/\/word-notebook\.ordoabchao-wt\.workers\.dev\/notebook\/:path\*'/,
+    'Expected the proxy to preserve the notebook path scope'
+  );
+  assert.doesNotMatch(
+    nextConfig,
+    /source: '\/api\/:path\*'/,
+    'Notebook proxy must not intercept the blog CMS API'
   );
 });

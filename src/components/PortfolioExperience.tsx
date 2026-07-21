@@ -38,7 +38,7 @@ const careerRows = [
 ];
 
 const wordNotebookUrl =
-  'https://word-notebook.ordoabchao-wt.workers.dev';
+  'https://www.taffy.wang/notebook/';
 
 export default function PortfolioExperience() {
   return (

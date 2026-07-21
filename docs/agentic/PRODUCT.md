@@ -19,6 +19,8 @@ Provide a personal editorial blog, portfolio experience, and locally operated CM
 - The portfolio post uses a dedicated portfolio experience.
 - The portfolio experience ends with a responsive selected-projects section;
   each project uses a large, accessible product card with a visual interface preview.
+- Word Notebook is exposed through the scoped `/notebook/` Vercel rewrite so readers
+  do not need to connect to `workers.dev` directly; the proxy must not claim `/api/*`.
 - Admin currently opens without a Basic Auth prompt.
 
 ## Acceptance
