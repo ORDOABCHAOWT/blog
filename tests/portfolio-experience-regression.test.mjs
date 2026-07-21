@@ -162,6 +162,11 @@ test('blog proxies the scoped notebook shell and API without caching stale PWA f
   );
   assert.match(
     notebookProxy,
+    /return new Response\(responseBody/,
+    'The proxy must use the standard Response implementation for buffered bodies'
+  );
+  assert.match(
+    notebookProxy,
     /X-Notebook-Upstream-Bytes/,
     'The proxy should expose a safe byte-count diagnostic for deployment verification'
   );

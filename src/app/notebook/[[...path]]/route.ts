@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 
 const NOTEBOOK_ORIGIN = 'https://word-notebook.ordoabchao-wt.workers.dev';
 
@@ -34,7 +34,7 @@ async function proxyNotebook(request: NextRequest, context: RouteContext) {
   responseHeaders.set('X-Notebook-Proxy-Version', 'buffer-v1');
   responseHeaders.set('X-Notebook-Upstream-Bytes', String(responseBody?.byteLength ?? 0));
 
-  return new NextResponse(responseBody, {
+  return new Response(responseBody, {
     status: upstream.status,
     statusText: upstream.statusText,
     headers: responseHeaders,
