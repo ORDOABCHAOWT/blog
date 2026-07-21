@@ -157,6 +157,11 @@ test('blog proxies the scoped notebook shell and API without caching stale PWA f
   );
   assert.match(
     notebookProxy,
+    /await upstream\.arrayBuffer\(\)/,
+    'The Vercel proxy must buffer the upstream body instead of dropping a passthrough stream'
+  );
+  assert.match(
+    notebookProxy,
     /`\/notebook\/\$\{path\.map/,
     'Expected the proxy to preserve the notebook path scope'
   );

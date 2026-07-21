@@ -30,8 +30,9 @@ async function proxyNotebook(request: NextRequest, context: RouteContext) {
   const responseHeaders = new Headers(upstream.headers);
   responseHeaders.set('Cache-Control', 'no-cache, no-store, must-revalidate');
   if (path.join('/') === 'sw.js') responseHeaders.set('Service-Worker-Allowed', '/notebook/');
+  const responseBody = request.method === 'HEAD' ? null : await upstream.arrayBuffer();
 
-  return new NextResponse(upstream.body, {
+  return new NextResponse(responseBody, {
     status: upstream.status,
     statusText: upstream.statusText,
     headers: responseHeaders,
