@@ -155,6 +155,11 @@ test('blog decodes the scoped notebook proxy without taking over blog routes', (
     /X-Notebook-Proxy-Version', 'decoded-v2'/,
     'Expected a safe proxy-version diagnostic'
   );
+  assert.match(
+    notebookProxy,
+    /Service-Worker-Allowed', '\/notebook'/,
+    'Expected the service worker to control the canonical no-trailing-slash app URL'
+  );
   assert.doesNotMatch(
     nextConfig,
     /\/api\/:path\*/,

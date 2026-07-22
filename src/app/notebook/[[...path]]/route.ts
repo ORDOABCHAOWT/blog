@@ -46,7 +46,7 @@ async function proxyNotebook(request: NextRequest, context: RouteContext) {
   responseHeaders.set('X-Notebook-Upstream-Bytes', String(bytes.byteLength));
   responseHeaders.delete('content-encoding');
   responseHeaders.delete('content-length');
-  if (path.join('/') === 'sw.js') responseHeaders.set('Service-Worker-Allowed', '/notebook/');
+  if (path.join('/') === 'sw.js') responseHeaders.set('Service-Worker-Allowed', '/notebook');
 
   return new Response(responseBody, {
     status: upstream.status,

@@ -14,6 +14,7 @@
 - `/api/deploy` can commit or push unintended working-tree changes.
 - Next builds can succeed while independent type checking fails because type errors are skipped.
 - A static Vercel external rewrite can leave `/notebook/sw.js` stale after the Worker deploys. The dynamic notebook proxy disables caching and content encoding, then materializes text or binary responses before returning them.
+- Vercel canonicalizes `/notebook/` to `/notebook`. The PWA manifest, registration scope, Worker header, and proxy `Service-Worker-Allowed` header must therefore all use `/notebook` so an installed app remains controlled and can update itself.
 
 ## Debugging
 
