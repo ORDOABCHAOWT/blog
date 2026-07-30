@@ -291,23 +291,61 @@ test('Markdown editor batches floating control measurement and skips identical p
     /positionsEqual/,
     'Expected identical floating positions to skip React state updates'
   );
+  assert.match(
+    markdownEditor,
+    /lastCursorGeometryKeyRef/,
+    'Expected same-line typing to skip repeated CodeMirror geometry reads'
+  );
+});
+
+test('Markdown editor defers whole-document word counting while the user types', () => {
+  assert.match(
+    markdownEditor,
+    /WORD_COUNT_DELAY_MS/,
+    'Expected word counting to be deferred until the typing burst settles'
+  );
+  assert.match(
+    markdownEditor,
+    /scheduleWordCountUpdate/,
+    'Expected a debounced custom word-count status item'
+  );
+  assert.doesNotMatch(
+    markdownEditor,
+    /status:\s*\[\s*['"]lines['"],\s*['"]words['"]/,
+    'Expected to avoid EasyMDE full-document word counting on every update'
+  );
 });
 
 test('Markdown images render as direct previews instead of exposed URLs', () => {
   assert.match(
     markdownEditor,
-    /previewImagesInEditor:\s*true/,
-    'Expected EasyMDE image previews to be enabled for standalone Markdown images'
+    /previewImagesInEditor:\s*false/,
+    'Expected the cursor-breaking EasyMDE pseudo-element preview to stay disabled'
   );
   assert.match(
     markdownEditor,
-    /\.CodeMirror-line:has\(\.cm-image-marker\)[\s\S]*?color:\s*transparent;[\s\S]*?font-size:\s*0/,
-    'Expected raw Markdown image text to be visually replaced by its image preview'
+    /addLineWidget\(/,
+    'Expected image previews to use CodeMirror-managed line widgets'
   );
   assert.match(
     markdownEditor,
-    /span\[data-img-src\]::after[\s\S]*?background-position:\s*center/,
-    'Expected loaded previews to use the editor image surface'
+    /\.markdown-image-source-line\s+span[\s\S]*?color:\s*transparent\s*!important/,
+    'Expected raw Markdown image text to be hidden without changing its metrics'
+  );
+  assert.match(
+    markdownEditor,
+    /widget\?\.changed\(\)/,
+    'Expected image load completion to refresh CodeMirror line geometry'
+  );
+  assert.doesNotMatch(
+    markdownEditor,
+    /\.CodeMirror-line:has\(\.cm-image-marker\)/,
+    'Expected image previews not to rely on expensive relational line selectors'
+  );
+  assert.doesNotMatch(
+    markdownEditor,
+    /\.markdown-image-source-line\s+span\s*\{[^}]*?(?:font-size|line-height|display|width)\s*:/,
+    'Expected image preview styling to preserve CodeMirror cursor geometry'
   );
 });
 

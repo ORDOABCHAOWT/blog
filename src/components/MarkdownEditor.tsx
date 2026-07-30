@@ -56,8 +56,57 @@ type EditorNotice = {
   message: string;
 };
 
+type StandaloneImage = {
+  alt: string;
+  markdown: string;
+  url: string;
+};
+
+type CodeMirrorLineWidget = {
+  clear: () => void;
+  changed: () => void;
+};
+
+type ImagePreviewWidget = {
+  line: number;
+  markdown: string;
+  widget: CodeMirrorLineWidget;
+};
+
 const LINE_ACTION_SIZE = 28;
 const LINE_ACTION_GAP = 10;
+const WORD_COUNT_DELAY_MS = 280;
+const IMAGE_PREVIEW_SYNC_DELAY_MS = 90;
+
+const countEditorWords = (text: string) => {
+  const matches = text.match(
+    /[a-zA-Z0-9_\u00A0-\u02AF\u0392-\u03c9\u0410-\u04F9]+|[\u4E00-\u9FFF\u3400-\u4dbf\uf900-\ufaff\u3040-\u309f\uac00-\ud7af]+/g
+  );
+
+  if (!matches) return 0;
+
+  return matches.reduce((count, word) => (
+    word.charCodeAt(0) >= 0x4E00 ? count + word.length : count + 1
+  ), 0);
+};
+
+const parseStandaloneImage = (markdown: string): StandaloneImage | null => {
+  const match = markdown.trim().match(/^!\[([^\]]*)\]\((.+)\)$/);
+  if (!match) return null;
+
+  const destination = match[2].trim();
+  const destinationMatch = destination.match(
+    /^<([^>]+)>$|^(\S+?)(?:\s+(?:"[^"]*"|'[^']*'|\([^)]*\)))?$/
+  );
+  const url = destinationMatch?.[1] ?? destinationMatch?.[2];
+  if (!url) return null;
+
+  return {
+    alt: match[1].trim() || '文章图片',
+    markdown,
+    url,
+  };
+};
 
 type CodeMirrorDoc = {
   getCursor: (start?: string) => EditorPosition;
@@ -71,6 +120,7 @@ type CodeMirrorDoc = {
 
 type CodeMirrorInstance = {
   getDoc: () => CodeMirrorDoc;
+  getValue: () => string;
   coordsChar: (
     coords: { left: number; top: number },
     mode?: 'local' | 'page' | 'window'
@@ -87,6 +137,18 @@ type CodeMirrorInstance = {
   on: (event: string, callback: () => void) => void;
   off: (event: string, callback: () => void) => void;
   getWrapperElement: () => HTMLElement;
+  addLineClass: (line: number, where: 'text' | 'background' | 'wrap', className: string) => void;
+  removeLineClass: (line: number, where: 'text' | 'background' | 'wrap', className: string) => void;
+  addLineWidget: (
+    line: number,
+    node: HTMLElement,
+    options?: {
+      above?: boolean;
+      coverGutter?: boolean;
+      handleMouseEvents?: boolean;
+      noHScroll?: boolean;
+    }
+  ) => CodeMirrorLineWidget;
 };
 
 type EasyMdeInstance = {
@@ -102,12 +164,17 @@ const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>(
   ({ value, onChange, onBusyChange }, ref) => {
     const rootRef = useRef<HTMLDivElement>(null);
     const instanceRef = useRef<EasyMdeInstance | null>(null);
+    const latestValueRef = useRef(value);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const floatingUpdateFrameRef = useRef<number | null>(null);
+    const imagePreviewSyncTimerRef = useRef<number | null>(null);
+    const imagePreviewWidgetsRef = useRef(new Map<number, ImagePreviewWidget>());
+    const wordCountTimerRef = useRef<number | null>(null);
     const noticeTimerRef = useRef<number | null>(null);
     const retainedObjectUrlsRef = useRef(new Set<string>());
     const lastLineActionPositionRef = useRef<FloatingPosition | null>(null);
     const lastSelectionToolbarPositionRef = useRef<FloatingPosition | null>(null);
+    const lastCursorGeometryKeyRef = useRef<string | null>(null);
     const [editorReadyTick, setEditorReadyTick] = useState(0);
     const [lineActionPosition, setLineActionPosition] =
       useState<FloatingPosition | null>(null);
@@ -118,6 +185,8 @@ const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>(
     const [inlineUploading, setInlineUploading] = useState(false);
     const [dragUploadActive, setDragUploadActive] = useState(false);
     const [editorNotice, setEditorNotice] = useState<EditorNotice | null>(null);
+
+    latestValueRef.current = value;
 
     const showEditorNotice = useCallback((
       notice: EditorNotice,
@@ -148,6 +217,12 @@ const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>(
         onBusyChange?.(false);
         if (noticeTimerRef.current !== null) {
           window.clearTimeout(noticeTimerRef.current);
+        }
+        if (wordCountTimerRef.current !== null) {
+          window.clearTimeout(wordCountTimerRef.current);
+        }
+        if (imagePreviewSyncTimerRef.current !== null) {
+          window.clearTimeout(imagePreviewSyncTimerRef.current);
         }
         retainedObjectUrls.forEach((url) => {
           URL.revokeObjectURL(url);
@@ -223,27 +298,166 @@ const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>(
       });
     }, [measureFloatingControls]);
 
+    const scheduleWordCountUpdate = useCallback((element: HTMLElement) => {
+      if (wordCountTimerRef.current !== null) {
+        window.clearTimeout(wordCountTimerRef.current);
+      }
+
+      wordCountTimerRef.current = window.setTimeout(() => {
+        const content = instanceRef.current?.codemirror?.getValue()
+          ?? latestValueRef.current;
+        element.textContent = String(countEditorWords(content));
+        wordCountTimerRef.current = null;
+      }, WORD_COUNT_DELAY_MS);
+    }, []);
+
+    const syncImagePreviewWidgets = useCallback((cm: CodeMirrorInstance) => {
+      const doc = cm.getDoc();
+      const desiredImages = new Map<number, StandaloneImage>();
+
+      for (let line = 0; line < doc.lineCount(); line += 1) {
+        const image = parseStandaloneImage(doc.getLine(line));
+        if (image) desiredImages.set(line, image);
+      }
+
+      imagePreviewWidgetsRef.current.forEach((entry, line) => {
+        const desired = desiredImages.get(line);
+        if (desired?.markdown === entry.markdown) return;
+
+        entry.widget.clear();
+        if (line < doc.lineCount()) {
+          cm.removeLineClass(line, 'text', 'markdown-image-source-line');
+        }
+        imagePreviewWidgetsRef.current.delete(line);
+      });
+
+      desiredImages.forEach((image, line) => {
+        if (imagePreviewWidgetsRef.current.has(line)) return;
+
+        const surface = document.createElement('div');
+        surface.className = 'markdown-image-preview';
+        surface.dataset.imageUrl = image.url;
+        surface.title = '点击图片可将光标放到图片所在行';
+
+        const imageElement = document.createElement('img');
+        imageElement.alt = image.alt;
+        imageElement.loading = 'lazy';
+        imageElement.decoding = 'async';
+
+        const status = document.createElement('span');
+        status.className = 'markdown-image-preview-status';
+        status.textContent = '正在加载图片预览…';
+
+        surface.append(imageElement, status);
+        cm.addLineClass(line, 'text', 'markdown-image-source-line');
+
+        let widget: CodeMirrorLineWidget | null = null;
+        imageElement.addEventListener('load', () => {
+          surface.classList.add('is-loaded');
+          widget?.changed();
+        }, { once: true });
+        imageElement.addEventListener('error', () => {
+          surface.classList.add('is-error');
+          status.textContent = '图片预览加载失败，正文链接仍会正常保存';
+          widget?.changed();
+        }, { once: true });
+        surface.addEventListener('mousedown', (event) => {
+          event.preventDefault();
+          doc.setCursor({ line, ch: doc.getLine(line).length });
+          cm.focus();
+          updateFloatingControls();
+        });
+
+        widget = cm.addLineWidget(line, surface, {
+          above: false,
+          coverGutter: false,
+          handleMouseEvents: false,
+          noHScroll: true,
+        });
+        imagePreviewWidgetsRef.current.set(line, {
+          line,
+          markdown: image.markdown,
+          widget,
+        });
+        imageElement.src = image.url;
+      });
+    }, [updateFloatingControls]);
+
+    useEffect(() => {
+      const cm = instanceRef.current?.codemirror;
+      if (!cm) return;
+      const previewWidgets = imagePreviewWidgetsRef.current;
+
+      const scheduleSync = () => {
+        if (imagePreviewSyncTimerRef.current !== null) {
+          window.clearTimeout(imagePreviewSyncTimerRef.current);
+        }
+        imagePreviewSyncTimerRef.current = window.setTimeout(() => {
+          syncImagePreviewWidgets(cm);
+          imagePreviewSyncTimerRef.current = null;
+        }, IMAGE_PREVIEW_SYNC_DELAY_MS);
+      };
+
+      cm.on('change', scheduleSync);
+      syncImagePreviewWidgets(cm);
+
+      return () => {
+        cm.off('change', scheduleSync);
+        if (imagePreviewSyncTimerRef.current !== null) {
+          window.clearTimeout(imagePreviewSyncTimerRef.current);
+          imagePreviewSyncTimerRef.current = null;
+        }
+        previewWidgets.forEach((entry) => {
+          entry.widget.clear();
+          if (entry.line < cm.getDoc().lineCount()) {
+            cm.removeLineClass(
+              entry.line,
+              'text',
+              'markdown-image-source-line'
+            );
+          }
+        });
+        previewWidgets.clear();
+      };
+    }, [editorReadyTick, syncImagePreviewWidgets]);
+
     useEffect(() => {
       const cm = instanceRef.current?.codemirror;
       if (!cm) return;
 
-      const update = () => updateFloatingControls();
+      const update = () => {
+        const doc = cm.getDoc();
+        const cursor = doc.getCursor();
+        const selection = doc.getSelection();
+        const selectionStart = selection ? doc.getCursor('start') : null;
+        const geometryKey = `${cursor.line}:${
+          selectionStart ? `${selectionStart.line}:${selectionStart.ch}` : 'none'
+        }`;
+
+        if (lastCursorGeometryKeyRef.current === geometryKey) return;
+        lastCursorGeometryKeyRef.current = geometryKey;
+        updateFloatingControls();
+      };
+      const forceUpdate = () => {
+        lastCursorGeometryKeyRef.current = null;
+        update();
+      };
       const markFocused = () => {
         setEditorFocused(true);
-        update();
+        forceUpdate();
       };
 
       cm.on('cursorActivity', update);
-      cm.on('scroll', update);
+      cm.on('scroll', forceUpdate);
       cm.on('focus', markFocused);
-      window.addEventListener('resize', update);
-      update();
+      window.addEventListener('resize', forceUpdate);
+      forceUpdate();
 
       return () => {
         cm.off('cursorActivity', update);
-        cm.off('scroll', update);
+        cm.off('scroll', forceUpdate);
         cm.off('focus', markFocused);
-        window.removeEventListener('resize', update);
+        window.removeEventListener('resize', forceUpdate);
         if (floatingUpdateFrameRef.current !== null) {
           window.cancelAnimationFrame(floatingUpdateFrameRef.current);
           floatingUpdateFrameRef.current = null;
@@ -600,12 +814,22 @@ const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>(
       spellChecker: false,
       placeholder: '在这里输入文章内容（支持Markdown）...',
       autofocus: false,
-      status: ['lines', 'words', 'cursor'],
+      status: [
+        'lines',
+        {
+          className: 'words',
+          defaultValue: (element) => {
+            element.textContent = String(countEditorWords(latestValueRef.current));
+          },
+          onUpdate: scheduleWordCountUpdate,
+        },
+        'cursor',
+      ],
       toolbar: false,
       inputStyle: 'textarea' as const,
       lineWrapping: true,
-      previewImagesInEditor: true,
-    }), []);
+      previewImagesInEditor: false,
+    }), [scheduleWordCountUpdate]);
 
     return (
       <div
@@ -930,60 +1154,57 @@ const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>(
         .markdown-editor .CodeMirror-line {
           padding: 2px 0;
         }
-        .markdown-editor .CodeMirror-line:has(.cm-image-marker) {
+        .markdown-editor .markdown-image-source-line span {
+          color: transparent !important;
+          text-shadow: none !important;
+        }
+        .markdown-editor .markdown-image-preview {
+          display: grid;
+          width: calc(100% - 2px);
+          height: clamp(180px, 34vw, 360px);
+          place-items: center;
+          margin: 8px 1px 14px;
           overflow: hidden;
-          min-height: 160px;
-          margin: 10px 0 14px;
-          border: 1px solid color-mix(in srgb, var(--site-border) 78%, transparent);
+          border: 1px solid color-mix(in srgb, var(--site-border) 74%, transparent);
           border-radius: 12px;
           background: color-mix(
             in srgb,
-            var(--site-background-soft) 72%,
+            var(--site-background-soft) 78%,
             var(--site-panel-strong)
           );
-          color: transparent;
-          font-size: 0;
-          line-height: 0;
-          box-shadow: 0 8px 24px color-mix(in srgb, var(--site-shadow) 36%, transparent);
+          contain: layout paint;
+          cursor: text;
         }
-        .markdown-editor .CodeMirror-line:has(.cm-image-marker):not(:has([data-img-src])) {
-          display: grid;
-          place-items: center;
-          background:
-            linear-gradient(
-              100deg,
-              transparent 20%,
-              color-mix(in srgb, var(--site-panel-strong) 72%, transparent) 42%,
-              transparent 64%
-            ),
-            color-mix(in srgb, var(--site-background-soft) 72%, var(--site-panel-strong));
-          background-size: 240% 100%;
-          animation: markdown-image-loading 1.4s ease-in-out infinite;
+        .markdown-editor .markdown-image-preview img,
+        .markdown-editor .markdown-image-preview-status {
+          grid-area: 1 / 1;
         }
-        .markdown-editor .CodeMirror-line:has(.cm-image-marker):not(:has([data-img-src]))::after {
-          content: '正在准备图片预览…';
-          color: var(--site-muted);
-          font-size: 0.76rem;
-          line-height: 1.4;
-        }
-        .markdown-editor span[data-img-src] {
+        .markdown-editor .markdown-image-preview img {
           display: block;
-          width: 100%;
-          overflow: hidden;
-          border-radius: 11px;
-          background-color: var(--site-background-soft);
-          color: transparent;
-          font-size: 0;
-          line-height: 0;
-        }
-        .markdown-editor span[data-img-src]::after {
-          width: 100%;
           max-width: 100%;
-          background-position: center;
+          max-height: 100%;
+          object-fit: contain;
+          border-radius: 10px;
+          opacity: 0;
         }
-        @keyframes markdown-image-loading {
-          0% { background-position: 120% 0; }
-          100% { background-position: -120% 0; }
+        .markdown-editor .markdown-image-preview-status {
+          color: var(--site-muted);
+          font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text",
+            var(--font-noto-sans-sc), "PingFang SC", sans-serif;
+          font-size: 0.72rem;
+          letter-spacing: -0.002em;
+          pointer-events: none;
+        }
+        .markdown-editor .markdown-image-preview.is-loaded img {
+          opacity: 1;
+        }
+        .markdown-editor .markdown-image-preview.is-loaded
+          .markdown-image-preview-status {
+          display: none;
+        }
+        .markdown-editor .markdown-image-preview.is-error {
+          height: 96px;
+          border-style: dashed;
         }
         .markdown-editor .CodeMirror pre.CodeMirror-line {
           line-height: 1.8;
@@ -1089,8 +1310,7 @@ const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>(
           .markdown-editor .EasyMDEContainer {
             transition-duration: 0.01ms;
           }
-          .markdown-editor-notice-spinner,
-          .markdown-editor .CodeMirror-line:has(.cm-image-marker):not(:has([data-img-src])) {
+          .markdown-editor-notice-spinner {
             animation-duration: 0.01ms;
           }
           .markdown-line-command-menu button:hover,
