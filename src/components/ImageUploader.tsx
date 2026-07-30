@@ -112,22 +112,29 @@ export default function ImageUploader({ onUploadSuccess }: ImageUploaderProps) {
         .image-uploader-drop {
           position: relative;
           padding: 2.4rem 1.5rem;
-          border: 1px dashed var(--site-border);
-          border-radius: 14px;
-          background: var(--site-panel);
+          border: 1px dashed color-mix(in srgb, var(--site-border) 96%, transparent);
+          border-radius: 16px;
+          background: color-mix(
+            in srgb,
+            var(--site-panel-strong) 94%,
+            var(--site-background)
+          );
           text-align: center;
           cursor: pointer;
-          transition: border-color 220ms ease, background-color 220ms ease,
-            transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
+          box-shadow:
+            0 1px 0 rgba(255, 255, 255, 0.68) inset,
+            0 8px 24px color-mix(in srgb, var(--site-shadow) 42%, transparent);
+          transition: border-color 160ms ease, background-color 160ms ease,
+            transform 160ms cubic-bezier(0.2, 0.8, 0.2, 1);
         }
         .image-uploader-drop:hover {
-          border-color: var(--site-accent);
+          border-color: #0071e3;
           background: var(--site-panel-strong);
         }
         .image-uploader-drop.is-active {
-          border-color: var(--site-accent);
+          border-color: #0071e3;
           border-style: solid;
-          background: color-mix(in srgb, var(--site-accent) 8%, var(--site-panel));
+          background: color-mix(in srgb, #0071e3 7%, var(--site-panel-strong));
           transform: translateY(-1px);
         }
         .image-uploader-drop.is-uploading {
@@ -137,46 +144,64 @@ export default function ImageUploader({ onUploadSuccess }: ImageUploaderProps) {
         .image-uploader-icon {
           width: 2.8rem;
           height: 2.8rem;
-          color: var(--site-muted);
+          color: #0071e3;
         }
         .image-uploader-copy {
-          font-family: var(--font-editorial-display);
+          font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text",
+            var(--font-noto-sans-sc), "PingFang SC", sans-serif;
         }
         .image-uploader-cta {
           margin: 0;
           color: var(--site-ink);
-          font-size: 1.02rem;
-          letter-spacing: var(--tracking-body);
+          font-size: 0.96rem;
+          font-weight: 600;
+          letter-spacing: -0.01em;
         }
         .image-uploader-hint {
           margin: 0.2rem 0 0;
           color: var(--site-muted);
-          font-size: 0.92rem;
-          font-style: italic;
+          font-size: 0.84rem;
+          font-style: normal;
         }
         .image-uploader-meta {
           margin: 0;
           color: var(--site-muted);
-          font-family: var(--font-editorial-mono), "SFMono-Regular", Consolas, monospace;
-          font-size: 0.7rem;
-          letter-spacing: var(--tracking-meta);
-          text-transform: uppercase;
+          font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text",
+            var(--font-noto-sans-sc), "PingFang SC", sans-serif;
+          font-size: 0.68rem;
+          letter-spacing: -0.002em;
+          text-transform: none;
         }
         .image-uploader-status {
           margin: 0;
           color: var(--site-muted);
-          font-family: var(--font-editorial-mono), monospace;
+          font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text",
+            var(--font-noto-sans-sc), "PingFang SC", sans-serif;
           font-size: 0.78rem;
-          letter-spacing: var(--tracking-meta);
-          text-transform: uppercase;
+          font-weight: 500;
+          letter-spacing: -0.005em;
+          text-transform: none;
         }
         .image-uploader-spinner {
           width: 2.2rem;
           height: 2.2rem;
           border: 2px solid var(--site-border);
-          border-top-color: var(--site-accent);
+          border-top-color: #0071e3;
           border-radius: 50%;
           animation: image-uploader-spin 900ms linear infinite;
+        }
+        @media (prefers-color-scheme: dark) {
+          .image-uploader-icon {
+            color: #2997ff;
+          }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .image-uploader-drop {
+            transition-duration: 0.01ms;
+          }
+          .image-uploader-drop.is-active {
+            transform: none;
+          }
         }
         @keyframes image-uploader-spin {
           to { transform: rotate(360deg); }

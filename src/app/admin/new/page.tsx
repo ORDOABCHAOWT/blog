@@ -8,7 +8,9 @@ import { toSafePostSlug } from '@/lib/slug';
 
 export default function NewPostPage() {
   const router = useRouter();
+  const formRef = useRef<HTMLFormElement>(null);
   const contentRef = useRef('');
+  const slugEditedRef = useRef(false);
   const [formData, setFormData] = useState({
     slug: '',
     title: '',
@@ -17,14 +19,39 @@ export default function NewPostPage() {
     content: '',
   });
   const [saving, setSaving] = useState(false);
+  const [editorBusy, setEditorBusy] = useState(false);
   const [error, setError] = useState('');
 
   useEffect(() => {
     document.title = '写新文章 | 博客管理后台';
   }, []);
 
+  useEffect(() => {
+    const handleSaveShortcut = (event: KeyboardEvent) => {
+      if (
+        event.key.toLowerCase() !== 's' ||
+        (!event.metaKey && !event.ctrlKey)
+      ) {
+        return;
+      }
+
+      event.preventDefault();
+      if (!saving && !editorBusy) {
+        formRef.current?.requestSubmit();
+      }
+    };
+
+    window.addEventListener('keydown', handleSaveShortcut);
+    return () => window.removeEventListener('keydown', handleSaveShortcut);
+  }, [editorBusy, saving]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (editorBusy) {
+      setError('图片仍在上传，请稍候再保存');
+      return;
+    }
+
     setSaving(true);
     setError('');
 
@@ -50,7 +77,7 @@ export default function NewPostPage() {
       } else {
         setError(data.error || '保存失败');
       }
-    } catch (err) {
+    } catch {
       setError('保存失败，请重试');
     } finally {
       setSaving(false);
@@ -58,18 +85,40 @@ export default function NewPostPage() {
   };
 
   const handleInputChange = (field: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
+    setError('');
+    setFormData((prev) => {
+      const next = { ...prev, [field]: value };
 
-    // 自动生成 slug
-    if (field === 'title' && !formData.slug) {
-      const slug = toSafePostSlug(value, formData.date);
-      setFormData((prev) => ({ ...prev, slug }));
-    }
+      if (field === 'title' && !slugEditedRef.current) {
+        next.slug = toSafePostSlug(value, prev.date);
+      }
+
+      return next;
+    });
+  };
+
+  const handleSlugChange = (value: string) => {
+    slugEditedRef.current = true;
+    setError('');
+    setFormData((prev) => ({ ...prev, slug: value }));
+  };
+
+  const handleSlugBlur = () => {
+    setFormData((prev) => ({
+      ...prev,
+      slug: toSafePostSlug(prev.slug || prev.title, prev.date),
+    }));
   };
 
   const handleContentChange = useCallback((value: string) => {
     contentRef.current = value;
+    setError('');
   }, []);
+
+  const slugPreview = toSafePostSlug(
+    formData.slug || formData.title,
+    formData.date
+  );
 
   return (
     <div className="admin-container px-8 py-12">
@@ -90,7 +139,12 @@ export default function NewPostPage() {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="admin-card p-8 space-y-7">
+        <form
+          ref={formRef}
+          onSubmit={handleSubmit}
+          className="admin-card p-8 space-y-7"
+          aria-busy={saving || editorBusy}
+        >
           <div className="grid grid-cols-2 gap-6">
             <div>
               <label className="block mb-2">文章标题 *</label>
@@ -110,12 +164,20 @@ export default function NewPostPage() {
                 type="text"
                 required
                 value={formData.slug}
-                onChange={(e) => setFormData({ ...formData, slug: toSafePostSlug(e.target.value, formData.date) })}
+                onChange={(e) => handleSlugChange(e.target.value)}
+                onBlur={handleSlugBlur}
                 className="admin-input w-full px-4 py-2.5"
                 placeholder="article-slug"
+                autoCapitalize="none"
+                autoCorrect="off"
+                spellCheck={false}
+                inputMode="url"
               />
-              <p className="admin-text-secondary mt-2" style={{ fontSize: '0.78rem', fontStyle: 'italic' }}>
-                用于 URL，只能包含字母、数字、连字符和下划线
+              <p className="admin-field-hint admin-text-secondary mt-2">
+                输入时不会打断光标；离开输入框后自动整理
+                <span className="admin-slug-preview">
+                  /posts/{slugPreview || 'article-slug'}
+                </span>
               </p>
             </div>
           </div>
@@ -126,7 +188,7 @@ export default function NewPostPage() {
               <input
                 type="date"
                 value={formData.date}
-                onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                onChange={(e) => handleInputChange('date', e.target.value)}
                 className="admin-input w-full px-4 py-2.5"
               />
             </div>
@@ -136,7 +198,7 @@ export default function NewPostPage() {
               <input
                 type="text"
                 value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                onChange={(e) => handleInputChange('description', e.target.value)}
                 className="admin-input w-full px-4 py-2.5"
                 placeholder="简短描述文章内容"
               />
@@ -148,23 +210,29 @@ export default function NewPostPage() {
             <MarkdownEditor
               value={formData.content}
               onChange={handleContentChange}
+              onBusyChange={setEditorBusy}
             />
           </div>
 
-          <div className="flex justify-end gap-3 pt-2">
-            <Link
-              href="/admin"
-              className="admin-button admin-button-secondary px-6 py-2.5"
-            >
-              取消
-            </Link>
-            <button
-              type="submit"
-              disabled={saving}
-              className="admin-button admin-button-primary px-6 py-2.5 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {saving ? '保存中…' : '保存文章'}
-            </button>
+          <div className="admin-editor-actions flex justify-between items-center gap-3 pt-2">
+            <p className="admin-editor-shortcut">
+              {editorBusy ? '正在处理图片，完成后即可保存' : '⌘S 快速保存'}
+            </p>
+            <div className="flex justify-end gap-3">
+              <Link
+                href="/admin"
+                className="admin-button admin-button-secondary px-6 py-2.5"
+              >
+                取消
+              </Link>
+              <button
+                type="submit"
+                disabled={saving || editorBusy}
+                className="admin-button admin-button-primary px-6 py-2.5 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {saving ? '保存中…' : editorBusy ? '图片上传中…' : '保存文章'}
+              </button>
+            </div>
           </div>
         </form>
       </div>

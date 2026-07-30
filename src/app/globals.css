@@ -2099,17 +2099,19 @@ img {
   }
 }
 
-/* ---------- Admin / CMS — editorial theme ----------
-   The CMS shares the blog's warm editorial palette so working "behind
-   the curtain" still feels like the same publication: soft cream paper,
-   industrial sans headings, mono eyebrows, slate-blue accent. */
+/* ---------- Admin / CMS — macOS 27-inspired visual layer ----------
+   Layout and behavior remain owned by the existing page components. The
+   CMS keeps the blog palette, uses quiet standard materials for content,
+   and reserves Liquid Glass for interactive controls. */
 .admin-container {
   background: transparent;
   color: var(--site-ink);
   min-height: 100vh;
   position: relative;
-  font-family: var(--font-editorial-display);
-  font-feature-settings: "liga" 1, "calt" 1, "kern" 1, "onum" 1;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text",
+    var(--font-noto-sans-sc), "PingFang SC", sans-serif;
+  font-feature-settings: "liga" 1, "calt" 1, "kern" 1;
+  letter-spacing: -0.012em;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -2122,200 +2124,326 @@ img {
   color: var(--site-muted);
 }
 
-/* Headings inside the CMS — shared industrial sans system. */
+/* SF-style hierarchy: compact, high-contrast, and free of display theatrics. */
+.admin-container .eyebrow {
+  color: color-mix(in srgb, var(--site-muted) 88%, transparent);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text",
+    var(--font-noto-sans-sc), "PingFang SC", sans-serif;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.055em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
 .admin-container h1,
 .admin-container h2,
 .admin-container h3 {
-  font-family: var(--font-editorial-display);
-  font-feature-settings: "liga" 1, "calt" 1, "dlig" 1, "kern" 1;
-  font-weight: 380;
-  letter-spacing: -0.008em;
-  line-height: 1.12;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display",
+    var(--font-noto-sans-sc), "PingFang SC", sans-serif;
+  font-feature-settings: "liga" 1, "calt" 1, "kern" 1;
+  font-weight: 650;
+  letter-spacing: -0.038em;
+  line-height: 1.08;
 }
 
 .admin-container h1 {
-  font-size: clamp(2rem, 3.4vw, 2.6rem);
+  font-size: clamp(2rem, 3.4vw, 2.7rem);
 }
 
-/* CMS writing forms stay open and editorial rather than boxed-in. */
+/* Forms are content, so they use a standard opaque material instead of glass. */
 .admin-card {
-  background: transparent;
+  background: color-mix(
+    in srgb,
+    var(--site-panel-strong) 96%,
+    var(--site-background)
+  );
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
-  border: none;
-  border-radius: 0;
-  box-shadow: none;
-  transition: none;
+  border: 1px solid color-mix(in srgb, var(--site-border) 86%, transparent);
+  border-radius: 20px;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.72) inset,
+    0 18px 48px color-mix(in srgb, var(--site-shadow) 72%, transparent);
 }
 
 .admin-card:hover {
-  border-color: transparent;
-  box-shadow: none;
+  border-color: color-mix(in srgb, var(--site-border) 86%, transparent);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.72) inset,
+    0 18px 48px color-mix(in srgb, var(--site-shadow) 72%, transparent);
 }
 
-@media (prefers-color-scheme: dark) {
-  .admin-card:hover {
-    border-color: transparent;
-    box-shadow: none;
-  }
-}
-
-/* Buttons — pill-shaped, mono label, low-key chrome. The ALL-CAPS
-   tracking matches the blog's `.eyebrow` / `.home-links` typography. */
+/* Liquid Glass is reserved for controls, with native-feeling type and motion. */
 .admin-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.45rem;
   border-radius: 999px;
-  font-family: var(--font-editorial-mono), "SFMono-Regular", Consolas, monospace;
-  font-size: 0.78rem;
-  font-weight: 500;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  border: 1px solid transparent;
-  box-shadow: none;
-  transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1),
-    border-color 220ms ease, background-color 220ms ease, color 220ms ease;
+  min-height: 34px;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text",
+    var(--font-noto-sans-sc), "PingFang SC", sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: -0.008em;
+  text-transform: none;
+  border: 1px solid color-mix(in srgb, var(--site-border) 72%, transparent);
+  background: color-mix(in srgb, var(--site-panel-strong) 78%, transparent);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.7) inset,
+    0 6px 18px color-mix(in srgb, var(--site-shadow) 54%, transparent);
+  backdrop-filter: blur(18px) saturate(145%);
+  -webkit-backdrop-filter: blur(18px) saturate(145%);
+  transition: transform 180ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    border-color 180ms ease, background-color 180ms ease, color 180ms ease,
+    box-shadow 180ms ease;
 }
 
 .admin-button:hover:not(:disabled) {
   transform: translateY(-1px);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.78) inset,
+    0 8px 22px color-mix(in srgb, var(--site-shadow) 72%, transparent);
 }
 
 .admin-button:active:not(:disabled) {
-  transform: translateY(0);
+  transform: translateY(0) scale(0.985);
+}
+
+.admin-button:focus-visible,
+.admin-link:focus-visible {
+  outline: 3px solid color-mix(in srgb, #0071e3 30%, transparent);
+  outline-offset: 2px;
 }
 
 .admin-button-primary {
-  background: var(--site-ink);
-  color: var(--site-background);
-  border-color: var(--site-ink);
+  background: #0071e3;
+  color: #ffffff;
+  border-color: color-mix(in srgb, #0071e3 78%, #004f9f);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.24) inset,
+    0 7px 18px rgba(0, 113, 227, 0.2);
 }
 
 .admin-button-primary:hover:not(:disabled) {
-  background: var(--site-accent);
-  border-color: var(--site-accent);
+  background: #0077ed;
+  border-color: #0071e3;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.28) inset,
+    0 9px 22px rgba(0, 113, 227, 0.26);
 }
 
 .admin-button-success {
-  background: var(--site-accent);
-  color: var(--site-background);
-  border-color: var(--site-accent);
+  background: color-mix(in srgb, var(--site-panel-strong) 80%, transparent);
+  color: var(--site-ink);
+  border-color: color-mix(in srgb, var(--site-border) 86%, transparent);
 }
 
 .admin-button-success:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--site-accent) 82%, var(--site-ink));
-  border-color: color-mix(in srgb, var(--site-accent) 82%, var(--site-ink));
+  background: color-mix(in srgb, var(--site-panel-strong) 92%, transparent);
+  border-color: color-mix(in srgb, var(--site-border) 100%, var(--site-ink) 12%);
 }
 
 .admin-button-danger {
-  background: transparent;
-  color: var(--site-ink);
-  border-color: rgba(46, 39, 31, 0.32);
+  background: color-mix(in srgb, var(--site-panel-strong) 72%, transparent);
+  color: #b42318;
+  border-color: color-mix(in srgb, #b42318 22%, var(--site-border));
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.64) inset;
 }
 
 .admin-button-danger:hover:not(:disabled) {
-  background: rgba(46, 39, 31, 0.06);
-  border-color: var(--site-ink);
+  background: color-mix(in srgb, #b42318 8%, var(--site-panel-strong));
+  border-color: color-mix(in srgb, #b42318 38%, var(--site-border));
 }
 
 @media (prefers-color-scheme: dark) {
-  .admin-button-danger {
-    color: var(--site-ink);
-    border-color: rgba(233, 226, 214, 0.28);
+  .admin-card,
+  .admin-card:hover {
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.07) inset,
+      0 20px 54px rgba(0, 0, 0, 0.22);
   }
+
+  .admin-button {
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.12) inset,
+      0 8px 24px rgba(0, 0, 0, 0.2);
+  }
+
+  .admin-button-primary {
+    background: #0a84ff;
+    border-color: #0a84ff;
+  }
+
+  .admin-button-primary:hover:not(:disabled) {
+    background: #2090ff;
+    border-color: #2090ff;
+  }
+
+  .admin-button-danger {
+    color: #ff9b93;
+    border-color: color-mix(in srgb, #ff6961 28%, var(--site-border));
+  }
+
   .admin-button-danger:hover:not(:disabled) {
-    background: rgba(233, 226, 214, 0.08);
-    border-color: var(--site-ink);
+    background: color-mix(in srgb, #ff6961 10%, var(--site-panel-strong));
+    border-color: color-mix(in srgb, #ff6961 42%, var(--site-border));
+  }
+
+  .admin-editor-actions {
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.1) inset,
+      0 18px 42px rgba(0, 0, 0, 0.24);
   }
 }
 
 .admin-button-secondary {
-  background: transparent;
-  color: var(--site-muted);
-  border-color: var(--site-border);
+  color: var(--site-ink);
 }
 
 .admin-button-secondary:hover:not(:disabled) {
   color: var(--site-ink);
-  border-color: rgba(46, 39, 31, 0.32);
+  background: color-mix(in srgb, var(--site-panel-strong) 94%, transparent);
+  border-color: color-mix(in srgb, var(--site-border) 100%, var(--site-ink) 10%);
 }
 
-@media (prefers-color-scheme: dark) {
-  .admin-button-secondary:hover:not(:disabled) {
-    border-color: rgba(233, 226, 214, 0.32);
-  }
-}
-
-/* Inputs — paper-coloured, calm focus ring in the blog's accent. */
+/* Fields use the inset, quietly dimensional treatment of native Mac controls. */
 .admin-input {
-  background: var(--site-panel);
+  min-height: 42px;
+  background: color-mix(in srgb, var(--site-panel-strong) 92%, var(--site-background));
   color: var(--site-ink);
-  border: 1px solid var(--site-border);
-  border-radius: 8px;
-  font-family: var(--font-editorial-display);
-  font-size: 1rem;
-  letter-spacing: 0.005em;
-  transition: border-color 200ms ease, box-shadow 200ms ease,
-    background-color 200ms ease;
+  border: 1px solid color-mix(in srgb, var(--site-border) 92%, transparent);
+  border-radius: 10px;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text",
+    var(--font-noto-sans-sc), "PingFang SC", sans-serif;
+  font-size: 0.95rem;
+  letter-spacing: -0.01em;
+  box-shadow:
+    0 1px 2px color-mix(in srgb, var(--site-shadow) 52%, transparent) inset,
+    0 1px 0 rgba(255, 255, 255, 0.7);
+  transition: border-color 160ms ease, box-shadow 160ms ease,
+    background-color 160ms ease;
 }
 
 .admin-input::placeholder {
-  color: var(--site-muted);
-  font-style: italic;
-  font-weight: 360;
+  color: color-mix(in srgb, var(--site-muted) 72%, transparent);
+  font-style: normal;
+  font-weight: 400;
 }
 
 .admin-input:hover {
-  border-color: rgba(46, 39, 31, 0.24);
+  border-color: color-mix(in srgb, var(--site-border) 100%, var(--site-ink) 12%);
 }
 
 .admin-input:focus {
   outline: none;
-  border-color: var(--site-accent);
+  border-color: #0071e3;
   background: var(--site-panel-strong);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--site-accent) 22%, transparent);
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, #0071e3 22%, transparent),
+    0 1px 2px color-mix(in srgb, var(--site-shadow) 45%, transparent) inset;
 }
 
-/* Form labels — mono uppercase eyebrows, like blog's `.eyebrow`. */
-.admin-container label {
-  font-family: var(--font-editorial-mono), "SFMono-Regular", Consolas, monospace;
+.admin-field-hint {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.22rem 0.55rem;
+  margin-bottom: 0;
   font-size: 0.74rem;
-  font-weight: 500;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--site-muted);
+  font-style: normal;
+  line-height: 1.45;
 }
 
-/* Table — soft warm sheet, hairline rules. */
+.admin-slug-preview {
+  flex-basis: 100%;
+  overflow-wrap: anywhere;
+  color: color-mix(in srgb, #0071e3 82%, var(--site-muted));
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 0.69rem;
+  letter-spacing: -0.018em;
+}
+
+.admin-editor-actions {
+  position: sticky;
+  z-index: 14;
+  bottom: 12px;
+  width: fit-content;
+  max-width: calc(100% + 1.1rem);
+  margin: 0 -0.55rem -0.55rem auto;
+  padding: 0.7rem;
+  border: 1px solid color-mix(in srgb, var(--site-border) 72%, transparent);
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--site-panel-strong) 82%, transparent);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.72) inset,
+    0 16px 38px color-mix(in srgb, var(--site-shadow) 70%, transparent);
+  backdrop-filter: blur(24px) saturate(150%);
+  -webkit-backdrop-filter: blur(24px) saturate(150%);
+}
+
+.admin-editor-shortcut {
+  margin: 0;
+  color: var(--site-muted);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: -0.004em;
+}
+
+/* Labels match native settings panes: sentence case, compact, and legible. */
+.admin-container label {
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text",
+    var(--font-noto-sans-sc), "PingFang SC", sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  text-transform: none;
+  color: color-mix(in srgb, var(--site-ink) 72%, var(--site-muted));
+}
+
+/* The article list is a content surface, not another translucent control. */
 .admin-table {
-  background: var(--site-panel-strong);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid var(--site-border);
-  border-radius: 8px;
-  overflow: hidden;
-  font-family: var(--font-editorial-display);
+  background: color-mix(
+    in srgb,
+    var(--site-panel-strong) 97%,
+    var(--site-background)
+  );
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border: 1px solid color-mix(in srgb, var(--site-border) 88%, transparent);
+  border-radius: 18px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text",
+    var(--font-noto-sans-sc), "PingFang SC", sans-serif;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.72) inset,
+    0 14px 40px color-mix(in srgb, var(--site-shadow) 58%, transparent);
+  scrollbar-width: thin;
+}
+
+.admin-table table {
+  min-width: 760px;
 }
 
 .admin-table thead {
-  background: transparent;
-  border-bottom: 1px solid var(--site-border);
+  background: color-mix(in srgb, var(--site-background-soft) 44%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--site-border) 84%, transparent);
 }
 
 .admin-table thead th {
-  font-family: var(--font-editorial-mono), "SFMono-Regular", Consolas, monospace;
-  font-size: 0.72rem;
-  font-weight: 500;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text",
+    var(--font-noto-sans-sc), "PingFang SC", sans-serif;
+  font-size: 0.73rem;
+  font-weight: 600;
+  letter-spacing: -0.002em;
+  text-transform: none;
   color: var(--site-muted);
 }
 
 .admin-table tbody tr {
-  border-bottom: 1px solid var(--site-border);
-  transition: background-color 220ms ease;
+  border-bottom: 1px solid color-mix(in srgb, var(--site-border) 76%, transparent);
+  transition: background-color 160ms ease;
 }
 
 .admin-table tbody tr:last-child {
@@ -2323,59 +2451,124 @@ img {
 }
 
 .admin-table tbody tr:hover {
-  background: rgba(46, 39, 31, 0.04);
+  background: color-mix(in srgb, #0071e3 4.5%, transparent);
 }
 
 @media (prefers-color-scheme: dark) {
+  .admin-table {
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.07) inset,
+      0 18px 48px rgba(0, 0, 0, 0.2);
+  }
+
   .admin-table tbody tr:hover {
-    background: rgba(233, 226, 214, 0.04);
+    background: color-mix(in srgb, #0a84ff 8%, transparent);
   }
 }
 
-/* Alerts — quiet, no Material chip vibe. */
+/* Alerts remain in the content layer and use semantic edge color sparingly. */
 .admin-alert {
-  border-radius: 8px;
-  border: 1px solid var(--site-border);
-  background: var(--site-panel);
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, var(--site-border) 84%, transparent);
+  background: color-mix(in srgb, var(--site-panel-strong) 96%, var(--site-background));
   color: var(--site-ink);
-  font-family: var(--font-editorial-display);
-  font-size: 0.98rem;
-  font-weight: 380;
-  letter-spacing: 0.005em;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text",
+    var(--font-noto-sans-sc), "PingFang SC", sans-serif;
+  font-size: 0.9rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--site-shadow) 44%, transparent);
 }
 
 .admin-alert-success {
-  border-left: 3px solid var(--site-accent);
+  border-left: 3px solid #34c759;
 }
 
 .admin-alert-error {
-  border-left: 3px solid #b8584d;
-  color: #8a3a30;
+  border-left: 3px solid #ff3b30;
+  color: #a6221a;
 }
 
 @media (prefers-color-scheme: dark) {
   .admin-alert-error {
-    color: #e8a59a;
-    border-left-color: #d97a6c;
+    color: #ff9b93;
+    border-left-color: #ff6961;
   }
 }
 
-/* Inline links — same accent + thin underline as the blog's article links. */
+/* Navigation links use the familiar macOS accent without decorative tracking. */
 .admin-link {
-  color: var(--site-muted);
+  color: #0066cc;
   text-decoration: none;
-  font-family: var(--font-editorial-mono), "SFMono-Regular", Consolas, monospace;
-  font-size: 0.76rem;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text",
+    var(--font-noto-sans-sc), "PingFang SC", sans-serif;
+  font-size: 0.82rem;
   font-weight: 500;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  transition: color 180ms ease, transform 180ms ease;
+  letter-spacing: -0.008em;
+  text-transform: none;
+  transition: color 160ms ease, transform 160ms ease;
 }
 
 .admin-link:hover {
-  color: var(--site-ink);
+  color: #0077ed;
   text-decoration: none;
   transform: translateX(-2px);
+}
+
+@media (prefers-color-scheme: dark) {
+  .admin-link {
+    color: #2997ff;
+  }
+
+  .admin-link:hover {
+    color: #64b5ff;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-button,
+  .admin-link,
+  .admin-input,
+  .admin-table tbody tr {
+    transition-duration: 0.01ms;
+  }
+
+  .admin-button:hover:not(:disabled),
+  .admin-button:active:not(:disabled),
+  .admin-link:hover {
+    transform: none;
+  }
+}
+
+@media (max-width: 720px) {
+  .admin-container {
+    padding: 2rem 1.25rem !important;
+  }
+
+  .admin-card {
+    padding: 1.25rem !important;
+    border-radius: 18px;
+  }
+
+  .admin-card .grid-cols-2 {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.25rem;
+  }
+
+  .admin-editor-actions {
+    align-items: stretch;
+    flex-direction: column;
+    position: static;
+    width: calc(100% + 1.1rem);
+  }
+
+  .admin-editor-actions > div {
+    width: 100%;
+  }
+
+  .admin-editor-actions .admin-button {
+    flex: 1;
+  }
 }
 
 .ascii-demo-page {
@@ -2616,9 +2809,6 @@ select {
 .editorial-prose h3,
 .portfolio-profile-header h2,
 .portfolio-profile-block h3,
-.admin-container h1,
-.admin-container h2,
-.admin-container h3,
 .ascii-demo-copy h1,
 .ascii-demo-overlay h2 {
   font-family: var(--font-editorial-display);
@@ -2636,10 +2826,6 @@ select {
 .post-outline-link,
 .portfolio-profile-line,
 .portfolio-skill-item p,
-.admin-container,
-.admin-input,
-.admin-table,
-.admin-alert,
 .ascii-demo-intro,
 .ascii-demo-overlay p {
   letter-spacing: var(--tracking-body);
@@ -2656,10 +2842,6 @@ select {
 .post-footer-link,
 .post-outline-label,
 .editorial-figure figcaption,
-.admin-button,
-.admin-container label,
-.admin-table thead th,
-.admin-link,
 .ascii-demo-kicker,
 .ascii-demo-scene-label,
 .ascii-demo-notes p {

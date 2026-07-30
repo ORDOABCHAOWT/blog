@@ -41,6 +41,26 @@ test('Markdown editor exposes a line-following insert menu tied to CodeMirror cu
     /cursorCoords|charCoords/,
     'Expected CodeMirror geometry to position the following controls'
   );
+  assert.match(
+    markdownEditor,
+    /charCoords\(\s*\{ line: cursor\.line, ch: 0 \},\s*'window'\s*\)/,
+    'Expected the plus control to align from the current line start instead of the editor frame'
+  );
+  assert.match(
+    markdownEditor,
+    /cursorCoords\.bottom - cursorCoords\.top - LINE_ACTION_SIZE/,
+    'Expected the plus control to center against the current line height'
+  );
+  assert.match(
+    markdownEditor,
+    /lineStartCoords\.left[\s\S]*LINE_ACTION_SIZE[\s\S]*LINE_ACTION_GAP/,
+    'Expected a stable gap between the circular control and the writing cursor'
+  );
+  assert.match(
+    markdownEditor,
+    /\.markdown-following-plus:not\(:disabled\)::before,[\s\S]*?\.markdown-following-plus:not\(:disabled\)::after[\s\S]*?top:\s*50%;[\s\S]*?left:\s*50%/,
+    'Expected the plus glyph to use centered geometry instead of a font baseline'
+  );
 });
 
 test('Markdown editor provides nearby Markdown formatting commands', () => {
@@ -175,7 +195,7 @@ test('CMS article forms remove the standalone image upload block above the edito
   ]) {
     assert.doesNotMatch(
       source,
-      /ImageUploader|图片上传|handleImageUpload/,
+      /import\s+ImageUploader|<ImageUploader|handleImageUpload/,
       `Expected ${label} to rely on inline editor image insertion instead of a standalone upload block`
     );
   }
@@ -204,7 +224,7 @@ test('Markdown editor uploads dropped images at the editor drop position', () =>
   );
 });
 
-test('Markdown editor keeps the plus menu lightweight and dismissible from blank clicks', () => {
+test('Markdown editor keeps the plus menu dismissible and the writing surface clearly bounded', () => {
   assert.match(
     markdownEditor,
     /document\.addEventListener\('pointerdown'/,
@@ -215,15 +235,15 @@ test('Markdown editor keeps the plus menu lightweight and dismissible from blank
     /setLineMenuOpen\(false\)/,
     'Expected floating menu state to close without blurring the whole editor'
   );
-  assert.doesNotMatch(
+  assert.match(
     markdownEditor,
-    /\.markdown-editor \.EasyMDEContainer\s*\{[^}]*border:\s*1px solid/s,
-    'Expected the editor shell to avoid a boxed border treatment'
+    /\.markdown-editor \.EasyMDEContainer\s*\{[\s\S]*?border:\s*1px solid/,
+    'Expected the editor shell to use a quiet standard-material boundary'
   );
   assert.match(
     markdownEditor,
-    /border:\s*none;[\s\S]*\.markdown-editor \.EasyMDEContainer/,
-    'Expected the editor shell to use a cleaner borderless treatment'
+    /\.markdown-editor \.EasyMDEContainer\s*\{[\s\S]*?border-radius:\s*16px/,
+    'Expected the editor shell to use the macOS content-surface radius'
   );
 });
 
@@ -271,4 +291,73 @@ test('Markdown editor batches floating control measurement and skips identical p
     /positionsEqual/,
     'Expected identical floating positions to skip React state updates'
   );
+});
+
+test('Markdown images render as direct previews instead of exposed URLs', () => {
+  assert.match(
+    markdownEditor,
+    /previewImagesInEditor:\s*true/,
+    'Expected EasyMDE image previews to be enabled for standalone Markdown images'
+  );
+  assert.match(
+    markdownEditor,
+    /\.CodeMirror-line:has\(\.cm-image-marker\)[\s\S]*?color:\s*transparent;[\s\S]*?font-size:\s*0/,
+    'Expected raw Markdown image text to be visually replaced by its image preview'
+  );
+  assert.match(
+    markdownEditor,
+    /span\[data-img-src\]::after[\s\S]*?background-position:\s*center/,
+    'Expected loaded previews to use the editor image surface'
+  );
+});
+
+test('image uploads insert an immediate local preview and replace it in place', () => {
+  assert.match(
+    markdownEditor,
+    /URL\.createObjectURL\(file\)/,
+    'Expected a local object URL to make the selected image visible immediately'
+  );
+  assert.match(
+    markdownEditor,
+    /insertAtPosition\(previewMarkdown,\s*position\)[\s\S]*?await uploadImageFile\(file\)/,
+    'Expected the preview to appear before compression and network upload finish'
+  );
+  assert.match(
+    markdownEditor,
+    /replaceEditorSnippet\(\s*previewMarkdown,\s*data\.markdown\s*\)/,
+    'Expected successful uploads to swap only the backing Markdown URL'
+  );
+  assert.match(
+    markdownEditor,
+    /onPaste=\{handleEditorPaste\}/,
+    'Expected pasted clipboard images to use the same inline upload flow'
+  );
+});
+
+test('CMS forms keep saving reachable and block incomplete image uploads', () => {
+  for (const [label, source] of [
+    ['new post form', newPostPage],
+    ['edit post form', editPostPage],
+  ]) {
+    assert.match(
+      source,
+      /onBusyChange=\{setEditorBusy\}/,
+      `Expected ${label} to receive image processing state`
+    );
+    assert.match(
+      source,
+      /disabled=\{saving \|\| editorBusy\}/,
+      `Expected ${label} not to save temporary local preview URLs`
+    );
+    assert.match(
+      source,
+      /className="admin-editor-actions/,
+      `Expected ${label} to keep its save controls in a dedicated sticky action surface`
+    );
+    assert.match(
+      source,
+      /formRef\.current\?\.requestSubmit\(\)/,
+      `Expected ${label} to support the Cmd/Ctrl+S shortcut`
+    );
+  }
 });

@@ -14,6 +14,10 @@ Provide a personal editorial blog, portfolio experience, and locally operated CM
 ## Stable Product Decisions
 
 - Blog and CMS share the same visual palette.
+- CMS presentation follows a macOS 27-inspired material hierarchy without
+  changing its page layout or workflows: forms and tables use quiet standard
+  content surfaces, while Liquid Glass is limited to controls and transient
+  editor menus.
 - Homepage uses the Wayfinder hero, neutral light background, approved social links, and portrait avatar.
 - Route transitions use grayscale `0/1` ash rather than colored bloom effects.
 - The portfolio post uses a dedicated portfolio experience.
@@ -22,6 +26,11 @@ Provide a personal editorial blog, portfolio experience, and locally operated CM
 - Word Notebook is exposed through the scoped `/notebook/` Vercel rewrite so readers
   do not need to connect to `workers.dev` directly; the proxy must not claim `/api/*`.
 - Admin currently opens without a Basic Auth prompt.
+- CMS slug fields preserve raw typing and IME composition, then normalize only
+  on blur or save; the form shows the resulting post URL before submission.
+- Inline CMS images appear immediately as local previews while compression and
+  upload continue, then keep a direct in-editor preview instead of exposing the
+  Markdown image URL by default.
 
 ## Acceptance
 

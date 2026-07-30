@@ -12,7 +12,7 @@ const editPostPage = fs.readFileSync(
 );
 const slugHelperPath = new URL('../src/lib/slug.ts', import.meta.url);
 
-test('new CMS entries normalize Chinese or mixed slug input before save', () => {
+test('new CMS entries preserve slug typing and normalize only at safe boundaries', () => {
   assert.match(
     newPostPage,
     /import\s+\{\s*toSafePostSlug\s*\}\s+from\s+'@\/lib\/slug'/,
@@ -20,7 +20,7 @@ test('new CMS entries normalize Chinese or mixed slug input before save', () => 
   );
   assert.match(
     newPostPage,
-    /toSafePostSlug\(value,\s*formData\.date\)/,
+    /next\.slug\s*=\s*toSafePostSlug\(value,\s*prev\.date\)/,
     'Expected title-generated slugs to be sanitized through the shared helper'
   );
   assert.match(
@@ -30,12 +30,22 @@ test('new CMS entries normalize Chinese or mixed slug input before save', () => 
   );
   assert.match(
     newPostPage,
-    /onChange=\{\(e\)\s*=>\s*setFormData\(\{\s*\.\.\.formData,\s*slug:\s*toSafePostSlug\(e\.target\.value,\s*formData\.date\)\s*\}\)\}/,
-    'Expected manual slug edits to discard characters the API will reject'
+    /onChange=\{\(e\)\s*=>\s*handleSlugChange\(e\.target\.value\)\}/,
+    'Expected manual slug edits to keep the value untouched while the user types'
+  );
+  assert.match(
+    newPostPage,
+    /const handleSlugBlur[\s\S]*toSafePostSlug\(prev\.slug \|\| prev\.title,\s*prev\.date\)/,
+    'Expected the slug to normalize after typing finishes'
+  );
+  assert.doesNotMatch(
+    newPostPage,
+    /onChange=\{[^}]*toSafePostSlug/,
+    'Expected slug input events not to rewrite the controlled value on every keystroke'
   );
 });
 
-test('edit CMS entries normalize renamed slugs before save', () => {
+test('edit CMS entries preserve typing and normalize renamed slugs on blur and save', () => {
   assert.match(
     editPostPage,
     /import\s+\{\s*toSafePostSlug\s*\}\s+from\s+'@\/lib\/slug'/,
@@ -43,9 +53,42 @@ test('edit CMS entries normalize renamed slugs before save', () => {
   );
   assert.match(
     editPostPage,
-    /slug:\s*toSafePostSlug\(e\.target\.value,\s*formData\.date\)/,
-    'Expected edited slugs to discard characters the API will reject'
+    /onChange=\{\(e\)\s*=>\s*handleInputChange\('slug',\s*e\.target\.value\)\}/,
+    'Expected edited slugs to preserve the current caret and composition value'
   );
+  assert.match(
+    editPostPage,
+    /const handleSlugBlur[\s\S]*toSafePostSlug\(prev\.slug \|\| prev\.title,\s*prev\.date\)/,
+    'Expected edited slugs to normalize when the field loses focus'
+  );
+  assert.match(
+    editPostPage,
+    /const normalizedSlug = toSafePostSlug\([\s\S]*?newSlug:\s*normalizedSlug !== slug/,
+    'Expected renamed slugs to be normalized again at the API boundary'
+  );
+  assert.doesNotMatch(
+    editPostPage,
+    /onChange=\{[^}]*toSafePostSlug/,
+    'Expected slug typing not to be sanitized mid-composition'
+  );
+});
+
+test('CMS slug fields disable text corrections and show the resulting post URL', () => {
+  for (const [label, source] of [
+    ['new post form', newPostPage],
+    ['edit post form', editPostPage],
+  ]) {
+    assert.match(
+      source,
+      /autoCapitalize="none"[\s\S]*autoCorrect="off"[\s\S]*spellCheck=\{false\}/,
+      `Expected ${label} to avoid browser corrections in URL input`
+    );
+    assert.match(
+      source,
+      /className="admin-slug-preview"[\s\S]*\/posts\/\{slugPreview/,
+      `Expected ${label} to preview the final article path`
+    );
+  }
 });
 
 test('CMS slug sanitizer keeps ASCII URL slugs and falls back when Chinese text has no ASCII', () => {
