@@ -15,6 +15,9 @@
 - Next builds can succeed while independent type checking fails because type errors are skipped.
 - A static Vercel external rewrite can leave `/notebook/sw.js` stale after the Worker deploys. The dynamic notebook proxy disables caching and content encoding, then materializes text or binary responses before returning them.
 - Vercel canonicalizes `/notebook/` to `/notebook`. The PWA manifest, registration scope, Worker header, and proxy `Service-Worker-Allowed` header must therefore all use `/notebook` so an installed app remains controlled and can update itself.
+- Vercel also canonicalizes `/japanese/` to `/japanese`. Keep the Japanese manifest,
+  service-worker registration, precache URL, proxy header, and public links on that
+  no-trailing-slash scope.
 
 ## Debugging
 
@@ -28,6 +31,8 @@
 
 - Use Git history to restore posts or implementation changes.
 - If the installed notebook does not update, compare `/notebook/sw.js` with the direct Worker response and confirm both report the same cache version before troubleshooting the iPhone.
+- If the installed Japanese textbook does not update, compare `/japanese/sw.js` with
+  the direct Worker response and confirm both report the same `nihongo-core-*` cache version.
 - Rotate OSS credentials if exposed.
 - Stop the CMS with `./stop-blog-cms.sh` if its LaunchAgent or port is stuck.
 - Never use `/api/deploy` as a verification step.

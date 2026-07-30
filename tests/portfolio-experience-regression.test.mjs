@@ -22,6 +22,10 @@ const notebookProxy = fs.readFileSync(
   new URL('../src/app/notebook/[[...path]]/route.ts', import.meta.url),
   'utf8'
 );
+const japaneseProxy = fs.readFileSync(
+  new URL('../src/app/japanese/[[...path]]/route.ts', import.meta.url),
+  'utf8'
+);
 
 test('aboutMyProjects uses the dedicated portfolio experience', () => {
   assert.match(
@@ -165,5 +169,38 @@ test('blog decodes the scoped notebook proxy without taking over blog routes', (
     nextConfig,
     /\/api\/:path\*/,
     'Notebook proxy must not intercept the blog CMS API'
+  );
+});
+
+test('blog exposes the Japanese textbook through a scoped no-cache proxy', () => {
+  assert.match(
+    japaneseProxy,
+    /`\/japanese\/\$\{path\.map/,
+    'Expected the public Japanese route to stay scoped to the Worker textbook path'
+  );
+  assert.match(
+    japaneseProxy,
+    /requestHeaders\.delete\('accept-encoding'\)/,
+    'Expected the Japanese proxy to request an identity-encoded upstream response'
+  );
+  assert.match(
+    japaneseProxy,
+    /new TextDecoder\(\)\.decode\(bytes\)/,
+    'Expected textual textbook assets to be decoded before Vercel returns them'
+  );
+  assert.match(
+    japaneseProxy,
+    /new Uint8Array\(bytes\)/,
+    'Expected PWA icons to be returned as explicit binary bytes'
+  );
+  assert.match(
+    japaneseProxy,
+    /X-Japanese-Proxy-Version', 'decoded-v1'/,
+    'Expected a safe Japanese proxy-version diagnostic'
+  );
+  assert.match(
+    japaneseProxy,
+    /Service-Worker-Allowed', '\/japanese'/,
+    'Expected the service worker to control the canonical no-trailing-slash app URL'
   );
 });
