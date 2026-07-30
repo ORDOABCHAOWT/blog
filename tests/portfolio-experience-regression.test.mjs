@@ -195,8 +195,18 @@ test('blog exposes the Japanese textbook through a scoped no-cache proxy', () =>
   );
   assert.match(
     japaneseProxy,
-    /X-Japanese-Proxy-Version', 'decoded-v1'/,
+    /X-Japanese-Proxy-Version', 'decoded-v2'/,
     'Expected a safe Japanese proxy-version diagnostic'
+  );
+  assert.match(
+    japaneseProxy,
+    /body: requestBody/,
+    'Expected Japanese sync requests to forward their JSON body to the Worker'
+  );
+  assert.match(
+    japaneseProxy,
+    /export const POST = proxyJapanese/,
+    'Expected the public Japanese route to accept learning-record sync writes'
   );
   assert.match(
     japaneseProxy,

@@ -23,10 +23,14 @@ async function proxyJapanese(request: NextRequest, context: RouteContext) {
   requestHeaders.delete('host');
   requestHeaders.delete('connection');
   requestHeaders.delete('accept-encoding');
+  const requestBody = request.method === 'GET' || request.method === 'HEAD'
+    ? undefined
+    : await request.arrayBuffer();
 
   const upstream = await fetch(upstreamUrl, {
     method: request.method,
     headers: requestHeaders,
+    body: requestBody,
     cache: 'no-store',
     redirect: 'manual',
   });
@@ -41,7 +45,7 @@ async function proxyJapanese(request: NextRequest, context: RouteContext) {
       : new Uint8Array(bytes);
 
   responseHeaders.set('Cache-Control', 'no-cache, no-store, must-revalidate');
-  responseHeaders.set('X-Japanese-Proxy-Version', 'decoded-v1');
+  responseHeaders.set('X-Japanese-Proxy-Version', 'decoded-v2');
   responseHeaders.set('X-Japanese-Upstream-Bytes', String(bytes.byteLength));
   responseHeaders.delete('content-encoding');
   responseHeaders.delete('content-length');
@@ -56,3 +60,4 @@ async function proxyJapanese(request: NextRequest, context: RouteContext) {
 
 export const GET = proxyJapanese;
 export const HEAD = proxyJapanese;
+export const POST = proxyJapanese;
