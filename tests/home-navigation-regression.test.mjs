@@ -10,6 +10,10 @@ const globalsCss = fs.readFileSync(
   new URL('../src/app/globals.css', import.meta.url),
   'utf8'
 );
+const postLoadingSource = fs.readFileSync(
+  new URL('../src/app/posts/[slug]/loading.tsx', import.meta.url),
+  'utf8'
+);
 
 function getCssBlock(source, selector) {
   const start = source.indexOf(`${selector} {`);
@@ -61,5 +65,28 @@ test('article list keeps the anchor hit area stable during hover', () => {
     globalsCss,
     /\.directory-item\.is-active \.directory-content h2\s*{/,
     'Expected active motion to be applied to the article title instead of the whole anchor'
+  );
+});
+
+test('article routes provide immediate, accessible loading feedback', () => {
+  assert.match(
+    postLoadingSource,
+    /aria-busy="true"/,
+    'Expected the dynamic article route to expose its pending state'
+  );
+  assert.match(
+    postLoadingSource,
+    /role="status"[\s\S]*aria-live="polite"/,
+    'Expected route loading feedback to be announced without interrupting the reader'
+  );
+  assert.match(
+    globalsCss,
+    /\.post-loading-line\s*\{/,
+    'Expected a lightweight article skeleton while the route resolves'
+  );
+  assert.match(
+    globalsCss,
+    /@media \(prefers-reduced-motion: reduce\)[\s\S]*?\.post-loading-line\s*\{[\s\S]*?animation:\s*none/,
+    'Expected the loading treatment to respect reduced-motion preferences'
   );
 });

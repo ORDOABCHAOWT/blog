@@ -10,11 +10,11 @@ import { useRouter } from 'next/navigation';
  * by the page's own background while grey 0/1 ash lifts off the two burn
  * edges. No color tint, no radial bloom.
  */
-const TOTAL_MS = 1120;
-const NAV_AT = 0.68;
+const TOTAL_MS = 760;
+const BURN_PEAK_AT = 0.62;
 const REVEAL_START = 0.72;
 const BURN_BAND = 92;
-const ASH_GLYPH_COUNT = 360;
+const ASH_GLYPH_COUNT = 220;
 const GREY_ASH = {
   light: { r: 72, g: 72, b: 68 },
   dark: { r: 198, g: 198, b: 190 },
@@ -95,7 +95,12 @@ export default function PageTransition() {
         return;
       }
 
-      if (document.querySelector('.page-dust-overlay')) return;
+      // A visual transition must never hold navigation hostage. Route
+      // immediately, even if a previous overlay is still finishing.
+      if (document.querySelector('.page-dust-overlay')) {
+        router.push(fullPath);
+        return;
+      }
 
       const w = window.innerWidth;
       const h = window.innerHeight;
@@ -128,6 +133,7 @@ export default function PageTransition() {
       }
       ctx.scale(dpr, dpr);
       document.body.appendChild(overlay);
+      router.push(fullPath);
 
       const glyphs: AshGlyph[] = Array.from({ length: ASH_GLYPH_COUNT }, () => {
         const seed = Math.random();
@@ -145,12 +151,11 @@ export default function PageTransition() {
       });
 
       const start = performance.now();
-      let pushed = false;
       let raf = 0;
 
       const draw = (now: number) => {
         const t = (now - start) / TOTAL_MS;
-        const burn = easeInOutCubic(t / NAV_AT);
+        const burn = easeInOutCubic(t / BURN_PEAK_AT);
         const reveal =
           t < REVEAL_START ? 0 : easeOutCubic((t - REVEAL_START) / (1 - REVEAL_START));
         const overlayAlpha = 1 - reveal;
@@ -212,11 +217,6 @@ export default function PageTransition() {
 
         ctx.restore();
 
-        if (!pushed && t >= NAV_AT) {
-          pushed = true;
-          router.push(fullPath);
-        }
-
         if (t < 1) {
           raf = requestAnimationFrame(draw);
         } else {
@@ -229,10 +229,6 @@ export default function PageTransition() {
       window.setTimeout(() => {
         cancelAnimationFrame(raf);
         if (overlay.isConnected) overlay.remove();
-        if (!pushed) {
-          pushed = true;
-          router.push(fullPath);
-        }
       }, TOTAL_MS + 400);
     };
 

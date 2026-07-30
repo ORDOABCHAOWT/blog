@@ -10,10 +10,6 @@ const globalsCss = fs.readFileSync(
   new URL('../src/app/globals.css', import.meta.url),
   'utf8'
 );
-const portfolioPost = fs.readFileSync(
-  new URL('../posts/aboutMyProjects.md', import.meta.url),
-  'utf8'
-);
 const portfolioComponent = fs.readFileSync(
   new URL('../src/components/PortfolioExperience.tsx', import.meta.url),
   'utf8'
@@ -35,8 +31,8 @@ test('aboutMyProjects uses the dedicated portfolio experience', () => {
   );
   assert.match(
     postPage,
-    /post\.slug === 'aboutMyProjects'/,
-    'Expected the aboutMyProjects slug to opt into the portfolio page'
+    /resolvedParams\.slug === PORTFOLIO_SLUG/,
+    'Expected the reserved aboutMyProjects route to opt into the portfolio page before post lookup'
   );
   assert.match(
     postPage,
@@ -90,14 +86,19 @@ test('portfolio page keeps the Figma cover structure and scroll transition hooks
 
 test('portfolio post metadata names the portfolio link correctly', () => {
   assert.match(
-    portfolioPost,
-    /title:\s*"王腾作品集&项目经历"/,
+    postPage,
+    /PORTFOLIO_TITLE\s*=\s*'王腾作品集&项目经历'/,
     'Expected homepage/archive metadata to describe the portfolio'
   );
   assert.match(
-    portfolioPost,
-    /description:\s*"平面设计、新媒体运营、媒介策划与品牌传播项目合集"/,
+    postPage,
+    /PORTFOLIO_DESCRIPTION\s*=\s*\n?\s*'平面设计、新媒体运营、媒介策划与品牌传播项目合集'/,
     'Expected a portfolio-specific description'
+  );
+  assert.match(
+    postPage,
+    /getAllPostSlugs\(\), PORTFOLIO_SLUG/,
+    'Expected static params to include the reserved portfolio route without a Markdown file'
   );
 });
 

@@ -24,8 +24,8 @@ test('route transition burns into grayscale 0/1 ash instead of a colored bloom',
   );
   assert.match(
     transitionSource,
-    /ASH_GLYPH_COUNT\s*=\s*(3\d{2}|[4-9]\d{2})/,
-    'Expected enough 0/1 ash glyphs for the burn to read clearly'
+    /ASH_GLYPH_COUNT\s*=\s*(1\d{2}|2[0-4]\d)/,
+    'Expected a bounded glyph count so the transition does not delay route rendering'
   );
   assert.match(
     transitionSource,
@@ -36,6 +36,33 @@ test('route transition burns into grayscale 0/1 ash instead of a colored bloom',
     transitionSource,
     /BLOOM_COUNT|EDGE_GLYPH_COUNT|accentRgb|mix-blend-mode/,
     'Transition should not use the rejected colored bloom treatment'
+  );
+});
+
+test('route transition starts navigation immediately and never swallows a click', () => {
+  const pushIndex = transitionSource.indexOf('router.push(fullPath);', transitionSource.indexOf('document.body.appendChild(overlay);'));
+  const animationIndex = transitionSource.indexOf('requestAnimationFrame(draw)');
+
+  assert.notEqual(pushIndex, -1, 'Expected the route push beside the overlay setup');
+  assert.notEqual(animationIndex, -1, 'Expected the decorative animation to remain');
+  assert.ok(
+    pushIndex < animationIndex,
+    'Navigation must start before the decorative animation loop'
+  );
+  assert.match(
+    transitionSource,
+    /if \(document\.querySelector\('\.page-dust-overlay'\)\) \{\s*router\.push\(fullPath\);\s*return;/,
+    'A finishing overlay must not swallow the next internal link click'
+  );
+  assert.doesNotMatch(
+    transitionSource,
+    /t\s*>=\s*NAV_AT|if\s*\(!pushed\)/,
+    'Navigation must not wait for animation progress or a timeout fallback'
+  );
+  assert.match(
+    transitionSource,
+    /TOTAL_MS\s*=\s*(?:[1-7]\d{2}|800)/,
+    'The visual transition should stay short enough to feel responsive'
   );
 });
 

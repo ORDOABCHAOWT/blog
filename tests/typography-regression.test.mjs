@@ -32,3 +32,21 @@ test('dates and article indices retain wide-tracked mono typography', () => {
     /\.directory-number,\s*\.directory-date,\s*\.post-stamp,\s*\.post-date\s*\{[\s\S]*?font-family:\s*var\(--font-editorial-mono\)[\s\S]*?letter-spacing:\s*var\(--tracking-meta\)/
   );
 });
+
+test('article opening paragraph uses the same typography as the remaining body', () => {
+  assert.doesNotMatch(
+    globals,
+    /\.editorial-prose(?:\[data-cjk\])?\s*>\s*p:first-of-type/,
+    'The first paragraph must not receive a larger lead style or drop cap'
+  );
+  assert.doesNotMatch(
+    globals,
+    /--site-dropcap/,
+    'Drop-cap-only tokens should not remain after normalizing article body text'
+  );
+  assert.match(
+    globals,
+    /\.editorial-prose\[data-cjk\]\s+p\s*\{[\s\S]*?line-height:\s*1\.94;[\s\S]*?letter-spacing:\s*var\(--tracking-body\)/,
+    'All CJK paragraphs should share the same readable body rhythm'
+  );
+});

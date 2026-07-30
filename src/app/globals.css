@@ -25,7 +25,6 @@
   --site-shadow: rgba(42, 36, 28, 0.08);
   --site-wave: rgba(29, 26, 23, 0.16);
   --site-wave-strong: rgba(29, 26, 23, 0.24);
-  --site-dropcap: rgba(29, 26, 23, 0.82);
 }
 
 @theme inline {
@@ -48,7 +47,6 @@
     --site-shadow: rgba(0, 0, 0, 0.34);
     --site-wave: rgba(241, 235, 223, 0.18);
     --site-wave-strong: rgba(241, 235, 223, 0.28);
-    --site-dropcap: rgba(241, 235, 223, 0.2);
   }
 }
 
@@ -776,6 +774,69 @@ img {
   background: linear-gradient(90deg, rgba(73, 92, 116, 0.85), rgba(29, 26, 23, 0.72));
 }
 
+.post-loading {
+  min-height: 100vh;
+}
+
+.post-loading-line {
+  display: block;
+  width: 100%;
+  height: 0.8rem;
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--site-ink) 8%, transparent);
+  animation: post-loading-pulse 1.1s ease-in-out infinite alternate;
+}
+
+.post-loading-line.is-back {
+  width: 3.5rem;
+}
+
+.post-loading-line.is-stamp {
+  width: 5.5rem;
+}
+
+.post-loading-title {
+  display: grid;
+  gap: 0.8rem;
+  width: min(38rem, 92%);
+  margin-top: 1.6rem;
+}
+
+.post-loading-title .post-loading-line {
+  height: clamp(1.8rem, 4vw, 2.8rem);
+}
+
+.post-loading-line.is-short {
+  width: 62%;
+}
+
+.post-loading-body {
+  display: grid;
+  gap: 1.15rem;
+  width: min(42rem, calc(100% - 3rem));
+  margin: 4rem auto 0;
+}
+
+.post-loading-line.is-medium {
+  width: 78%;
+}
+
+@keyframes post-loading-pulse {
+  from {
+    opacity: 0.5;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .post-loading-line {
+    animation: none;
+  }
+}
+
 /* (Old `.post-rail-card` / `.post-rail-meta` / `.post-pagination`
    styles removed — Prev/Next now lives in the article-footer
    `.post-pager` block, and the side rail is chrome-free.) */
@@ -801,33 +862,6 @@ img {
 
 .editorial-prose > :first-child {
   margin-top: 0;
-}
-
-.editorial-prose > p:first-of-type:first-letter {
-  float: left;
-  margin: 0.12rem 0.55rem 0 0;
-  font-family: var(--font-editorial-display);
-  font-size: 4.9rem;
-  line-height: 0.8;
-  color: var(--site-dropcap);
-}
-
-/* CJK opens with a square ideograph; a true Western dropcap looks heavy
-   and uneven. Skip it and lean on the post-title / lead paragraph rhythm
-   instead. The first paragraph also gets a slightly larger lead size so
-   the article still has a visible "opening note". */
-.editorial-prose[data-cjk] > p:first-of-type:first-letter {
-  float: none;
-  margin: 0;
-  font-size: inherit;
-  line-height: inherit;
-  color: inherit;
-}
-
-.editorial-prose[data-cjk] > p:first-of-type {
-  font-size: 1.16rem;
-  line-height: 1.95;
-  letter-spacing: var(--tracking-body);
 }
 
 .editorial-prose p {
@@ -1201,10 +1235,6 @@ img {
     line-height: 1.8;
   }
 
-  .editorial-prose > p:first-of-type:first-letter {
-    margin-right: 0.4rem;
-    font-size: 4rem;
-  }
 }
 
 @media (max-width: 480px) {
@@ -1247,10 +1277,6 @@ img {
     line-height: 1.82;
   }
 
-  .editorial-prose > p:first-of-type:first-letter {
-    margin-right: 0.32rem;
-    font-size: 3.35rem;
-  }
 }
 
 /* ---------- Portfolio experience ----------

@@ -14,6 +14,11 @@ import {
   getPostBySlug,
 } from '@/lib/posts';
 
+const PORTFOLIO_SLUG = 'aboutMyProjects';
+const PORTFOLIO_TITLE = '王腾作品集&项目经历';
+const PORTFOLIO_DESCRIPTION =
+  '平面设计、新媒体运营、媒介策划与品牌传播项目合集';
+
 function getNodeText(node: ReactNode): string {
   return Children.toArray(node)
     .map((child) => {
@@ -31,7 +36,9 @@ function getNodeText(node: ReactNode): string {
 }
 
 export async function generateStaticParams() {
-  return getAllPostSlugs().map((slug) => ({ slug }));
+  return [...new Set([...getAllPostSlugs(), PORTFOLIO_SLUG])].map((slug) => ({
+    slug,
+  }));
 }
 
 export async function generateMetadata({
@@ -40,6 +47,14 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const resolvedParams = await params;
+
+  if (resolvedParams.slug === PORTFOLIO_SLUG) {
+    return {
+      title: `${PORTFOLIO_TITLE} | Taffy Wang`,
+      description: PORTFOLIO_DESCRIPTION,
+    };
+  }
+
   const post = getPostBySlug(resolvedParams.slug);
 
   if (!post) {
@@ -60,13 +75,14 @@ export default async function PostPage({
   params: Promise<{ slug: string }>;
 }) {
   const resolvedParams = await params;
+
+  if (resolvedParams.slug === PORTFOLIO_SLUG) {
+    return <PortfolioExperience />;
+  }
+
   const post = getPostBySlug(resolvedParams.slug);
 
   if (!post) return notFound();
-
-  if (post.slug === 'aboutMyProjects') {
-    return <PortfolioExperience />;
-  }
 
   const { previousPost, nextPost } = getAdjacentPosts(post.slug);
   const headings = extractHeadings(post.content);
