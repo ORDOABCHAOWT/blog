@@ -11,8 +11,9 @@ export async function POST() {
 
     if (!status.trim()) {
       return NextResponse.json({
-        success: false,
-        message: '没有需要提交的更改'
+        success: true,
+        unchanged: true,
+        message: '内容已是最新状态'
       });
     }
 

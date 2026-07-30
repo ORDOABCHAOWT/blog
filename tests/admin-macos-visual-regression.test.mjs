@@ -10,6 +10,14 @@ const markdownEditor = fs.readFileSync(
   new URL('../src/components/MarkdownEditor.tsx', import.meta.url),
   'utf8'
 );
+const adminPage = fs.readFileSync(
+  new URL('../src/app/admin/page.tsx', import.meta.url),
+  'utf8'
+);
+const deployRoute = fs.readFileSync(
+  new URL('../src/app/api/deploy/route.ts', import.meta.url),
+  'utf8'
+);
 
 test('CMS uses native Mac typography and controls without changing its page structure', () => {
   assert.match(
@@ -85,5 +93,33 @@ test('CMS preserves field order while stacking the existing form grid on small s
     globals,
     /@media \(max-width:\s*720px\)\s*\{[\s\S]*?\.admin-editor-actions\s*\{[\s\S]*?position:\s*static/,
     'Expected the mobile save controls not to cover the writing surface'
+  );
+});
+
+test('CMS homepage uses a compact neutral publishing status instead of a large alert card', () => {
+  assert.match(
+    adminPage,
+    /type AdminNotice = \{[\s\S]*?tone:\s*'neutral' \| 'success' \| 'error'/,
+    'Expected homepage publishing feedback to use an explicit neutral state'
+  );
+  assert.doesNotMatch(
+    adminPage,
+    /message\.includes\(['"]✅['"]\)/,
+    'Expected status tone not to depend on decorative emoji parsing'
+  );
+  assert.match(
+    globals,
+    /\.admin-status\s*\{[\s\S]*?display:\s*inline-flex;[\s\S]*?min-height:\s*38px;[\s\S]*?border-radius:\s*8px/,
+    'Expected a compact inline CMS status treatment'
+  );
+  assert.doesNotMatch(
+    globals,
+    /\.admin-status\s*\{[^}]*box-shadow:/,
+    'Expected the routine publishing status not to look like an elevated alert card'
+  );
+  assert.match(
+    deployRoute,
+    /success:\s*true,[\s\S]*?unchanged:\s*true,[\s\S]*?message:\s*'内容已是最新状态'/,
+    'Expected a no-change deployment to be treated as neutral success'
   );
 });

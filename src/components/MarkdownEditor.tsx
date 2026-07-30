@@ -64,12 +64,14 @@ type StandaloneImage = {
 
 type CodeMirrorLineWidget = {
   clear: () => void;
-  changed: () => void;
 };
 
 type ImagePreviewWidget = {
   line: number;
+  loadVersion: number;
   markdown: string;
+  status: HTMLSpanElement;
+  surface: HTMLDivElement;
   widget: CodeMirrorLineWidget;
 };
 
@@ -315,6 +317,35 @@ const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>(
       const doc = cm.getDoc();
       const desiredImages = new Map<number, StandaloneImage>();
 
+      const loadImageIntoWidget = (
+        entry: ImagePreviewWidget,
+        image: StandaloneImage
+      ) => {
+        const imageElement = document.createElement('img');
+        imageElement.alt = image.alt;
+        imageElement.loading = 'lazy';
+        imageElement.decoding = 'async';
+
+        entry.loadVersion += 1;
+        const loadVersion = entry.loadVersion;
+        entry.markdown = image.markdown;
+        entry.surface.dataset.imageUrl = image.url;
+        entry.surface.classList.remove('is-loaded', 'is-error');
+        entry.status.textContent = '正在加载图片预览…';
+        entry.surface.replaceChildren(imageElement, entry.status);
+
+        imageElement.addEventListener('load', () => {
+          if (entry.loadVersion !== loadVersion) return;
+          entry.surface.classList.add('is-loaded');
+        }, { once: true });
+        imageElement.addEventListener('error', () => {
+          if (entry.loadVersion !== loadVersion) return;
+          entry.surface.classList.add('is-error');
+          entry.status.textContent = '图片预览加载失败，正文链接仍会正常保存';
+        }, { once: true });
+        imageElement.src = image.url;
+      };
+
       for (let line = 0; line < doc.lineCount(); line += 1) {
         const image = parseStandaloneImage(doc.getLine(line));
         if (image) desiredImages.set(line, image);
@@ -322,7 +353,13 @@ const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>(
 
       imagePreviewWidgetsRef.current.forEach((entry, line) => {
         const desired = desiredImages.get(line);
-        if (desired?.markdown === entry.markdown) return;
+        if (desired) {
+          if (desired.markdown !== entry.markdown) {
+            loadImageIntoWidget(entry, desired);
+          }
+          desiredImages.delete(line);
+          return;
+        }
 
         entry.widget.clear();
         if (line < doc.lineCount()) {
@@ -336,52 +373,32 @@ const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>(
 
         const surface = document.createElement('div');
         surface.className = 'markdown-image-preview';
-        surface.dataset.imageUrl = image.url;
-        surface.title = '点击图片可将光标放到图片所在行';
-
-        const imageElement = document.createElement('img');
-        imageElement.alt = image.alt;
-        imageElement.loading = 'lazy';
-        imageElement.decoding = 'async';
 
         const status = document.createElement('span');
         status.className = 'markdown-image-preview-status';
         status.textContent = '正在加载图片预览…';
 
-        surface.append(imageElement, status);
+        surface.append(status);
         cm.addLineClass(line, 'text', 'markdown-image-source-line');
 
-        let widget: CodeMirrorLineWidget | null = null;
-        imageElement.addEventListener('load', () => {
-          surface.classList.add('is-loaded');
-          widget?.changed();
-        }, { once: true });
-        imageElement.addEventListener('error', () => {
-          surface.classList.add('is-error');
-          status.textContent = '图片预览加载失败，正文链接仍会正常保存';
-          widget?.changed();
-        }, { once: true });
-        surface.addEventListener('mousedown', (event) => {
-          event.preventDefault();
-          doc.setCursor({ line, ch: doc.getLine(line).length });
-          cm.focus();
-          updateFloatingControls();
-        });
-
-        widget = cm.addLineWidget(line, surface, {
+        const widget = cm.addLineWidget(line, surface, {
           above: false,
           coverGutter: false,
           handleMouseEvents: false,
-          noHScroll: true,
+          noHScroll: false,
         });
-        imagePreviewWidgetsRef.current.set(line, {
+        const entry: ImagePreviewWidget = {
           line,
+          loadVersion: 0,
           markdown: image.markdown,
+          status,
+          surface,
           widget,
-        });
-        imageElement.src = image.url;
+        };
+        imagePreviewWidgetsRef.current.set(line, entry);
+        loadImageIntoWidget(entry, image);
       });
-    }, [updateFloatingControls]);
+    }, []);
 
     useEffect(() => {
       const cm = instanceRef.current?.codemirror;
@@ -528,8 +545,6 @@ const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>(
           { line, ch: start },
           { line, ch: start + snippet.length }
         );
-        doc.setCursor({ line, ch: start + replacement.length });
-        cm.focus();
         updateFloatingControls();
         return true;
       }
@@ -1159,11 +1174,13 @@ const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>(
           text-shadow: none !important;
         }
         .markdown-editor .markdown-image-preview {
+          box-sizing: border-box;
           display: grid;
-          width: calc(100% - 2px);
+          width: 100%;
+          max-width: 100%;
           height: clamp(180px, 34vw, 360px);
           place-items: center;
-          margin: 8px 1px 14px;
+          margin: 8px 0 14px;
           overflow: hidden;
           border: 1px solid color-mix(in srgb, var(--site-border) 74%, transparent);
           border-radius: 12px;
@@ -1181,6 +1198,10 @@ const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>(
         }
         .markdown-editor .markdown-image-preview img {
           display: block;
+          width: 100%;
+          height: 100%;
+          min-width: 0;
+          min-height: 0;
           max-width: 100%;
           max-height: 100%;
           object-fit: contain;
@@ -1203,7 +1224,6 @@ const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>(
           display: none;
         }
         .markdown-editor .markdown-image-preview.is-error {
-          height: 96px;
           border-style: dashed;
         }
         .markdown-editor .CodeMirror pre.CodeMirror-line {

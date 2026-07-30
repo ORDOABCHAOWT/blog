@@ -2489,10 +2489,61 @@ img {
   color: #a6221a;
 }
 
+.admin-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 38px;
+  max-width: min(100%, 560px);
+  padding: 8px 12px;
+  border: 1px solid color-mix(in srgb, var(--site-border) 82%, transparent);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--site-panel-strong) 72%, transparent);
+  color: var(--site-muted);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text",
+    var(--font-noto-sans-sc), "PingFang SC", sans-serif;
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: -0.006em;
+}
+
+.admin-status-dot {
+  flex: 0 0 auto;
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--site-muted) 72%, transparent);
+}
+
+.admin-status-success {
+  color: color-mix(in srgb, #187a35 82%, var(--site-ink));
+}
+
+.admin-status-success .admin-status-dot {
+  background: #34a853;
+}
+
+.admin-status-error {
+  color: #a6221a;
+  border-color: color-mix(in srgb, #ff3b30 24%, var(--site-border));
+}
+
+.admin-status-error .admin-status-dot {
+  background: #ff3b30;
+}
+
 @media (prefers-color-scheme: dark) {
   .admin-alert-error {
     color: #ff9b93;
     border-left-color: #ff6961;
+  }
+
+  .admin-status-success {
+    color: #78d991;
+  }
+
+  .admin-status-error {
+    color: #ff9b93;
   }
 }
 

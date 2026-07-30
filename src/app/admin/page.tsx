@@ -10,11 +10,16 @@ interface Post {
   description: string;
 }
 
+type AdminNotice = {
+  message: string;
+  tone: 'neutral' | 'success' | 'error';
+};
+
 export default function AdminPage() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [deploying, setDeploying] = useState(false);
-  const [message, setMessage] = useState('');
+  const [notice, setNotice] = useState<AdminNotice | null>(null);
 
   useEffect(() => {
     document.title = '博客管理后台 | Taffy CMS';
@@ -28,7 +33,7 @@ export default function AdminPage() {
       setPosts(data.posts);
     } catch (error) {
       console.error('Failed to fetch posts:', error);
-      setMessage('获取文章列表失败');
+      setNotice({ message: '文章列表加载失败', tone: 'error' });
     } finally {
       setLoading(false);
     }
@@ -43,19 +48,19 @@ export default function AdminPage() {
       });
 
       if (res.ok) {
-        setMessage('文章删除成功！');
+        setNotice({ message: '文章已删除', tone: 'success' });
         fetchPosts();
       } else {
-        setMessage('删除失败');
+        setNotice({ message: '删除失败，请重试', tone: 'error' });
       }
     } catch (error) {
-      setMessage('删除失败');
+      setNotice({ message: '删除失败，请重试', tone: 'error' });
     }
   };
 
   const handleDeploy = async () => {
     setDeploying(true);
-    setMessage('');
+    setNotice(null);
 
     try {
       const res = await fetch('/api/deploy', {
@@ -65,12 +70,18 @@ export default function AdminPage() {
       const data = await res.json();
 
       if (data.success) {
-        setMessage('✅ ' + data.message);
+        setNotice({
+          message: data.message,
+          tone: data.unchanged ? 'neutral' : 'success',
+        });
       } else {
-        setMessage('❌ ' + (data.message || data.error));
+        setNotice({
+          message: data.message || data.error || '发布失败',
+          tone: 'error',
+        });
       }
     } catch (error) {
-      setMessage('❌ 发布失败，请检查网络连接');
+      setNotice({ message: '发布失败，请检查网络连接', tone: 'error' });
     } finally {
       setDeploying(false);
     }
@@ -114,11 +125,14 @@ export default function AdminPage() {
           </div>
         </div>
 
-        {message && (
-          <div className={`admin-alert mb-8 px-5 py-4 ${
-            message.includes('✅') ? 'admin-alert-success' : 'admin-alert-error'
-          }`}>
-            {message.replace(/^[✅❌]\s*/, '')}
+        {notice && (
+          <div
+            className={`admin-status admin-status-${notice.tone} mb-8`}
+            role={notice.tone === 'error' ? 'alert' : 'status'}
+            aria-live="polite"
+          >
+            <span className="admin-status-dot" aria-hidden="true" />
+            <span>{notice.message}</span>
           </div>
         )}
 

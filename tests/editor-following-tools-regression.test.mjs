@@ -334,8 +334,33 @@ test('Markdown images render as direct previews instead of exposed URLs', () => 
   );
   assert.match(
     markdownEditor,
-    /widget\?\.changed\(\)/,
-    'Expected image load completion to refresh CodeMirror line geometry'
+    /noHScroll:\s*false/,
+    'Expected image widgets to remain inside the CodeMirror content width'
+  );
+  assert.match(
+    markdownEditor,
+    /loadImageIntoWidget\(entry,\s*desired\)/,
+    'Expected uploaded image URLs to update the existing widget without rebuilding its line'
+  );
+  assert.match(
+    markdownEditor,
+    /entry\.loadVersion !== loadVersion/,
+    'Expected stale image load events not to update a newer preview'
+  );
+  assert.doesNotMatch(
+    markdownEditor,
+    /widget\.changed\(\)/,
+    'Expected image loading not to mutate line-widget geometry after insertion'
+  );
+  assert.match(
+    markdownEditor,
+    /\.markdown-image-preview\s*\{[\s\S]*?width:\s*100%;[\s\S]*?max-width:\s*100%/,
+    'Expected the preview surface to stay within the editor content box'
+  );
+  assert.match(
+    markdownEditor,
+    /\.markdown-image-preview img\s*\{[\s\S]*?width:\s*100%;[\s\S]*?height:\s*100%;[\s\S]*?object-fit:\s*contain/,
+    'Expected the image element itself to stay inside the preview surface'
   );
   assert.doesNotMatch(
     markdownEditor,
@@ -364,6 +389,15 @@ test('image uploads insert an immediate local preview and replace it in place', 
     markdownEditor,
     /replaceEditorSnippet\(\s*previewMarkdown,\s*data\.markdown\s*\)/,
     'Expected successful uploads to swap only the backing Markdown URL'
+  );
+  const replacementHelper = markdownEditor.match(
+    /const replaceEditorSnippet = useCallback\([\s\S]*?return false;[\s\S]*?\}, \[updateFloatingControls\]\);/
+  )?.[0];
+  assert.ok(replacementHelper, 'Expected the asynchronous image replacement helper');
+  assert.doesNotMatch(
+    replacementHelper,
+    /setCursor|cm\.focus/,
+    'Expected upload completion not to steal focus or move the user cursor'
   );
   assert.match(
     markdownEditor,
