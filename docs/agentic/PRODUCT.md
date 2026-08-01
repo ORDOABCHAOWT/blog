@@ -27,6 +27,8 @@ Provide a personal editorial blog, portfolio experience, and locally operated CM
   do not need to connect to `workers.dev` directly; the proxy must not claim `/api/*`.
 - The Japanese core-expressions textbook is exposed at `/japanese` through its own
   scoped Worker proxy so the same URL works on desktop, mobile, and as an installed PWA.
+- The family blood-pressure journal is exposed at `/blood-pressure` through a scoped
+  Vercel proxy, with the same public no-access-code mode on desktop and installed iPhone PWAs.
 - Admin currently opens without a Basic Auth prompt.
 - CMS slug fields preserve raw typing and IME composition, then normalize only
   on blur or save; the form shows the resulting post URL before submission.

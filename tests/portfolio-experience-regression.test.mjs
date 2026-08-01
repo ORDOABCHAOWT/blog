@@ -26,6 +26,10 @@ const japaneseProxy = fs.readFileSync(
   new URL('../src/app/japanese/[[...path]]/route.ts', import.meta.url),
   'utf8'
 );
+const bloodPressureProxy = fs.readFileSync(
+  new URL('../src/app/blood-pressure/[[...path]]/route.ts', import.meta.url),
+  'utf8'
+);
 
 test('aboutMyProjects uses the dedicated portfolio experience', () => {
   assert.match(
@@ -212,5 +216,45 @@ test('blog exposes the Japanese textbook through a scoped no-cache proxy', () =>
     japaneseProxy,
     /Service-Worker-Allowed', '\/japanese'/,
     'Expected the service worker to control the canonical no-trailing-slash app URL'
+  );
+});
+
+test('blog exposes the blood-pressure PWA and all of its sync methods through a scoped proxy', () => {
+  assert.match(
+    bloodPressureProxy,
+    /`\/blood-pressure\/\$\{path\.map/,
+    'Expected the family health app to remain isolated under /blood-pressure'
+  );
+  assert.match(
+    bloodPressureProxy,
+    /blood-pressure-journal\.ordoabchao-wt\.workers\.dev/,
+    'Expected the proxy to target the deployed blood-pressure Worker'
+  );
+  assert.match(
+    bloodPressureProxy,
+    /requestHeaders\.delete\('accept-encoding'\)/,
+    'Expected the proxy to request an identity-encoded upstream response'
+  );
+  assert.match(
+    bloodPressureProxy,
+    /X-Blood-Pressure-Proxy-Version', 'decoded-v1'/,
+    'Expected a safe proxy-version diagnostic'
+  );
+  assert.match(
+    bloodPressureProxy,
+    /Service-Worker-Allowed', '\/blood-pressure'/,
+    'Expected the PWA to control the canonical no-trailing-slash app URL'
+  );
+  for (const method of ['POST', 'PATCH', 'PUT', 'DELETE']) {
+    assert.match(
+      bloodPressureProxy,
+      new RegExp(`export const ${method} = proxyBloodPressure`),
+      `Expected ${method} writes to reach the Worker API`
+    );
+  }
+  assert.doesNotMatch(
+    nextConfig,
+    /\/api\/:path\*/,
+    'Blood-pressure proxy must not intercept the blog CMS API'
   );
 });

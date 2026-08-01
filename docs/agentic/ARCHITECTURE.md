@@ -19,6 +19,7 @@
 - Markdown posts and public assets are user content, not implementation scratch space.
 - `/notebook/[[...path]]` is a narrowly scoped dynamic proxy to the Word Notebook Worker. It requests identity encoding and returns decoded text or explicit binary bytes so Vercel does not cache or drop the PWA response; it must never claim the blog's `/api/*` routes.
 - `/japanese/[[...path]]` uses the same decoded, no-cache proxy boundary for the static Japanese textbook and its PWA assets.
+- `/blood-pressure/[[...path]]` proxies the family blood-pressure PWA, its scoped assets, and its GET/POST/PATCH/PUT/DELETE sync API to the dedicated Cloudflare Worker without claiming the blog's root `/api/*` routes.
 
 ## Known Architectural Exceptions
 
