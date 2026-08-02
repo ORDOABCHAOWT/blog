@@ -38,7 +38,7 @@
 - If the installed Japanese textbook does not update, compare `/japanese/sw.js` with
   the direct Worker response and confirm both report the same `nihongo-core-*` cache version.
 - If the installed blood-pressure journal does not update, compare `/blood-pressure/sw.js`
-  with the direct Worker response and confirm both report `blood-pressure-journal-shell-v3`.
+  with the direct Worker response and confirm both report `blood-pressure-journal-shell-v4`.
 - Rotate OSS credentials if exposed.
 - Stop the CMS with `./stop-blog-cms.sh` if its LaunchAgent or port is stuck.
 - Never use `/api/deploy` as a verification step.
