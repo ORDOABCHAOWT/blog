@@ -1,4 +1,9 @@
 import { NextRequest } from 'next/server';
+import {
+  getUpstreamTimeoutSignal,
+  hasOversizedRequestBody,
+  MAX_PROXY_BODY_BYTES,
+} from '@/lib/request-security';
 
 const BLOOD_PRESSURE_ORIGIN = 'https://blood-pressure-journal.ordoabchao-wt.workers.dev';
 
@@ -12,6 +17,10 @@ const isTextual = (contentType: string) =>
   || /(?:json|javascript|xml|manifest)/i.test(contentType);
 
 async function proxyBloodPressure(request: NextRequest, context: RouteContext) {
+  if (hasOversizedRequestBody(request, MAX_PROXY_BODY_BYTES)) {
+    return new Response('Request body is too large', { status: 413 });
+  }
+
   const { path = [] } = await context.params;
   const upstreamUrl = new URL(
     `/blood-pressure/${path.map((segment) => encodeURIComponent(segment)).join('/')}`,
@@ -33,6 +42,7 @@ async function proxyBloodPressure(request: NextRequest, context: RouteContext) {
     body: requestBody,
     cache: 'no-store',
     redirect: 'manual',
+    signal: getUpstreamTimeoutSignal(),
   });
 
   const responseHeaders = new Headers(upstream.headers);

@@ -10,11 +10,19 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'taffyblog.oss-ap-northeast-1.aliyuncs.com',
       },
-      {
-        protocol: 'https',
-        hostname: '**.aliyuncs.com',
-      },
     ],
+  },
+  async headers() {
+    return [
+      {
+        source: '/(.*)',
+        headers: [
+          { key: 'X-Content-Type-Options', value: 'nosniff' },
+          { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+          { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
+        ],
+      },
+    ];
   },
 };
 

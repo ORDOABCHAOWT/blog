@@ -2,6 +2,11 @@ import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
+import { cmsUnavailableResponse, isCmsAvailable } from '@/lib/cms-access';
+import {
+  hasOversizedRequestBody,
+  MAX_CMS_JSON_BODY_BYTES,
+} from '@/lib/request-security';
 
 const postsDir = path.join(process.cwd(), 'posts');
 
@@ -16,6 +21,8 @@ export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
 ) {
+  if (!isCmsAvailable()) return cmsUnavailableResponse();
+
   try {
     const { slug } = await params;
 
@@ -50,6 +57,11 @@ export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
 ) {
+  if (!isCmsAvailable()) return cmsUnavailableResponse();
+  if (hasOversizedRequestBody(request, MAX_CMS_JSON_BODY_BYTES)) {
+    return NextResponse.json({ error: 'Request body is too large' }, { status: 413 });
+  }
+
   try {
     const { slug } = await params;
     const { title, date, description, content, newSlug } = await request.json();
@@ -101,6 +113,8 @@ export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
 ) {
+  if (!isCmsAvailable()) return cmsUnavailableResponse();
+
   try {
     const { slug } = await params;
 

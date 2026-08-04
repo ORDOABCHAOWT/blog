@@ -2,6 +2,11 @@ import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
+import { cmsUnavailableResponse, isCmsAvailable } from '@/lib/cms-access';
+import {
+  hasOversizedRequestBody,
+  MAX_CMS_JSON_BODY_BYTES,
+} from '@/lib/request-security';
 
 const postsDir = path.join(process.cwd(), 'posts');
 
@@ -13,6 +18,8 @@ function isValidSlug(slug: string): boolean {
 
 // GET - 获取所有文章
 export async function GET() {
+  if (!isCmsAvailable()) return cmsUnavailableResponse();
+
   try {
     const files = fs.readdirSync(postsDir);
     const posts = files
@@ -39,6 +46,11 @@ export async function GET() {
 
 // POST - 创建新文章
 export async function POST(request: NextRequest) {
+  if (!isCmsAvailable()) return cmsUnavailableResponse();
+  if (hasOversizedRequestBody(request, MAX_CMS_JSON_BODY_BYTES)) {
+    return NextResponse.json({ error: 'Request body is too large' }, { status: 413 });
+  }
+
   try {
     const { slug, title, date, description, content } = await request.json();
 

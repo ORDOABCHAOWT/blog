@@ -2,13 +2,13 @@
 
 This document outlines the security features and configuration guidelines for this blog CMS.
 
-> **Current implementation note (2026-06-09):** The repository currently contains an explicit regression test requiring `/admin` to load without Basic Auth middleware. Admin pages and mutating API routes should therefore be treated as trusted-local-only until an explicit access-control redesign is approved and implemented. See `docs/agentic/SECURITY.md` for the current operational security contract. The Basic Auth sections below describe older or aspirational guidance, not the behavior currently enforced by the codebase.
+> **Current implementation note (2026-08-04):** The CMS remains passwordless on the trusted local server, while `/admin` and all CMS APIs return 404 on every Vercel deployment. See `docs/agentic/SECURITY.md` for the operational security contract.
 
 ## Overview
 
 This project implements multiple security layers to protect against common web vulnerabilities:
 
-- ✅ HTTP Basic Authentication for admin endpoints
+- ✅ Local-only CMS boundary on Vercel deployments
 - ✅ Path traversal attack prevention
 - ✅ File upload security with type validation
 - ✅ Command injection protection
@@ -18,28 +18,14 @@ This project implements multiple security layers to protect against common web v
 
 ## 🛡️ Security Features
 
-### 1. Authentication Protection
+### 1. Deployment Boundary Protection
 
-All administrative endpoints (`/admin` and `/api/*`) are protected by HTTP Basic Authentication.
+The CMS has two deliberate operating modes:
 
-**Setup:**
+- On the trusted local server, `/admin` and CMS APIs remain available without a password.
+- On every Vercel deployment, `/admin`, `/api/posts`, `/api/upload`, and `/api/deploy` return 404 before reading input or performing work.
 
-1. Copy the environment variable template:
-   ```bash
-   cp .env.example .env.local
-   ```
-
-2. Configure credentials in `.env.local`:
-   ```env
-   ADMIN_USER=your-username
-   ADMIN_PASSWORD=your-secure-password
-   ```
-
-3. **Password Requirements:**
-   - Minimum 16 characters
-   - Mix of letters and numbers
-   - Avoid special characters like `$`, `#`, `@` in development (they may cause issues with Next.js middleware)
-   - Use alphanumeric passwords: e.g., `MyBlog2024SecurePass99`
+Remote CMS access is not supported. Adding it requires a dedicated authenticated design rather than exposing the local routes.
 
 ### 2. Path Traversal Protection
 
@@ -73,10 +59,6 @@ All Git commands use parameterized execution via `execFile` instead of string in
 **Required variables in `.env.local`:**
 
 ```env
-# Admin Authentication
-ADMIN_USER=admin
-ADMIN_PASSWORD=YourSecurePassword123
-
 # Alibaba Cloud OSS (for image storage)
 OSS_ACCESS_KEY_ID=your-key-id
 OSS_ACCESS_KEY_SECRET=your-key-secret
@@ -97,25 +79,21 @@ OSS_DOMAIN=https://your-bucket.oss-region.aliyuncs.com
 
 ### Vercel Deployment
 
-When deploying to Vercel:
+When deploying the public blog to Vercel:
 
 1. Go to [Vercel Dashboard](https://vercel.com/dashboard)
 2. Select your project
 3. Navigate to Settings → Environment Variables
-4. Add all required variables from `.env.local`
+4. Do not add local CMS or OSS write credentials unless a future authenticated remote workflow explicitly requires them
 5. Redeploy the project
-
-**Note:** In production (Vercel), you can use complex passwords with special characters safely.
 
 ### Security Checklist
 
 Before deploying:
 
-- [ ] Environment variables configured
-- [ ] Strong password set (16+ characters)
+- [ ] `/admin` and CMS APIs return 404 on Vercel
 - [ ] `.env.local` not committed to Git
-- [ ] OSS credentials are valid
-- [ ] Tested authentication on staging
+- [ ] OSS write credentials are absent from Vercel unless explicitly required
 - [ ] Verified file upload restrictions
 
 ---
@@ -124,16 +102,16 @@ Before deploying:
 
 ### 1. Credential Management
 
-- **Development:** Use simple alphanumeric passwords
-- **Production:** Use complex passwords with special characters
-- **Rotation:** Change passwords every 3 months
-- **Storage:** Use password managers for credential storage
+- Use a dedicated, least-privilege RAM identity for OSS uploads.
+- Keep OSS write credentials only in the local `.env.local` file.
+- Rotate OSS credentials if exposure is suspected.
+- Store recovery credentials in a password manager.
 
 ### 2. Access Control
 
-- Only share admin credentials with trusted users
-- Use separate credentials for different environments
-- Monitor access logs regularly
+- Keep the local CMS bound to `127.0.0.1`.
+- Keep all CMS routes unavailable on Vercel.
+- Monitor Vercel, GitHub, and OSS access logs regularly.
 
 ### 3. Content Security
 
@@ -156,9 +134,8 @@ The blog content is stored in the `/posts` directory as Markdown files:
 ### If You Suspect Unauthorized Access
 
 1. **Immediately rotate credentials:**
-   - Change `ADMIN_PASSWORD` in `.env.local`
    - Rotate OSS AccessKey in Alibaba Cloud console
-   - Update Vercel environment variables
+   - Remove unexpected OSS write credentials from Vercel
 
 2. **Check for unauthorized changes:**
    ```bash
@@ -188,14 +165,19 @@ If you discover a security vulnerability:
 
 - [OWASP Top 10](https://owasp.org/www-project-top-ten/)
 - [Next.js Security Headers](https://nextjs.org/docs/app/building-your-application/configuring/security-headers)
-- [HTTP Basic Authentication](https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication)
 
 ---
 
 ## 🔄 Changelog
 
+### 2026-08-04 - Low-risk Security Hardening
+- Kept the passwordless CMS local-only and blocked it on Vercel
+- Added request bounds, upstream timeouts, and baseline security headers
+- Restricted image optimization to the owned OSS bucket
+- Refreshed vulnerable dependencies
+
 ### 2025-12-08 - Security Hardening
-- Added HTTP Basic Authentication
+- Added the original authentication guidance, later replaced by the local-only boundary
 - Implemented path traversal protection
 - Enhanced file upload validation
 - Upgraded Next.js to 16.0.7
@@ -203,6 +185,6 @@ If you discover a security vulnerability:
 
 ---
 
-**Last Updated:** 2025-12-08
-**Security Audit:** Completed
-**Status:** Production Ready
+**Last Updated:** 2026-08-04
+**Security Audit:** In active maintenance
+**Status:** Public frontend hardened; CMS local-only

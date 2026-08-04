@@ -5,6 +5,7 @@
 - `npm run dev` starts Next.js on `127.0.0.1`.
 - `start-blog-cms.sh` and `stop-blog-cms.sh` operate a macOS user LaunchAgent on port 3000.
 - `npm run build` validates that the production application can compile and generate pages.
+- Vercel deployments return 404 for the local-only CMS pages and APIs; local development and `next start` retain CMS access.
 
 ## Failure Modes
 
@@ -12,6 +13,7 @@
 - Missing OSS environment variables break uploads.
 - Port 3000 or LaunchAgent state can break the desktop CMS launcher.
 - `/api/deploy` can commit or push unintended working-tree changes.
+- Removing the Vercel CMS guard would expose destructive local-only routes on public deployments.
 - Next builds can succeed while independent type checking fails because type errors are skipped.
 - A static Vercel external rewrite can leave `/notebook/sw.js` stale after the Worker deploys. The dynamic notebook proxy disables caching and content encoding, then materializes text or binary responses before returning them.
 - Vercel canonicalizes `/notebook/` to `/notebook`. The PWA manifest, registration scope, Worker header, and proxy `Service-Worker-Allowed` header must therefore all use `/notebook` so an installed app remains controlled and can update itself.

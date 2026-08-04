@@ -32,7 +32,7 @@
 - Treat `/api/posts` write/delete operations and `/api/upload` as destructive or externally visible.
 - Never expose or commit `.env*`, OSS credentials, cookies, tokens, or private deployment details.
 - Preserve slug allowlist validation, upload MIME/extension/size checks, and parameterized `execFile` deployment commands.
-- The admin/API surface is currently intentionally unauthenticated by regression test. Do not silently add or remove authentication; require an explicit security/product decision.
+- The admin/API surface remains passwordless for the trusted local CMS, but every Vercel deployment must keep it unavailable through `src/lib/cms-access.ts`. Changing this boundary or adding remote authentication requires an explicit security/product decision.
 - `next.config.ts` currently skips TypeScript build errors. Do not remove that escape hatch until the existing type errors are fixed in a dedicated task.
 
 ## Working Agreements

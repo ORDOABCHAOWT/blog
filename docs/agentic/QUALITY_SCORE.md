@@ -4,9 +4,9 @@
 | --- | ---: | --- | --- |
 | Agent map | 4 | Project-specific `AGENTS.md` and indexed docs. | Add nested instructions only if ownership grows. |
 | Architecture clarity | 4 | Data, filesystem, OSS, process, and content boundaries documented. | Extract duplicated slug validation during a dedicated change. |
-| Verification | 3 | Reliable build gate, many regression tests, repository validation, CI. | Repair stale test, type errors, and lint findings. |
+| Verification | 3 | Reliable build gate, 63 passing regression tests, repository validation, CI. | Repair existing type errors and lint warnings. |
 | Reliability | 3 | Local/LaunchAgent operation and recovery documented. | Add stable browser smoke tests without destructive API calls. |
-| Security | 2 | Important static constraints exist, but admin/API are unauthenticated. | Decide and implement an explicit access-control model. |
+| Security | 3 | Public Vercel deployments block the local-only CMS; dependency scanning, request bounds, timeouts, exact image origins, and security headers are regression-tested. | Resolve the legacy `ali-oss` proxy chain and add monitored WAF limits. |
 | Entropy control | 3 | Audit, docs, tests, and debt register exist. | Schedule periodic debt and doc-gardening reviews. |
 
 ## Scoring Guide

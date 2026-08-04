@@ -13,6 +13,7 @@
 
 - Public reading behavior belongs in public pages/components and post parsing.
 - CMS behavior belongs under `src/app/admin/`.
+- `src/lib/cms-access.ts` keeps all CMS pages and APIs local-only by returning 404 on Vercel deployments.
 - Filesystem mutation belongs only in post API routes.
 - External object-storage behavior belongs in `src/lib/oss.ts` and `/api/upload`.
 - Process execution belongs only in `/api/deploy` and must use parameterized `execFile`.
@@ -20,11 +21,12 @@
 - `/notebook/[[...path]]` is a narrowly scoped dynamic proxy to the Word Notebook Worker. It requests identity encoding and returns decoded text or explicit binary bytes so Vercel does not cache or drop the PWA response; it must never claim the blog's `/api/*` routes.
 - `/japanese/[[...path]]` uses the same decoded, no-cache proxy boundary for the static Japanese textbook and its PWA assets.
 - `/blood-pressure/[[...path]]` proxies the family blood-pressure PWA, its scoped assets, and its GET/POST/PATCH/PUT/DELETE sync API to the dedicated Cloudflare Worker without claiming the blog's root `/api/*` routes.
+- All three Worker proxies reject declared request bodies larger than 4MB and abort upstream fetches after 30 seconds.
 
 ## Known Architectural Exceptions
 
 - Next production builds currently skip TypeScript errors.
-- Admin and API routes are intentionally unauthenticated according to an existing regression test.
+- Local CMS routes are intentionally passwordless and unavailable on Vercel.
 - Deploy API stages broadly and can push all current changes.
 
 Changing any exception requires a dedicated plan and explicit user approval.

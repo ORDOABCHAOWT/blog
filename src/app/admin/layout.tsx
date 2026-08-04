@@ -1,4 +1,6 @@
 import type { Metadata } from 'next';
+import { notFound } from 'next/navigation';
+import { isCmsAvailable } from '@/lib/cms-access';
 
 export const metadata: Metadata = {
   title: '博客管理后台 | Taffy CMS',
@@ -13,5 +15,7 @@ export default function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
+  if (!isCmsAvailable()) notFound();
+
   return <>{children}</>;
 }

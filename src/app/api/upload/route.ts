@@ -1,7 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getOSSClient, generateFileName, getFullUrl } from '@/lib/oss';
+import { cmsUnavailableResponse, isCmsAvailable } from '@/lib/cms-access';
+import {
+  hasOversizedRequestBody,
+  MAX_UPLOAD_REQUEST_BYTES,
+} from '@/lib/request-security';
 
 export async function POST(request: NextRequest) {
+  if (!isCmsAvailable()) return cmsUnavailableResponse();
+  if (hasOversizedRequestBody(request, MAX_UPLOAD_REQUEST_BYTES)) {
+    return NextResponse.json({ error: 'Request body is too large' }, { status: 413 });
+  }
+
   try {
     const formData = await request.formData();
     const file = formData.get('file') as File;

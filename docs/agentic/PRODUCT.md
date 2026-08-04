@@ -29,7 +29,7 @@ Provide a personal editorial blog, portfolio experience, and locally operated CM
   scoped Worker proxy so the same URL works on desktop, mobile, and as an installed PWA.
 - The family blood-pressure journal is exposed at `/blood-pressure` through a scoped
   Vercel proxy, with the same public no-access-code mode on desktop and installed iPhone PWAs.
-- Admin currently opens without a Basic Auth prompt.
+- Admin opens without a Basic Auth prompt only on the trusted local server; Vercel deployments return 404 for CMS pages and APIs.
 - CMS slug fields preserve raw typing and IME composition, then normalize only
   on blur or save; the form shows the resulting post URL before submission.
 - Inline CMS images appear immediately as local previews while compression and

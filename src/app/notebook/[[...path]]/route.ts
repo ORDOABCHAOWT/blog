@@ -1,4 +1,9 @@
 import { NextRequest } from 'next/server';
+import {
+  getUpstreamTimeoutSignal,
+  hasOversizedRequestBody,
+  MAX_PROXY_BODY_BYTES,
+} from '@/lib/request-security';
 
 const NOTEBOOK_ORIGIN = 'https://word-notebook.ordoabchao-wt.workers.dev';
 
@@ -12,6 +17,10 @@ const isTextual = (contentType: string) =>
   || /(?:json|javascript|xml|manifest)/i.test(contentType);
 
 async function proxyNotebook(request: NextRequest, context: RouteContext) {
+  if (hasOversizedRequestBody(request, MAX_PROXY_BODY_BYTES)) {
+    return new Response('Request body is too large', { status: 413 });
+  }
+
   const { path = [] } = await context.params;
   const upstreamUrl = new URL(
     `/notebook/${path.map((segment) => encodeURIComponent(segment)).join('/')}`,
@@ -30,6 +39,7 @@ async function proxyNotebook(request: NextRequest, context: RouteContext) {
     body: request.method === 'GET' || request.method === 'HEAD' ? undefined : await request.arrayBuffer(),
     cache: 'no-store',
     redirect: 'manual',
+    signal: getUpstreamTimeoutSignal(),
   });
 
   const responseHeaders = new Headers(upstream.headers);
