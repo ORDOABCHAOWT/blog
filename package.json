@@ -14,6 +14,7 @@
     "check": "npm run validate && npm run check:agentic && npm run build"
   },
   "dependencies": {
+    "@vercel/analytics": "^2.0.1",
     "ali-oss": "^6.23.0",
     "easymde": "^2.20.0",
     "gray-matter": "^4.0.3",

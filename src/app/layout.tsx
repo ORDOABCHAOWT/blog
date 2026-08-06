@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { IBM_Plex_Sans, JetBrains_Mono, Noto_Sans_SC } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import PageTransition from "@/components/PageTransition";
 import "./globals.css";
 
@@ -42,6 +43,7 @@ export default function RootLayout({
       <body>
         <PageTransition />
         {children}
+        <Analytics />
       </body>
     </html>
   );

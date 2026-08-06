@@ -7,6 +7,7 @@
 - Admin pages call `/api/posts` to create, edit, and delete local Markdown files.
 - Image uploads flow from `ImageUploader` to `/api/upload`, then to Alibaba OSS.
 - `/api/deploy` stages repository changes, commits, and pushes `main`, which may trigger Vercel deployment.
+- The root layout loads Vercel Web Analytics on every route so public deployments report anonymized page views and visitor metadata to the project's Vercel dashboard.
 - macOS helper scripts start and stop the local CMS through a user LaunchAgent.
 
 ## Boundaries
@@ -16,6 +17,7 @@
 - `src/lib/cms-access.ts` keeps all CMS pages and APIs local-only by returning 404 on Vercel deployments.
 - Filesystem mutation belongs only in post API routes.
 - External object-storage behavior belongs in `src/lib/oss.ts` and `/api/upload`.
+- External traffic analytics are limited to the official `@vercel/analytics` component mounted in the root layout.
 - Process execution belongs only in `/api/deploy` and must use parameterized `execFile`.
 - Markdown posts and public assets are user content, not implementation scratch space.
 - `/notebook/[[...path]]` is a narrowly scoped dynamic proxy to the Word Notebook Worker. It requests identity encoding and returns decoded text or explicit binary bytes so Vercel does not cache or drop the PWA response; it must never claim the blog's `/api/*` routes.
