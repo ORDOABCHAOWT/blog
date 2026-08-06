@@ -22,7 +22,7 @@ npm run lint
 
 Current baseline:
 
-- `npm test`: 24 tests pass; one suite fails because `posts/aboutMyProjects.md` is missing.
+- `npm test`: all 68 regression tests pass.
 - `npm run typecheck`: reports existing canvas-nullability, React child-props, editor-options, and missing `ali-oss` declaration issues.
 - `npm run lint`: runs correctly after the Next 16/ESLint 9 config update; currently reports 2 errors and 18 warnings.
 

@@ -12,6 +12,7 @@ const deployRoute = read('src/app/api/deploy/route.ts');
 const postsRoute = read('src/app/api/posts/route.ts');
 const postRoute = read('src/app/api/posts/[slug]/route.ts');
 const uploadRoute = read('src/app/api/upload/route.ts');
+const analyticsRoute = read('src/app/api/analytics/route.ts');
 const cmsAccess = read('src/lib/cms-access.ts');
 
 for (const command of ['check', 'validate', 'check:agentic', 'build', 'test', 'typecheck', 'lint']) {
@@ -43,6 +44,7 @@ for (const [name, source] of [
   ['src/app/api/posts/route.ts', postsRoute],
   ['src/app/api/posts/[slug]/route.ts', postRoute],
   ['src/app/api/upload/route.ts', uploadRoute],
+  ['src/app/api/analytics/route.ts', analyticsRoute],
 ]) {
   assert.match(source, /cmsUnavailableResponse/, `${name} must keep its Vercel production guard`);
 }

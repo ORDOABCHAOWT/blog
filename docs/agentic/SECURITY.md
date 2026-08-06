@@ -13,6 +13,7 @@ The CMS is intentionally local-only. Public deployment must not rely on Vercel f
 ## Required Constraints
 
 - Never commit `.env*`, OSS credentials, cookies, tokens, or private deployment details.
+- Keep Vercel Analytics credentials server-side. The local CMS may read an ignored environment token or the existing Vercel CLI login file, but must never expose either credential to client components, API responses, logs, or public deployments.
 - Preserve slug allowlist validation before filesystem access.
 - Preserve upload MIME type, extension, and 10MB size checks; continue blocking SVG.
 - Keep deployment commands parameterized with `execFile`; never use shell-interpolated `exec`.

@@ -21,6 +21,7 @@ const cmsApiRoutes = [
   '../src/app/api/posts/[slug]/route.ts',
   '../src/app/api/upload/route.ts',
   '../src/app/api/deploy/route.ts',
+  '../src/app/api/analytics/route.ts',
 ].map((relativePath) => fs.readFileSync(new URL(relativePath, import.meta.url), 'utf8'));
 
 test('CMS admin routes are not gated by Basic Auth middleware', () => {

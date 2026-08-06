@@ -23,7 +23,7 @@
 - Lint diagnostics: `npm run lint`
 - Local development: `npm run dev`
 
-`npm test`, `npm run typecheck`, and `npm run lint` currently expose documented baseline debt. Do not hide or weaken those findings to make them green.
+`npm run typecheck` and `npm run lint` currently expose documented baseline debt. Do not hide or weaken those findings to make them green.
 
 ## Non-Negotiable Boundaries
 

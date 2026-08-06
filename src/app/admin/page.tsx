@@ -110,6 +110,12 @@ export default function AdminPage() {
           </div>
           <div className="flex gap-3">
             <Link
+              href="/admin/analytics"
+              className="admin-button admin-button-secondary px-6 py-2.5"
+            >
+              流量统计
+            </Link>
+            <Link
               href="/admin/new"
               className="admin-button admin-button-primary px-6 py-2.5"
             >
