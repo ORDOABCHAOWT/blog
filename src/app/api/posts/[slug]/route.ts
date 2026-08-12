@@ -2,7 +2,11 @@ import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
-import { cmsUnavailableResponse, isCmsAvailable } from '@/lib/cms-access';
+import {
+  cmsMutationOriginResponse,
+  cmsUnavailableResponse,
+  isCmsAvailable,
+} from '@/lib/cms-access';
 import {
   hasOversizedRequestBody,
   MAX_CMS_JSON_BODY_BYTES,
@@ -58,6 +62,8 @@ export async function PUT(
   { params }: { params: Promise<{ slug: string }> }
 ) {
   if (!isCmsAvailable()) return cmsUnavailableResponse();
+  const originResponse = cmsMutationOriginResponse(request);
+  if (originResponse) return originResponse;
   if (hasOversizedRequestBody(request, MAX_CMS_JSON_BODY_BYTES)) {
     return NextResponse.json({ error: 'Request body is too large' }, { status: 413 });
   }
@@ -114,6 +120,8 @@ export async function DELETE(
   { params }: { params: Promise<{ slug: string }> }
 ) {
   if (!isCmsAvailable()) return cmsUnavailableResponse();
+  const originResponse = cmsMutationOriginResponse(request);
+  if (originResponse) return originResponse;
 
   try {
     const { slug } = await params;

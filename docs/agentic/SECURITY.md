@@ -18,6 +18,8 @@ The CMS is intentionally local-only. Public deployment must not rely on Vercel f
 - Preserve upload MIME type, extension, and 10MB size checks; continue blocking SVG.
 - Keep deployment commands parameterized with `execFile`; never use shell-interpolated `exec`.
 - Preserve the Vercel CMS guard in every admin page and CMS API route.
+- Enable CMS capabilities only through the explicit loopback-bound `BLOG_CMS_LOCAL=1` development command.
+- Require a fixed loopback `Origin` on every local CMS mutation before reading a body or invoking filesystem, OSS, Git, or process operations; never derive trust from `Host`.
 - Preserve bounded request sizes and upstream timeouts on public Worker proxy routes.
 - Do not invoke write, delete, upload, deploy, or credential-rotation actions during routine validation.
 

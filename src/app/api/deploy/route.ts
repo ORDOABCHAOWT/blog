@@ -1,12 +1,18 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { execFile } from 'child_process';
 import { promisify } from 'util';
-import { cmsUnavailableResponse, isCmsAvailable } from '@/lib/cms-access';
+import {
+  cmsMutationOriginResponse,
+  cmsUnavailableResponse,
+  isCmsAvailable,
+} from '@/lib/cms-access';
 
 const execFileAsync = promisify(execFile);
 
-export async function POST() {
+export async function POST(request: NextRequest) {
   if (!isCmsAvailable()) return cmsUnavailableResponse();
+  const originResponse = cmsMutationOriginResponse(request);
+  if (originResponse) return originResponse;
 
   try {
     // 检查是否有未提交的更改（使用参数化命令防止注入）

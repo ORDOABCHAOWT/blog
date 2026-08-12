@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getOSSClient, generateFileName, getFullUrl } from '@/lib/oss';
-import { cmsUnavailableResponse, isCmsAvailable } from '@/lib/cms-access';
+import {
+  cmsMutationOriginResponse,
+  cmsUnavailableResponse,
+  isCmsAvailable,
+} from '@/lib/cms-access';
 import {
   hasOversizedRequestBody,
   MAX_UPLOAD_REQUEST_BYTES,
@@ -8,6 +12,8 @@ import {
 
 export async function POST(request: NextRequest) {
   if (!isCmsAvailable()) return cmsUnavailableResponse();
+  const originResponse = cmsMutationOriginResponse(request);
+  if (originResponse) return originResponse;
   if (hasOversizedRequestBody(request, MAX_UPLOAD_REQUEST_BYTES)) {
     return NextResponse.json({ error: 'Request body is too large' }, { status: 413 });
   }
