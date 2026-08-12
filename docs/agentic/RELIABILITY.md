@@ -20,10 +20,6 @@
 - Vercel also canonicalizes `/japanese/` to `/japanese`. Keep the Japanese manifest,
   service-worker registration, precache URL, proxy header, and public links on that
   no-trailing-slash scope.
-- Vercel canonicalizes `/blood-pressure/` to `/blood-pressure`. Keep the blood-pressure
-  manifest, service-worker registration, precache URLs, Worker asset rewrite, and both
-  Worker/Vercel `Service-Worker-Allowed` headers on that scoped path. The proxy must keep
-  PUT enabled because family member settings use it.
 
 ## Debugging
 
@@ -39,8 +35,6 @@
 - If the installed notebook does not update, compare `/notebook/sw.js` with the direct Worker response and confirm both report the same cache version before troubleshooting the iPhone.
 - If the installed Japanese textbook does not update, compare `/japanese/sw.js` with
   the direct Worker response and confirm both report the same `nihongo-core-*` cache version.
-- If the installed blood-pressure journal does not update, compare `/blood-pressure/sw.js`
-  with the direct Worker response and confirm both report `blood-pressure-journal-shell-v4`.
 - Rotate OSS credentials if exposed.
 - Stop the CMS with `./stop-blog-cms.sh` if its LaunchAgent or port is stuck.
 - Never use `/api/deploy` as a verification step.
