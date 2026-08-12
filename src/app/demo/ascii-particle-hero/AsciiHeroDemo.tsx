@@ -29,8 +29,9 @@ export default function AsciiHeroDemo() {
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
+    const canvasContext = canvas.getContext('2d');
+    if (!canvasContext) return;
+    const ctx: CanvasRenderingContext2D = canvasContext;
 
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
     canvas.width = W * dpr;

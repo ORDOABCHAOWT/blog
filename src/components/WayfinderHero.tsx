@@ -25,8 +25,9 @@ function WayfinderHeroImpl(_props: { activeIndex?: number | null }) {
     const wrap = wrapRef.current;
     const canvas = canvasRef.current;
     if (!wrap || !canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
+    const canvasContext = canvas.getContext('2d');
+    if (!canvasContext) return;
+    const ctx: CanvasRenderingContext2D = canvasContext;
 
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
     let cols = 0;

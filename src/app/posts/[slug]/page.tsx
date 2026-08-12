@@ -26,7 +26,7 @@ function getNodeText(node: ReactNode): string {
         return String(child);
       }
 
-      if (isValidElement(child)) {
+      if (isValidElement<{ children?: ReactNode }>(child)) {
         return getNodeText(child.props.children);
       }
 
