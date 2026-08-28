@@ -48,3 +48,7 @@ next-env.d.ts
 
 # local implementation worktrees
 .worktrees/
+
+# local CMS runtime state
+.cms-server.log
+.cms-server.pid

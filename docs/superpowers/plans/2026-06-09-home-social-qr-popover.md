@@ -34,7 +34,7 @@ Expected: FAIL because the WeChat popover hooks and QR asset path do not exist y
 
 - [ ] **Step 1: Copy the approved QR image**
 
-Copy `/Users/whitney/Downloads/qrcode_for_gh_b8a56ea26e5e_430.jpg` to `public/wechat-official-account-qr.jpg`.
+Copy the approved local QR asset to `public/wechat-official-account-qr.jpg` without recording its private source path.
 
 - [ ] **Step 2: Implement minimal React behavior**
 
