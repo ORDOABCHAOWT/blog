@@ -44,46 +44,51 @@ test('aboutMyProjects uses the dedicated portfolio experience', () => {
   );
 });
 
-test('portfolio page keeps the Figma cover structure and scroll transition hooks', () => {
+test('portfolio page presents four centred portfolio categories', () => {
   assert.match(
-    globalsCss,
-    /\.portfolio-cover-stage\s*{/,
-    'Expected the 16:9 cover stage CSS'
-  );
-  assert.match(
-    globalsCss,
-    /\.portfolio-cover-image\s*[,{\s]/,
-    'Expected the exported Figma cover image CSS'
-  );
-  assert.match(
-    globalsCss,
-    /\.portfolio-cover-fragment\.is-w\s*{/,
-    'Expected letter-level cover fragments for scroll scatter'
+    portfolioComponent,
+    /aria-pressed=\{isActive\}/,
+    'Expected the selected category to be exposed as a pressed button'
   );
   assert.match(
     portfolioComponent,
-    /\/portfolio-letters\/\$\{fragment\}\.png/,
-    'Expected the scroll transition to use transparent letter assets'
+    /label: 'Vibe coding'/,
+    'Expected the Vibe Coding category'
+  );
+  assert.match(
+    portfolioComponent,
+    /label: '平面设计'/,
+    'Expected the graphic-design category'
+  );
+  assert.match(
+    portfolioComponent,
+    /label: '视频'/,
+    'Expected the video category'
+  );
+  assert.match(
+    portfolioComponent,
+    /label: '新媒体运营'/,
+    'Expected the social-media category'
+  );
+  assert.match(
+    portfolioComponent,
+    /projects: \[/,
+    'Expected categories to support a growing collection of projects'
+  );
+  assert.match(
+    portfolioComponent,
+    /title: 'Word Notebook'/,
+    'Expected the current Vibe Coding project to remain in the collection'
+  );
+  assert.match(
+    portfolioComponent,
+    /type="button"/,
+    'Expected every category control to be a native keyboard-accessible button'
   );
   assert.match(
     globalsCss,
-    /--letter-left\s*:/,
-    'Expected letter fragments to be positioned from the exported cover coordinates'
-  );
-  assert.match(
-    globalsCss,
-    /@keyframes portfolio-letter-forward/,
-    'Expected Wang Teng letters to move forward during the transition'
-  );
-  assert.match(
-    globalsCss,
-    /animation-timeline\s*:\s*scroll\(root\);/,
-    'Expected scroll-linked animation for the cover pieces'
-  );
-  assert.match(
-    globalsCss,
-    /\.portfolio-profile\s*{/,
-    'Expected a follow-up profile section after the cover'
+    /\.portfolio-category-picker\s*{/,
+    'Expected the centred category picker styling'
   );
 });
 
@@ -95,7 +100,7 @@ test('portfolio post metadata names the portfolio link correctly', () => {
   );
   assert.match(
     postPage,
-    /PORTFOLIO_DESCRIPTION\s*=\s*\n?\s*'平面设计、新媒体运营、媒介策划与品牌传播项目合集'/,
+    /PORTFOLIO_DESCRIPTION\s*=\s*\n?\s*'Vibe Coding、平面设计、视频与新媒体运营作品集'/,
     'Expected a portfolio-specific description'
   );
   assert.match(
@@ -105,36 +110,36 @@ test('portfolio post metadata names the portfolio link correctly', () => {
   );
 });
 
-test('portfolio page presents Word Notebook as a responsive project entry', () => {
+test('portfolio page keeps its code field quiet, animated, and motion-safe', () => {
   assert.match(
     portfolioComponent,
-    /id="selected-projects"/,
-    'Expected a stable anchor for the projects section'
+    /const codeCellCount = 468/,
+    'Expected a dense but lightweight code field'
   );
   assert.match(
     portfolioComponent,
-    /Word Notebook/,
-    'Expected the Word Notebook project title'
+    /window\.setInterval\(updateFlicker, 1900\)/,
+    'Expected the code field to vary after the page loads'
   );
   assert.match(
     portfolioComponent,
-    /https:\/\/www\.taffy\.wang\/notebook\//,
-    'Expected the project entry to use the mainland-friendly blog route'
-  );
-  assert.match(
-    portfolioComponent,
-    /aria-label="打开 Word Notebook 网页应用（新窗口）"/,
-    'Expected an accessible external-link label'
+    /window\.matchMedia\('\(prefers-reduced-motion: reduce\)'\)\.matches/,
+    'Expected reduced-motion users to avoid code-field flickering'
   );
   assert.match(
     globalsCss,
-    /\.portfolio-project-card\s*{/,
-    'Expected the product-focused project card styling'
+    /\.portfolio-code-field\s*{/,
+    'Expected bottom code field styling'
   );
   assert.match(
     globalsCss,
-    /@media \(max-width: 900px\)[\s\S]*\.portfolio-project-card/,
-    'Expected the project card to collapse for mobile screens'
+    /@keyframes portfolio-code-breathe/,
+    'Expected gentle character movement instead of a dominant animation'
+  );
+  assert.match(
+    globalsCss,
+    /@media \(prefers-reduced-motion: reduce\)[\s\S]*\.portfolio-code-grid span/,
+    'Expected a reduced-motion fallback for the character field'
   );
 });
 
