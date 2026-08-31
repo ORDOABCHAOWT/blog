@@ -14,6 +14,10 @@ const portfolioComponent = fs.readFileSync(
   new URL('../src/components/PortfolioExperience.tsx', import.meta.url),
   'utf8'
 );
+const wayfinderHero = fs.readFileSync(
+  new URL('../src/components/WayfinderHero.tsx', import.meta.url),
+  'utf8'
+);
 const nextConfig = fs.readFileSync(
   new URL('../next.config.ts', import.meta.url),
   'utf8'
@@ -47,11 +51,6 @@ test('aboutMyProjects uses the dedicated portfolio experience', () => {
 test('portfolio page presents four centred portfolio categories', () => {
   assert.match(
     portfolioComponent,
-    /aria-pressed=\{isActive\}/,
-    'Expected the selected category to be exposed as a pressed button'
-  );
-  assert.match(
-    portfolioComponent,
     /label: 'Vibe coding'/,
     'Expected the Vibe Coding category'
   );
@@ -72,16 +71,6 @@ test('portfolio page presents four centred portfolio categories', () => {
   );
   assert.match(
     portfolioComponent,
-    /projects: \[/,
-    'Expected categories to support a growing collection of projects'
-  );
-  assert.match(
-    portfolioComponent,
-    /title: 'Word Notebook'/,
-    'Expected the current Vibe Coding project to remain in the collection'
-  );
-  assert.match(
-    portfolioComponent,
     /type="button"/,
     'Expected every category control to be a native keyboard-accessible button'
   );
@@ -89,6 +78,26 @@ test('portfolio page presents four centred portfolio categories', () => {
     globalsCss,
     /\.portfolio-category-picker\s*{/,
     'Expected the centred category picker styling'
+  );
+  assert.doesNotMatch(
+    portfolioComponent,
+    /SELECTED WORKS|Word Notebook|在不同媒介中|portfolio-category-detail/,
+    'Expected no header tagline, project link, introduction, or detail copy'
+  );
+  assert.doesNotMatch(
+    portfolioComponent,
+    /aria-pressed|activeCategory|setActiveCategory/,
+    'Expected no persistent selected category state'
+  );
+  assert.match(
+    globalsCss,
+    /\.portfolio-category-button:hover\s*{/,
+    'Expected category emphasis to be hover-only'
+  );
+  assert.doesNotMatch(
+    globalsCss,
+    /\.portfolio-category-button\[aria-pressed/,
+    'Expected category emphasis to clear when the pointer leaves'
   );
 });
 
@@ -110,36 +119,31 @@ test('portfolio post metadata names the portfolio link correctly', () => {
   );
 });
 
-test('portfolio page keeps its code field quiet, animated, and motion-safe', () => {
+test('portfolio page reuses the homepage animated digit flow at the bottom', () => {
   assert.match(
     portfolioComponent,
-    /const codeCellCount = 468/,
-    'Expected a dense but lightweight code field'
-  );
-  assert.match(
-    portfolioComponent,
-    /window\.setInterval\(updateFlicker, 1900\)/,
-    'Expected the code field to vary after the page loads'
+    /import WayfinderHero from '@\/components\/WayfinderHero';/,
+    'Expected the portfolio to reuse the homepage animation engine'
   );
   assert.match(
     portfolioComponent,
-    /window\.matchMedia\('\(prefers-reduced-motion: reduce\)'\)\.matches/,
-    'Expected reduced-motion users to avoid code-field flickering'
+    /<WayfinderHero \/>/,
+    'Expected a live digit canvas at the bottom of the page'
   );
   assert.match(
     globalsCss,
-    /\.portfolio-code-field\s*{/,
-    'Expected bottom code field styling'
+    /\.portfolio-code-flow\s*{/,
+    'Expected the moving canvas to remain visible in normal page flow'
   );
   assert.match(
-    globalsCss,
-    /@keyframes portfolio-code-breathe/,
-    'Expected gentle character movement instead of a dominant animation'
+    wayfinderHero,
+    /raf = requestAnimationFrame\(render\)/,
+    'Expected continuous movement through animation frames'
   );
   assert.match(
-    globalsCss,
-    /@media \(prefers-reduced-motion: reduce\)[\s\S]*\.portfolio-code-grid span/,
-    'Expected a reduced-motion fallback for the character field'
+    wayfinderHero,
+    /prefers-reduced-motion: reduce/,
+    'Expected the shared animation to retain its reduced-motion fallback'
   );
 });
 
