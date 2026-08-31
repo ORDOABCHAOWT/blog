@@ -7,12 +7,12 @@ const CELL_Y = 9;
 
 type FlowSource = {
   x: number;
-  y: number;
   radiusX: number;
   radiusY: number;
   phase: number;
   speed: number;
   texture: number;
+  riseSpeed: number;
 };
 
 function seededRandom(seed: number) {
@@ -33,12 +33,12 @@ function createSources(width: number, height: number) {
 
     return {
       x: segmentStart + segmentWidth * (0.32 + random() * 0.36),
-      y: 0.38 + random() * 0.46,
       radiusX: segmentWidth * (0.72 + random() * 0.42),
-      radiusY: 0.2 + random() * 0.2,
+      radiusY: 0.28 + random() * 0.17,
       phase: random() * Math.PI * 2,
       speed: 0.28 + random() * 0.42,
       texture: 2.1 + random() * 3.2,
+      riseSpeed: 0.08 + random() * 0.07,
     };
   });
 }
@@ -100,20 +100,33 @@ export default function PortfolioCodeFlow() {
 
       for (let row = 0; row < rows; row++) {
         const normalizedY = rows <= 1 ? 1 : row / (rows - 1);
-        const topFade = Math.min(1, Math.max(0, (normalizedY - 0.03) / 0.42));
+        const topFade = Math.min(1, Math.max(0, (normalizedY - 0.02) / 0.28));
+        const risingRow = row + time * 3.8;
 
         for (let column = 0; column < columns; column++) {
           const normalizedX = columns <= 1 ? 0 : column / (columns - 1);
           const backgroundWave =
-            0.025 +
-            (Math.sin(column * 0.19 - time * 0.72 + row * 0.23) + 1) * 0.018;
+            0.032 +
+            (Math.sin(column * 0.19 + risingRow * 0.23) + 1) * 0.022;
           let weight = backgroundWave;
 
           for (const source of sources) {
-            const sourceY = source.y + Math.sin(time * source.speed + source.phase) * 0.075;
+            const phaseOffset = source.phase / (Math.PI * 2);
+            const riseProgress = (time * source.riseSpeed + phaseOffset) % 1;
+            const sourceY = 1.12 - riseProgress * 1.16;
+            const sourceX =
+              source.x +
+              Math.sin(time * source.speed * 0.48 + source.phase) *
+                source.radiusX *
+                0.42;
+            const lifeFade = Math.pow(Math.sin(riseProgress * Math.PI), 0.46);
             const pulse = 0.82 + Math.sin(time * source.speed * 0.73 + source.phase) * 0.18;
-            const dx = (normalizedX - source.x) / (source.radiusX * pulse);
-            const dy = (normalizedY - sourceY) / source.radiusY;
+            const dx = (normalizedX - sourceX) / (source.radiusX * pulse);
+            const verticalRadius =
+              normalizedY > sourceY
+                ? source.radiusY * 1.55
+                : source.radiusY * 0.68;
+            const dy = (normalizedY - sourceY) / verticalRadius;
             const distance = dx * dx + dy * dy;
             const envelope = Math.exp(-distance * 1.45);
             const texture =
@@ -127,25 +140,36 @@ export default function PortfolioCodeFlow() {
                 )
               ) *
                 0.64;
-            const presence =
-              0.2 +
-              ((Math.sin(time * source.speed + source.phase) + 1) / 2) * 0.8;
+            const dustBreakup =
+              0.48 +
+              Math.abs(
+                Math.sin(
+                  column * 0.31 +
+                    risingRow * 0.47 +
+                    source.phase +
+                    time * source.speed
+                )
+              ) *
+                0.52;
 
-            weight = Math.max(weight, envelope * texture * presence);
+            weight = Math.max(
+              weight,
+              envelope * texture * lifeFade * dustBreakup
+            );
           }
 
           weight *= topFade;
           if (weight < 0.018) continue;
 
           const digitWave =
-            Math.sin(column * 0.41 + row * 0.27 - time * 1.15) +
-            Math.cos(column * 0.09 - row * 0.34 + time * 0.63);
+            Math.sin(column * 0.41 + risingRow * 0.27) +
+            Math.cos(column * 0.09 - risingRow * 0.34 + time * 0.24);
           const digit = digitWave > 0 ? '1' : '0';
           const intensity = Math.min(1, weight);
           const shade = darkMode
-            ? Math.round(82 + intensity * 142)
-            : Math.round(205 - intensity * 130);
-          const alpha = 0.16 + intensity * 0.68;
+            ? Math.round(70 + intensity * 162)
+            : Math.round(190 - intensity * 132);
+          const alpha = 0.22 + intensity * 0.72;
 
           ctx.fillStyle = `rgba(${shade}, ${shade}, ${shade + (darkMode ? 8 : 14)}, ${alpha})`;
           ctx.fillText(digit, column * CELL_X, row * CELL_Y);

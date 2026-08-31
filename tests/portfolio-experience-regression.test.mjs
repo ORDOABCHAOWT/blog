@@ -141,6 +141,11 @@ test('portfolio page uses an independent full-width random digit flow', () => {
     'Expected the top boundary of the digit field to fade in gradually'
   );
   assert.match(
+    globalsCss,
+    /height: clamp\(10rem, 34svh, 26rem\)/,
+    'Expected the rising digit dust to cover roughly the lower third of the viewport'
+  );
+  assert.match(
     portfolioCodeFlow,
     /segmentStart = index \/ sourceCount/,
     'Expected random sources to be distributed evenly across horizontal segments'
@@ -149,6 +154,11 @@ test('portfolio page uses an independent full-width random digit flow', () => {
     portfolioCodeFlow,
     /animationFrame = requestAnimationFrame\(render\)/,
     'Expected continuous movement through animation frames'
+  );
+  assert.match(
+    portfolioCodeFlow,
+    /sourceY = 1\.12 - riseProgress \* 1\.16/,
+    'Expected digit clusters to rise from the bottom and evaporate near the top'
   );
   assert.match(
     portfolioCodeFlow,
