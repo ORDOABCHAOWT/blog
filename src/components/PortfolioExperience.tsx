@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import WayfinderHero from '@/components/WayfinderHero';
+import PortfolioCodeFlow from '@/components/PortfolioCodeFlow';
 
 const portfolioCategories = [
   { index: '01', label: 'Vibe coding' },
@@ -41,9 +41,7 @@ export default function PortfolioExperience() {
         </div>
       </section>
 
-      <div className="portfolio-code-flow" aria-hidden="true">
-        <WayfinderHero />
-      </div>
+      <PortfolioCodeFlow />
     </main>
   );
 }

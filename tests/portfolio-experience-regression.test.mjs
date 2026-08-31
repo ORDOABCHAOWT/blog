@@ -14,8 +14,8 @@ const portfolioComponent = fs.readFileSync(
   new URL('../src/components/PortfolioExperience.tsx', import.meta.url),
   'utf8'
 );
-const wayfinderHero = fs.readFileSync(
-  new URL('../src/components/WayfinderHero.tsx', import.meta.url),
+const portfolioCodeFlow = fs.readFileSync(
+  new URL('../src/components/PortfolioCodeFlow.tsx', import.meta.url),
   'utf8'
 );
 const nextConfig = fs.readFileSync(
@@ -91,8 +91,8 @@ test('portfolio page presents four centred portfolio categories', () => {
   );
   assert.match(
     globalsCss,
-    /\.portfolio-category-button:hover\s*{/,
-    'Expected category emphasis to be hover-only'
+    /@media \(hover: hover\) and \(pointer: fine\)/,
+    'Expected hover emphasis only on devices with a real fine pointer'
   );
   assert.doesNotMatch(
     globalsCss,
@@ -119,31 +119,41 @@ test('portfolio post metadata names the portfolio link correctly', () => {
   );
 });
 
-test('portfolio page reuses the homepage animated digit flow at the bottom', () => {
+test('portfolio page uses an independent full-width random digit flow', () => {
   assert.match(
     portfolioComponent,
-    /import WayfinderHero from '@\/components\/WayfinderHero';/,
-    'Expected the portfolio to reuse the homepage animation engine'
+    /import PortfolioCodeFlow from '@\/components\/PortfolioCodeFlow';/,
+    'Expected the portfolio to use its own animation engine'
   );
   assert.match(
     portfolioComponent,
-    /<WayfinderHero \/>/,
+    /<PortfolioCodeFlow \/>/,
     'Expected a live digit canvas at the bottom of the page'
+  );
+  assert.doesNotMatch(
+    portfolioComponent,
+    /WayfinderHero/,
+    'Expected no reuse of the homepage central figure animation'
   );
   assert.match(
     globalsCss,
-    /\.portfolio-code-flow\s*{/,
-    'Expected the moving canvas to remain visible in normal page flow'
+    /mask-image: linear-gradient\(to bottom, transparent 0%/,
+    'Expected the top boundary of the digit field to fade in gradually'
   );
   assert.match(
-    wayfinderHero,
-    /raf = requestAnimationFrame\(render\)/,
+    portfolioCodeFlow,
+    /segmentStart = index \/ sourceCount/,
+    'Expected random sources to be distributed evenly across horizontal segments'
+  );
+  assert.match(
+    portfolioCodeFlow,
+    /animationFrame = requestAnimationFrame\(render\)/,
     'Expected continuous movement through animation frames'
   );
   assert.match(
-    wayfinderHero,
+    portfolioCodeFlow,
     /prefers-reduced-motion: reduce/,
-    'Expected the shared animation to retain its reduced-motion fallback'
+    'Expected the animation to retain its reduced-motion fallback'
   );
 });
 

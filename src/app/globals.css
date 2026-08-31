@@ -3593,18 +3593,20 @@ select {
   font-size: 0.82rem;
 }
 
-.portfolio-category-button:hover {
-  padding-inline: 0.62rem;
-  color: var(--portfolio-accent);
-}
+@media (hover: hover) and (pointer: fine) {
+  .portfolio-category-button:hover {
+    padding-inline: 0.62rem;
+    color: var(--portfolio-accent);
+  }
 
-.portfolio-category-button:hover .portfolio-category-index {
-  color: currentColor;
-}
+  .portfolio-category-button:hover .portfolio-category-index {
+    color: currentColor;
+  }
 
-.portfolio-category-button:hover .portfolio-category-arrow {
-  color: currentColor;
-  transform: translate(0.22rem, -0.22rem);
+  .portfolio-category-button:hover .portfolio-category-arrow {
+    color: currentColor;
+    transform: translate(0.22rem, -0.22rem);
+  }
 }
 
 .portfolio-category-button:focus-visible {
@@ -3619,21 +3621,16 @@ select {
   width: 100%;
   height: clamp(8.5rem, 18vh, 12rem);
   overflow: hidden;
-  opacity: 0.52;
+  opacity: 0.58;
   pointer-events: none;
-  mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.18) 18%, black 48%, black 100%);
+  mask-image: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.18) 18%, black 48%, black 100%);
 }
 
-.portfolio-code-flow .wayfinder-hero {
-  width: min(92rem, 100vw);
-  height: 100%;
-  margin: 0 auto;
-  animation: none;
-  cursor: default;
-}
-
-.portfolio-code-flow canvas {
+.portfolio-code-flow__canvas {
   display: block;
+  width: 100%;
+  height: 100%;
 }
 
 @media (prefers-color-scheme: dark) {
