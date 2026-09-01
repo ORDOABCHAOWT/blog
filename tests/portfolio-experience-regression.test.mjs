@@ -79,6 +79,11 @@ test('portfolio page presents four centred portfolio categories', () => {
     /\.portfolio-category-picker\s*{/,
     'Expected the centred category picker styling'
   );
+  assert.match(
+    globalsCss,
+    /transform: translateY\(clamp\(-4\.75rem, -7svh, -3rem\)\)/,
+    'Expected the selector group to sit slightly above geometric center'
+  );
   assert.doesNotMatch(
     portfolioComponent,
     /SELECTED WORKS|Word Notebook|在不同媒介中|portfolio-category-detail/,
