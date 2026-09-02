@@ -3526,7 +3526,7 @@ select {
   min-height: 0;
   margin: auto;
   padding-block: clamp(3rem, 7vh, 5rem) clamp(2rem, 4vh, 3.5rem);
-  transform: translateY(clamp(-4.75rem, -7svh, -3rem));
+  transform: translateY(clamp(-6.5rem, -12svh, -4rem));
 }
 
 .portfolio-selector-heading {
@@ -3660,7 +3660,7 @@ select {
 
   .portfolio-selector {
     padding-block: 3.2rem 2rem;
-    transform: translateY(-1.65rem);
+    transform: translateY(-2.7rem);
   }
 
   .portfolio-selector-heading {

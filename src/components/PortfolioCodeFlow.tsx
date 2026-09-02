@@ -5,14 +5,22 @@ import { useEffect, useRef } from 'react';
 const CELL_X = 9;
 const CELL_Y = 9;
 
-type FlowSource = {
+type Point = {
   x: number;
-  radiusX: number;
-  radiusY: number;
+  y: number;
+};
+
+type CircuitSegment = {
+  from: Point;
+  to: Point;
+  phase: number;
+};
+
+type CircuitTrace = {
+  segments: CircuitSegment[];
+  nodes: Point[];
   phase: number;
   speed: number;
-  texture: number;
-  riseSpeed: number;
 };
 
 function seededRandom(seed: number) {
@@ -23,24 +31,108 @@ function seededRandom(seed: number) {
   };
 }
 
-function createSources(width: number, height: number) {
-  const sourceCount = Math.max(6, Math.min(14, Math.ceil(width / 170)));
+function clamp(value: number, min: number, max: number) {
+  return Math.min(max, Math.max(min, value));
+}
+
+function createCircuit(width: number, height: number) {
   const random = seededRandom(Math.round(width * 13 + height * 29));
+  const laneCount = Math.max(7, Math.min(13, Math.ceil(width / 160)));
+  const traces: CircuitTrace[] = [];
 
-  return Array.from({ length: sourceCount }, (_, index): FlowSource => {
-    const segmentStart = index / sourceCount;
-    const segmentWidth = 1 / sourceCount;
+  const addTrace = (points: Point[], phase: number, speed: number) => {
+    const trace: CircuitTrace = { segments: [], nodes: [], phase, speed };
+    for (let index = 0; index < points.length - 1; index++) {
+      trace.segments.push({
+        from: points[index],
+        to: points[index + 1],
+        phase: random() * Math.PI * 2,
+      });
+    }
+    trace.nodes.push(...points.slice(1, -1));
+    traces.push(trace);
+    return trace;
+  };
 
-    return {
-      x: segmentStart + segmentWidth * (0.32 + random() * 0.36),
-      radiusX: segmentWidth * (0.72 + random() * 0.42),
-      radiusY: 0.28 + random() * 0.17,
-      phase: random() * Math.PI * 2,
-      speed: 0.28 + random() * 0.42,
-      texture: 2.1 + random() * 3.2,
-      riseSpeed: 0.08 + random() * 0.07,
-    };
-  });
+  // Full-width horizontal buses establish the regular circuit-board rhythm.
+  for (let lane = 0; lane < laneCount; lane++) {
+    const y = clamp(
+      0.1 + (lane / Math.max(1, laneCount - 1)) * 0.86 + (random() - 0.5) * 0.025,
+      0.04,
+      0.98
+    );
+    const trace = addTrace(
+      [
+        { x: -0.04, y },
+        { x: 1.04, y },
+      ],
+      random() * Math.PI * 2,
+      0.22 + random() * 0.3
+    );
+
+    const branchCount = 1 + Math.floor(random() * 3);
+    for (let branch = 0; branch < branchCount; branch++) {
+      const x = 0.08 + random() * 0.84;
+      const direction = random() > 0.5 ? 1 : -1;
+      const branchY = clamp(y + direction * (0.055 + random() * 0.16), 0.03, 0.97);
+      const branchX = clamp(x + (random() - 0.5) * 0.16, 0.04, 0.96);
+      trace.nodes.push({ x, y });
+      addTrace(
+        [
+          { x, y },
+          { x, y: branchY },
+          { x: branchX, y: branchY },
+        ],
+        trace.phase + random() * 1.8,
+        trace.speed * (0.8 + random() * 0.5)
+      );
+    }
+  }
+
+  // A few vertical rails make the field read as connected circuitry instead of waves.
+  const railCount = Math.max(3, Math.min(6, Math.round(width / 280)));
+  for (let rail = 0; rail < railCount; rail++) {
+    const x = clamp(
+      0.08 + (rail / Math.max(1, railCount - 1)) * 0.84 + (random() - 0.5) * 0.04,
+      0.04,
+      0.96
+    );
+    const top = 0.08 + random() * 0.14;
+    const bottom = 0.8 + random() * 0.16;
+    addTrace(
+      [
+        { x, y: top },
+        { x, y: bottom },
+      ],
+      random() * Math.PI * 2,
+      0.18 + random() * 0.24
+    );
+  }
+
+  return traces;
+}
+
+function segmentDistance(point: Point, segment: CircuitSegment) {
+  const vx = segment.to.x - segment.from.x;
+  const vy = segment.to.y - segment.from.y;
+  const lengthSquared = vx * vx + vy * vy || 1;
+  const progress = clamp(
+    ((point.x - segment.from.x) * vx + (point.y - segment.from.y) * vy) /
+      lengthSquared,
+    0,
+    1
+  );
+  const nearestX = segment.from.x + vx * progress;
+  const nearestY = segment.from.y + vy * progress;
+  return {
+    distance: Math.hypot(point.x - nearestX, point.y - nearestY),
+    progress,
+  };
+}
+
+function circularDistance(first: number, second: number) {
+  const distance = Math.abs(first - second);
+  return Math.min(distance, 1 - distance);
 }
 
 export default function PortfolioCodeFlow() {
@@ -61,7 +153,7 @@ export default function PortfolioCodeFlow() {
     let height = 0;
     let columns = 0;
     let rows = 0;
-    let sources: FlowSource[] = [];
+    let circuit: CircuitTrace[] = [];
     let animationFrame = 0;
 
     const resize = () => {
@@ -70,7 +162,7 @@ export default function PortfolioCodeFlow() {
       height = Math.max(1, rect.height);
       columns = Math.max(1, Math.floor(width / CELL_X));
       rows = Math.max(1, Math.floor(height / CELL_Y));
-      sources = createSources(width, height);
+      circuit = createCircuit(width, height);
 
       canvas.width = Math.round(width * dpr);
       canvas.height = Math.round(height * dpr);
@@ -100,76 +192,56 @@ export default function PortfolioCodeFlow() {
 
       for (let row = 0; row < rows; row++) {
         const normalizedY = rows <= 1 ? 1 : row / (rows - 1);
-        const topFade = Math.min(1, Math.max(0, (normalizedY - 0.02) / 0.28));
-        const risingRow = row + time * 3.8;
+        const topFade = Math.min(1, Math.max(0, (normalizedY - 0.015) / 0.25));
 
         for (let column = 0; column < columns; column++) {
-          const normalizedX = columns <= 1 ? 0 : column / (columns - 1);
-          const backgroundWave =
-            0.032 +
-            (Math.sin(column * 0.19 + risingRow * 0.23) + 1) * 0.022;
-          let weight = backgroundWave;
+          const point = {
+            x: columns <= 1 ? 0 : column / (columns - 1),
+            y: normalizedY,
+          };
+          let weight = 0.012;
 
-          for (const source of sources) {
-            const phaseOffset = source.phase / (Math.PI * 2);
-            const riseProgress = (time * source.riseSpeed + phaseOffset) % 1;
-            const sourceY = 1.12 - riseProgress * 1.16;
-            const sourceX =
-              source.x +
-              Math.sin(time * source.speed * 0.48 + source.phase) *
-                source.radiusX *
-                0.42;
-            const lifeFade = Math.pow(Math.sin(riseProgress * Math.PI), 0.46);
-            const pulse = 0.82 + Math.sin(time * source.speed * 0.73 + source.phase) * 0.18;
-            const dx = (normalizedX - sourceX) / (source.radiusX * pulse);
-            const verticalRadius =
-              normalizedY > sourceY
-                ? source.radiusY * 1.55
-                : source.radiusY * 0.68;
-            const dy = (normalizedY - sourceY) / verticalRadius;
-            const distance = dx * dx + dy * dy;
-            const envelope = Math.exp(-distance * 1.45);
-            const texture =
-              0.36 +
-              Math.abs(
-                Math.sin(
-                  dx * source.texture +
-                    dy * (source.texture + 1.3) -
-                    time * (0.34 + source.speed) +
-                    source.phase
-                )
-              ) *
-                0.64;
-            const dustBreakup =
-              0.48 +
-              Math.abs(
-                Math.sin(
-                  column * 0.31 +
-                    risingRow * 0.47 +
-                    source.phase +
-                    time * source.speed
-                )
-              ) *
-                0.52;
+          for (const trace of circuit) {
+            const tracePulse =
+              0.16 +
+              Math.abs(Math.sin(time * trace.speed + trace.phase)) * 0.2;
 
-            weight = Math.max(
-              weight,
-              envelope * texture * lifeFade * dustBreakup
-            );
+            for (let segmentIndex = 0; segmentIndex < trace.segments.length; segmentIndex++) {
+              const segment = trace.segments[segmentIndex];
+              const nearest = segmentDistance(point, segment);
+              if (nearest.distance > 0.045) continue;
+
+              const lineWeight = (1 - nearest.distance / 0.045) * tracePulse;
+              const pulsePosition =
+                (time * trace.speed * 0.38 +
+                  trace.phase / (Math.PI * 2) +
+                  segmentIndex * 0.19) %
+                1;
+              const pulse = Math.exp(
+                -circularDistance(nearest.progress, pulsePosition) * 120
+              );
+              weight = Math.max(weight, lineWeight + pulse * lineWeight * 2.8);
+            }
+
+            for (const node of trace.nodes) {
+              const nodeDistance = Math.hypot(point.x - node.x, point.y - node.y);
+              if (nodeDistance > 0.04) continue;
+              const nodePulse =
+                0.55 + Math.abs(Math.sin(time * trace.speed + trace.phase)) * 0.45;
+              weight = Math.max(weight, (1 - nodeDistance / 0.04) * nodePulse);
+            }
           }
 
           weight *= topFade;
-          if (weight < 0.018) continue;
+          if (weight < 0.025) continue;
 
-          const digitWave =
-            Math.sin(column * 0.41 + risingRow * 0.27) +
-            Math.cos(column * 0.09 - risingRow * 0.34 + time * 0.24);
-          const digit = digitWave > 0 ? '1' : '0';
+          const digit =
+            Math.sin(column * 0.53 + row * 0.17 + time * 0.22) > 0 ? '1' : '0';
           const intensity = Math.min(1, weight);
           const shade = darkMode
-            ? Math.round(70 + intensity * 162)
-            : Math.round(190 - intensity * 132);
-          const alpha = 0.22 + intensity * 0.72;
+            ? Math.round(74 + intensity * 156)
+            : Math.round(188 - intensity * 132);
+          const alpha = 0.18 + intensity * 0.72;
 
           ctx.fillStyle = `rgba(${shade}, ${shade}, ${shade + (darkMode ? 8 : 14)}, ${alpha})`;
           ctx.fillText(digit, column * CELL_X, row * CELL_Y);

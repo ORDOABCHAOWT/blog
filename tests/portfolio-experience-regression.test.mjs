@@ -81,8 +81,8 @@ test('portfolio page presents four centred portfolio categories', () => {
   );
   assert.match(
     globalsCss,
-    /transform: translateY\(clamp\(-4\.75rem, -7svh, -3rem\)\)/,
-    'Expected the selector group to sit slightly above geometric center'
+    /transform: translateY\(clamp\(-6\.5rem, -12svh, -4rem\)\)/,
+    'Expected the selector group to sit above the geometric center'
   );
   assert.doesNotMatch(
     portfolioComponent,
@@ -152,8 +152,13 @@ test('portfolio page uses an independent full-width random digit flow', () => {
   );
   assert.match(
     portfolioCodeFlow,
-    /segmentStart = index \/ sourceCount/,
-    'Expected random sources to be distributed evenly across horizontal segments'
+    /Full-width horizontal buses establish the regular circuit-board rhythm/,
+    'Expected random circuitry to use full-width horizontal buses'
+  );
+  assert.match(
+    portfolioCodeFlow,
+    /function segmentDistance\(/,
+    'Expected digit positions to follow right-angle circuit segments'
   );
   assert.match(
     portfolioCodeFlow,
@@ -162,8 +167,8 @@ test('portfolio page uses an independent full-width random digit flow', () => {
   );
   assert.match(
     portfolioCodeFlow,
-    /sourceY = 1\.12 - riseProgress \* 1\.16/,
-    'Expected digit clusters to rise from the bottom and evaporate near the top'
+    /pulsePosition =/,
+    'Expected moving pulses to travel along the circuit traces'
   );
   assert.match(
     portfolioCodeFlow,
