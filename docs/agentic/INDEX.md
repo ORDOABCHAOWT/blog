@@ -14,4 +14,4 @@ Start here before non-trivial changes.
 - [Generated References](generated/README.md)
 - [Local References](references/README.md)
 
-Historical design decisions and plans live under `../superpowers/`. Active multi-step agent plans belong in `plans/active/`; move finished plans to `plans/completed/`.
+Active multi-step agent plans belong in `plans/active/`; move finished plans to `plans/completed/`.

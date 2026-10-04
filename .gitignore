@@ -44,7 +44,6 @@ next-env.d.ts
 .claude/
 
 # local visual brainstorming workspace
-.superpowers/
 
 # local implementation worktrees
 .worktrees/

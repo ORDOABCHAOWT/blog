@@ -9,7 +9,6 @@
 - `public/`: stable public assets.
 - `tests/`: source-level regression tests for product and visual decisions.
 - `start-blog-cms.sh`, `stop-blog-cms.sh`, `create-automator-app.sh`: macOS local CMS operations.
-- `docs/superpowers/`: historical designs and implementation plans.
 - `docs/agentic/`: current architecture, product, quality, reliability, security, and maintenance guidance.
 
 ## Commands
