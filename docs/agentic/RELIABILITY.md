@@ -20,6 +20,10 @@
 - Vercel also canonicalizes `/japanese/` to `/japanese`. Keep the Japanese manifest,
   service-worker registration, precache URL, proxy header, and public links on that
   no-trailing-slash scope.
+- `/ledger` follows the same no-trailing-slash rule, but the ledger Worker produces its own
+  prefixed links, manifest scope, cookie path and `Service-Worker-Allowed` header; the proxy only
+  forwards. If the ledger misbehaves here, compare `/ledger/api/ping` and `/ledger/sw.js` with the
+  same paths on the Worker's own address before changing this repository.
 
 ## Debugging
 

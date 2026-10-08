@@ -23,6 +23,15 @@ const nextConfig: NextConfig = {
           { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
         ],
       },
+      {
+        // The ledger asks for stricter values than the blog's defaults above; without this rule
+        // the defaults would replace the ones its Worker sends.
+        source: '/ledger/:path*',
+        headers: [
+          { key: 'Referrer-Policy', value: 'no-referrer' },
+          { key: 'X-Frame-Options', value: 'DENY' },
+        ],
+      },
     ];
   },
 };

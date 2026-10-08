@@ -11,6 +11,7 @@ const requestSecurity = read('src/lib/request-security.ts');
 const proxyRoutes = [
   read('src/app/notebook/[[...path]]/route.ts'),
   read('src/app/japanese/[[...path]]/route.ts'),
+  read('src/app/ledger/[[...path]]/route.ts'),
 ];
 
 test('Next image optimization only trusts the owned OSS bucket', () => {

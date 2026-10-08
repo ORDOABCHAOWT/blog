@@ -21,6 +21,7 @@ The CMS is intentionally local-only. Public deployment must not rely on Vercel f
 - Enable CMS capabilities only through the explicit loopback-bound `BLOG_CMS_LOCAL=1` development command.
 - Require a fixed loopback `Origin` on every local CMS mutation before reading a body or invoking filesystem, OSS, Git, or process operations; never derive trust from `Host`.
 - Preserve bounded request sizes and upstream timeouts on public Worker proxy routes.
+- The private ledger is served at `/ledger` on this origin by an explicit owner decision (2026-10-08, chosen over a separate subdomain). Browsers isolate by origin, not by path: any script that runs anywhere on this site can read and change the ledger of a signed-in browser. So never add third-party scripts to the site, never render post or user content as raw HTML, and keep the ledger proxy forwarding only the ledger's own cookie and never caching its responses.
 - Do not invoke write, delete, upload, deploy, or credential-rotation actions during routine validation.
 
 ## Security Decision Gate

@@ -24,6 +24,7 @@
 - Markdown posts and public assets are user content, not implementation scratch space.
 - `/notebook/[[...path]]` is a narrowly scoped dynamic proxy to the Word Notebook Worker. It requests identity encoding and returns decoded text or explicit binary bytes so Vercel does not cache or drop the PWA response; it must never claim the blog's `/api/*` routes.
 - `/japanese/[[...path]]` uses the same decoded, no-cache proxy boundary for the static Japanese textbook and its PWA assets.
+- `/ledger/[[...path]]` forwards the private ledger (a separate Worker with its own access key) the same way, because `workers.dev` cannot be reached from some networks. The Worker knows it is mounted under `/ledger`, so the route rewrites nothing; it forwards only the ledger's own session cookie upstream and also accepts `PUT`, which the ledger's Mac client uses.
 - Both Worker proxies reject declared request bodies larger than 4MB and abort upstream fetches after 30 seconds.
 
 ## Known Architectural Exceptions
