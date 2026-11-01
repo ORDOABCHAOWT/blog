@@ -3552,34 +3552,6 @@ select {
   line-height: 0.98;
 }
 
-.portfolio-category-picker {
-  display: grid;
-  width: min(100%, 30.5rem);
-  border-top: 1px solid var(--portfolio-rule);
-}
-
-.portfolio-category-button {
-  display: grid;
-  grid-template-columns: 2.25rem 1fr auto;
-  gap: 0.8rem;
-  align-items: center;
-  width: 100%;
-  min-height: 3.85rem;
-  padding: 0;
-  border: 0;
-  border-bottom: 1px solid var(--portfolio-rule);
-  appearance: none;
-  color: var(--portfolio-ink);
-  background: transparent;
-  cursor: pointer;
-  font: inherit;
-  font-size: clamp(1rem, 1.6vw, 1.16rem);
-  font-weight: 500;
-  letter-spacing: -0.035em;
-  text-align: left;
-  transition: color 180ms ease, padding 220ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-
 .portfolio-category-index,
 .portfolio-category-arrow {
   color: var(--portfolio-muted);
@@ -3594,27 +3566,280 @@ select {
   font-size: 0.82rem;
 }
 
-@media (hover: hover) and (pointer: fine) {
-  .portfolio-category-button:hover {
-    padding-inline: 0.62rem;
-    color: var(--portfolio-accent);
-  }
+/* /posts/aboutMyProjects: a compact beige computer in the middle of the page, its screen
+   listing the categories as `ls -l` output, in front of an ASCII starfield. The case keeps
+   its colours in both themes, as a physical object would. */
+.portfolio-desk-page {
+  --mac-case: #e3dccb;
+  --mac-case-hi: #f3efe5;
+  --mac-case-lo: #c4baa3;
+  --mac-case-shade: rgba(60, 48, 28, 0.22);
+  --mac-bezel: #d1c8b1;
+  --mac-screen: #eef0e9;
+  --mac-screen-ink: #1d1d1b;
+  --mac-screen-accent: #4f47b8;
+  --mac-scanline: rgba(29, 29, 27, 0.035);
+  --mac-slot: #35302a;
+  --mac-shadow: rgba(24, 23, 26, 0.28);
+}
 
-  .portfolio-category-button:hover .portfolio-category-index {
-    color: currentColor;
-  }
+.portfolio-desk {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  padding: clamp(1.5rem, 5svh, 4rem) 1rem clamp(2rem, 6svh, 4.5rem);
+}
 
-  .portfolio-category-button:hover .portfolio-category-arrow {
-    color: currentColor;
-    transform: translate(0.22rem, -0.22rem);
+.portfolio-mac {
+  /* As wide as the page allows while the whole machine still fits under the navigation. */
+  --mac-width: min(clamp(340px, 58vw, 720px), calc((100svh - 12rem) * 0.84));
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  width: var(--mac-width);
+  max-width: 100%;
+  aspect-ratio: 0.84;
+  padding: calc(var(--mac-width) * 0.062) calc(var(--mac-width) * 0.062) 0;
+  border-radius: 18px 18px 10px 10px;
+  background: linear-gradient(180deg, var(--mac-case-hi) 0, var(--mac-case) 10%, var(--mac-case) 86%, var(--mac-case-lo) 100%);
+  box-shadow:
+    inset 0 2px 0 var(--mac-case-hi),
+    inset 0 -5px 0 var(--mac-case-lo),
+    0 0 0 1px var(--mac-case-lo),
+    0 36px 44px -30px var(--mac-shadow);
+}
+
+.portfolio-mac-bezel {
+  padding: 6% 6% 7%;
+  border-radius: 10px;
+  background: var(--mac-bezel);
+  box-shadow: inset 0 3px 6px var(--mac-case-shade), inset 0 -1px 0 var(--mac-case-hi);
+}
+
+.portfolio-mac-screen {
+  aspect-ratio: 4 / 3.15;
+  padding: 7%;
+  overflow: hidden;
+  border-radius: 14px / 16px;
+  background:
+    repeating-linear-gradient(180deg, transparent 0 2px, var(--mac-scanline) 2px 3px),
+    radial-gradient(ellipse at 50% 40%, var(--mac-screen) 60%, var(--mac-case-hi) 140%);
+  box-shadow: inset 0 0 22px var(--mac-case-shade), 0 0 0 2px var(--mac-case-lo);
+  color: var(--mac-screen-ink);
+  container-type: inline-size;
+}
+
+.portfolio-mac-chin {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 5% 8%;
+}
+
+.portfolio-mac-badge {
+  color: var(--mac-case-lo);
+  font-family: var(--font-editorial-mono), monospace;
+  font-size: clamp(9px, 1.7cqw, 12px);
+  font-weight: 700;
+  letter-spacing: 0.24em;
+  text-shadow: 0 1px 0 var(--mac-case-hi);
+}
+
+.portfolio-mac-slot {
+  position: relative;
+  width: 40%;
+  height: 7px;
+  border-radius: 4px;
+  background: var(--mac-slot);
+  box-shadow: inset 0 2px 2px var(--mac-case-shade), 0 1px 0 var(--mac-case-hi);
+}
+
+.portfolio-mac-slot::after {
+  position: absolute;
+  top: 13px;
+  right: 8%;
+  width: 14%;
+  height: 4px;
+  border-radius: 2px;
+  content: "";
+  background: var(--mac-case-lo);
+  box-shadow: 0 1px 0 var(--mac-case-hi);
+}
+
+.portfolio-terminal {
+  color: var(--mac-screen-ink);
+  font-family: var(--font-editorial-mono), monospace;
+  font-size: clamp(9.5px, 4.6cqw, 18px);
+  line-height: 1.7;
+  outline: none;
+}
+
+.portfolio-terminal:focus-visible {
+  outline: 2px solid var(--mac-screen-accent);
+  outline-offset: 6px;
+}
+
+.portfolio-terminal-line,
+.portfolio-terminal-output {
+  margin: 0;
+}
+
+.portfolio-terminal-prompt {
+  color: var(--mac-screen-accent);
+}
+
+/* `ls -l` types itself, then the rows and the next prompt appear one after another. */
+.portfolio-terminal-command {
+  display: inline-block;
+  width: 5ch;
+  overflow: hidden;
+  vertical-align: bottom;
+  white-space: nowrap;
+  animation: portfolio-terminal-type 0.45s steps(5) 0.3s both;
+}
+
+.portfolio-terminal-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.portfolio-terminal-list li {
+  animation: portfolio-terminal-row 0.2s ease both;
+  animation-delay: calc(0.95s + var(--row, 0) * 0.11s);
+}
+
+.portfolio-terminal-input {
+  animation: portfolio-terminal-row 0.2s ease 1.5s both;
+}
+
+.portfolio-terminal-row {
+  display: grid;
+  grid-template-columns: 2ch auto minmax(0, 1fr);
+  gap: 0 1.6ch;
+  align-items: baseline;
+  width: calc(100% + 1ch);
+  margin: 0 -0.5ch;
+  padding: 0 0.5ch;
+  border: 0;
+  background: none;
+  color: var(--mac-screen-ink);
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+}
+
+.portfolio-terminal-count,
+.portfolio-terminal-note {
+  opacity: 0.55;
+  font-size: 0.92em;
+}
+
+.portfolio-terminal-note {
+  overflow: hidden;
+  font-family: var(--font-editorial-sans), "PingFang SC", sans-serif;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* The selected row is inverted, the way the first Macs showed a selection. */
+.portfolio-terminal-row.is-selected {
+  background: var(--mac-screen-ink);
+  color: var(--mac-screen);
+}
+
+.portfolio-terminal-row.is-selected .portfolio-terminal-count,
+.portfolio-terminal-row.is-selected .portfolio-terminal-note {
+  opacity: 1;
+}
+
+.portfolio-terminal-row.is-dimmed {
+  opacity: 0.28;
+}
+
+.portfolio-terminal-row:focus-visible {
+  outline: none;
+}
+
+.portfolio-terminal-output {
+  opacity: 0.6;
+}
+
+.portfolio-terminal-caret {
+  display: inline-block;
+  width: 0.62em;
+  height: 1.05em;
+  margin-left: 1px;
+  vertical-align: -0.16em;
+  background: var(--mac-screen-ink);
+  animation: portfolio-terminal-blink 1.05s steps(1) infinite;
+}
+
+@keyframes portfolio-terminal-type {
+  from {
+    width: 0;
   }
 }
 
-.portfolio-category-button:focus-visible {
-  position: relative;
-  z-index: 1;
-  outline: 2px solid var(--portfolio-accent);
-  outline-offset: 4px;
+@keyframes portfolio-terminal-row {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes portfolio-terminal-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+@container (max-width: 240px) {
+  .portfolio-terminal-row {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .portfolio-terminal-count {
+    display: none;
+  }
+}
+
+/* The sky behind the portfolio pages: stars, the Milky Way and a few accent marks as text. */
+.portfolio-starfield {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.portfolio-starfield__layer {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  overflow: hidden;
+  color: var(--portfolio-ink);
+  font-family: var(--font-editorial-mono), monospace;
+  font-size: 13px;
+  line-height: 1.15;
+  letter-spacing: 0;
+  white-space: pre;
+}
+
+.portfolio-starfield__stars {
+  opacity: 0.45;
+}
+
+.portfolio-starfield__band {
+  opacity: 0.28;
+}
+
+.portfolio-starfield__accent {
+  color: var(--portfolio-accent);
+}
+
+/* On the project index the sky sits behind running text, so it stays fainter. */
+.vibe-page .portfolio-starfield {
+  opacity: 0.55;
 }
 
 /* /vibe-coding: the Vibe coding category's project index, in the selector's shell. */
@@ -3728,25 +3953,6 @@ select {
   }
 }
 
-.portfolio-code-flow {
-  position: absolute;
-  inset: auto 0 0;
-  z-index: 0;
-  width: 100%;
-  height: clamp(10rem, 34svh, 26rem);
-  overflow: hidden;
-  opacity: 0.78;
-  pointer-events: none;
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.22) 10%, rgba(0, 0, 0, 0.7) 32%, black 70%);
-  mask-image: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.22) 10%, rgba(0, 0, 0, 0.7) 32%, black 70%);
-}
-
-.portfolio-code-flow__canvas {
-  display: block;
-  width: 100%;
-  height: 100%;
-}
-
 @media (prefers-color-scheme: dark) {
   .portfolio-page {
     --portfolio-ink: #eeeaf0;
@@ -3762,6 +3968,17 @@ select {
       linear-gradient(rgba(238, 234, 240, 0.032) 1px, transparent 1px);
   }
 
+  .portfolio-desk-page {
+    --mac-case: #cbc3b0;
+    --mac-case-hi: #ddd6c6;
+    --mac-case-lo: #a99f88;
+    --mac-case-shade: rgba(0, 0, 0, 0.4);
+    --mac-bezel: #b8ae96;
+    --mac-screen: #dfe2da;
+    --mac-scanline: rgba(29, 29, 27, 0.05);
+    --mac-slot: #24201b;
+    --mac-shadow: rgba(0, 0, 0, 0.6);
+  }
 }
 
 @media (max-width: 620px) {
@@ -3778,17 +3995,21 @@ select {
     margin-bottom: 2.45rem;
   }
 
-  .portfolio-code-flow {
-    height: 34svh;
-    min-height: 10rem;
-    opacity: 0.72;
+  .portfolio-mac {
+    --mac-width: min(calc(100vw - 24px), 440px);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .portfolio-category-button,
   .portfolio-category-index,
   .portfolio-category-arrow {
     transition: none;
+  }
+
+  .portfolio-terminal-command,
+  .portfolio-terminal-list li,
+  .portfolio-terminal-input,
+  .portfolio-terminal-caret {
+    animation: none;
   }
 }

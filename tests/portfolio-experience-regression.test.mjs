@@ -14,8 +14,12 @@ const portfolioComponent = fs.readFileSync(
   new URL('../src/components/PortfolioExperience.tsx', import.meta.url),
   'utf8'
 );
-const portfolioCodeFlow = fs.readFileSync(
-  new URL('../src/components/PortfolioCodeFlow.tsx', import.meta.url),
+const portfolioTerminal = fs.readFileSync(
+  new URL('../src/components/PortfolioTerminal.tsx', import.meta.url),
+  'utf8'
+);
+const portfolioStarfield = fs.readFileSync(
+  new URL('../src/components/PortfolioStarfield.tsx', import.meta.url),
   'utf8'
 );
 const nextConfig = fs.readFileSync(
@@ -48,61 +52,63 @@ test('aboutMyProjects uses the dedicated portfolio experience', () => {
   );
 });
 
-test('portfolio page presents four centred portfolio categories', () => {
+test('portfolio page lists four categories on the screen of a vintage computer', () => {
+  for (const [dir, label] of [
+    ['vibe-coding/', 'Vibe coding'],
+    ['graphic-design/', '平面设计'],
+    ['video/', '视频'],
+    ['social-media/', '新媒体运营'],
+  ]) {
+    assert.match(
+      portfolioComponent,
+      new RegExp(`dir: '${dir}', label: '${label}'`),
+      `Expected the ${label} category as ${dir}`
+    );
+  }
   assert.match(
     portfolioComponent,
-    /label: 'Vibe coding'/,
-    'Expected the Vibe Coding category'
+    /<PortfolioTerminal entries=\{portfolioCategories\} badge="PORTFOLIO" \/>/,
+    'Expected the categories on the computer screen, with PORTFOLIO on its badge'
   );
   assert.match(
     portfolioComponent,
-    /label: '平面设计'/,
-    'Expected the graphic-design category'
+    /<h1 id="portfolio-title" className="sr-only">/,
+    'Expected the page title to stay available to search engines and screen readers while hidden'
   );
   assert.match(
-    portfolioComponent,
-    /label: '视频'/,
-    'Expected the video category'
+    portfolioTerminal,
+    /ls -l/,
+    'Expected the screen to show the categories as ls -l output'
   );
   assert.match(
-    portfolioComponent,
-    /label: '新媒体运营'/,
-    'Expected the social-media category'
-  );
-  assert.match(
-    portfolioComponent,
+    portfolioTerminal,
     /type="button"/,
-    'Expected every category control to be a native keyboard-accessible button'
+    'Expected unpublished categories to stay native keyboard-accessible buttons'
+  );
+  assert.match(
+    portfolioTerminal,
+    /作品整理中/,
+    'Expected unpublished categories to answer on the screen instead of navigating'
+  );
+  assert.match(
+    portfolioTerminal,
+    /ArrowDown[\s\S]*Enter[\s\S]*Escape/,
+    'Expected arrow keys, Enter and Escape to work on the focused screen'
   );
   assert.match(
     globalsCss,
-    /\.portfolio-category-picker\s*{/,
-    'Expected the centred category picker styling'
+    /animation: portfolio-terminal-type/,
+    'Expected the command to type itself through CSS, so the server-rendered list never flashes'
   );
   assert.match(
     globalsCss,
-    /transform: translateY\(clamp\(-6\.5rem, -12svh, -4rem\)\)/,
-    'Expected the selector group to sit above the geometric center'
+    /\.portfolio-terminal-row\.is-selected\s*{\s*background: var\(--mac-screen-ink\);/,
+    'Expected the selected row to be inverted like the first Macs'
   );
   assert.doesNotMatch(
     portfolioComponent,
     /SELECTED WORKS|Word Notebook|在不同媒介中|portfolio-category-detail/,
     'Expected no header tagline, project link, introduction, or detail copy'
-  );
-  assert.doesNotMatch(
-    portfolioComponent,
-    /aria-pressed|activeCategory|setActiveCategory/,
-    'Expected no persistent selected category state'
-  );
-  assert.match(
-    globalsCss,
-    /@media \(hover: hover\) and \(pointer: fine\)/,
-    'Expected hover emphasis only on devices with a real fine pointer'
-  );
-  assert.doesNotMatch(
-    globalsCss,
-    /\.portfolio-category-button\[aria-pressed/,
-    'Expected category emphasis to clear when the pointer leaves'
   );
 });
 
@@ -124,56 +130,36 @@ test('portfolio post metadata names the portfolio link correctly', () => {
   );
 });
 
-test('portfolio page uses an independent full-width random digit flow', () => {
+test('portfolio pages share an ASCII starfield with the Milky Way behind them', () => {
   assert.match(
     portfolioComponent,
-    /import PortfolioCodeFlow from '@\/components\/PortfolioCodeFlow';/,
-    'Expected the portfolio to use its own animation engine'
-  );
-  assert.match(
-    portfolioComponent,
-    /<PortfolioCodeFlow \/>/,
-    'Expected a live digit canvas at the bottom of the page'
+    /<PortfolioStarfield \/>/,
+    'Expected the starfield behind the computer'
   );
   assert.doesNotMatch(
-    portfolioComponent,
-    /WayfinderHero/,
-    'Expected no reuse of the homepage central figure animation'
+    portfolioComponent + globalsCss,
+    /PortfolioCodeFlow|portfolio-code-flow/,
+    'Expected the old digit flow to be gone'
   );
   assert.match(
-    globalsCss,
-    /mask-image: linear-gradient\(to bottom, transparent 0%/,
-    'Expected the top boundary of the digit field to fade in gradually'
+    portfolioStarfield,
+    /The Milky Way runs from lower left to upper right, split along its length by a dark dust lane/,
+    'Expected a Milky Way band with a dust lane'
   );
   assert.match(
-    globalsCss,
-    /height: clamp\(10rem, 34svh, 26rem\)/,
-    'Expected the rising digit dust to cover roughly the lower third of the viewport'
+    portfolioStarfield,
+    /A shooting star every few seconds/,
+    'Expected an occasional shooting star'
   );
   assert.match(
-    portfolioCodeFlow,
-    /Full-width horizontal buses establish the regular circuit-board rhythm/,
-    'Expected random circuitry to use full-width horizontal buses'
-  );
-  assert.match(
-    portfolioCodeFlow,
-    /function segmentDistance\(/,
-    'Expected digit positions to follow right-angle circuit segments'
-  );
-  assert.match(
-    portfolioCodeFlow,
-    /animationFrame = requestAnimationFrame\(render\)/,
-    'Expected continuous movement through animation frames'
-  );
-  assert.match(
-    portfolioCodeFlow,
-    /pulsePosition =/,
-    'Expected moving pulses to travel along the circuit traces'
-  );
-  assert.match(
-    portfolioCodeFlow,
+    portfolioStarfield,
     /prefers-reduced-motion: reduce/,
-    'Expected the animation to retain its reduced-motion fallback'
+    'Expected a still sky for visitors who reduce motion'
+  );
+  assert.match(
+    portfolioStarfield,
+    /IntersectionObserver/,
+    'Expected the sky to stop drawing while it is off screen'
   );
 });
 
@@ -264,7 +250,7 @@ test('Vibe coding opens its own project index with its work pages', () => {
   );
   assert.match(
     portfolioComponent,
-    /label: 'Vibe coding', href: '\/vibe-coding'/,
+    /label: 'Vibe coding'.*href: '\/vibe-coding'/,
     'Expected the Vibe coding category to link to its index page'
   );
   assert.match(
@@ -274,8 +260,8 @@ test('Vibe coding opens its own project index with its work pages', () => {
   );
   assert.match(
     vibePage,
-    /<PortfolioCodeFlow \/>/,
-    'Expected the index to share the portfolio shell and digit flow'
+    /<PortfolioStarfield \/>/,
+    'Expected the index to share the portfolio shell and starfield'
   );
   assert.match(
     nextConfig,

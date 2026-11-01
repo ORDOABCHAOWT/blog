@@ -1,16 +1,20 @@
 import Link from 'next/link';
-import PortfolioCodeFlow from '@/components/PortfolioCodeFlow';
+import PortfolioStarfield from '@/components/PortfolioStarfield';
+import PortfolioTerminal, { type TerminalEntry } from '@/components/PortfolioTerminal';
 
-const portfolioCategories: { index: string; label: string; href?: string }[] = [
-  { index: '01', label: 'Vibe coding', href: '/vibe-coding' },
-  { index: '02', label: '平面设计' },
-  { index: '03', label: '视频' },
-  { index: '04', label: '新媒体运营' },
+// Categories with published work link to their own index page; the rest answer "作品整理中" on the screen.
+const portfolioCategories: TerminalEntry[] = [
+  { dir: 'vibe-coding/', label: 'Vibe coding', count: 4, status: '4 个项目', href: '/vibe-coding' },
+  { dir: 'graphic-design/', label: '平面设计', count: 0, status: '整理中' },
+  { dir: 'video/', label: '视频', count: 0, status: '整理中' },
+  { dir: 'social-media/', label: '新媒体运营', count: 0, status: '整理中' },
 ];
 
 export default function PortfolioExperience() {
   return (
-    <main className="portfolio-page">
+    <main className="portfolio-page portfolio-desk-page">
+      <PortfolioStarfield />
+
       <header className="portfolio-navigation">
         <Link href="/" className="portfolio-wordmark">
           TAFFY WANG
@@ -18,39 +22,12 @@ export default function PortfolioExperience() {
         <span aria-hidden="true">◌</span>
       </header>
 
-      <section className="portfolio-selector" aria-labelledby="portfolio-title">
-        <div className="portfolio-selector-heading">
-          <p className="portfolio-kicker">Portfolio</p>
-          <h1 id="portfolio-title">作品集</h1>
-        </div>
-
-        <div className="portfolio-category-picker" aria-label="作品类别">
-          {portfolioCategories.map((category) => {
-            const content = (
-              <>
-                <span className="portfolio-category-index">{category.index}</span>
-                <span>{category.label}</span>
-                <span className="portfolio-category-arrow" aria-hidden="true">
-                  ↗
-                </span>
-              </>
-            );
-
-            // Categories with published work open their own index page; the rest stay placeholders.
-            return category.href ? (
-              <Link className="portfolio-category-button" href={category.href} key={category.index}>
-                {content}
-              </Link>
-            ) : (
-              <button className="portfolio-category-button" type="button" key={category.index}>
-                {content}
-              </button>
-            );
-          })}
-        </div>
+      <section className="portfolio-desk" aria-labelledby="portfolio-title">
+        <h1 id="portfolio-title" className="sr-only">
+          作品集
+        </h1>
+        <PortfolioTerminal entries={portfolioCategories} badge="PORTFOLIO" />
       </section>
-
-      <PortfolioCodeFlow />
     </main>
   );
 }

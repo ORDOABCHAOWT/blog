@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import PortfolioCodeFlow from '@/components/PortfolioCodeFlow';
+import PortfolioStarfield from '@/components/PortfolioStarfield';
 
 export const metadata: Metadata = {
   title: 'Vibe coding | Taffy Wang',
@@ -38,6 +38,7 @@ const projects = [
 export default function VibeCodingPage() {
   return (
     <main className="portfolio-page vibe-page">
+      <PortfolioStarfield />
       <header className="portfolio-navigation">
         <Link href="/" className="portfolio-wordmark">
           TAFFY WANG
@@ -77,7 +78,6 @@ export default function VibeCodingPage() {
         </Link>
       </section>
 
-      <PortfolioCodeFlow />
     </main>
   );
 }
