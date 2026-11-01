@@ -30,7 +30,7 @@ h1, h2, h3, p, ul, ol, dl, dd, figure { margin: 0; padding: 0; }
 ul, ol { list-style: none; }
 a { color: inherit; }
 .wrap { width: min(1280px, 100% - var(--gut) * 2); margin-inline: auto; }
-/* ── 博客外壳：取自 Taffy's Blog 作品集页的导航、标签、点阵流动条和页脚 ── */
+/* ── 博客外壳：取自 Taffy's Blog 作品集页的导航、标签、星空和页脚 ── */
 .site-nav { position: relative; z-index: 5; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: clamp(14px, 3vw, 40px); width: min(100%, 104rem); margin: 0 auto; min-height: clamp(4.35rem, 7vw, 5.4rem); padding-inline: clamp(1.2rem, 3vw, 3.5rem); border-bottom: 1px solid var(--b-rule); color: var(--b-muted); font: 400 0.63rem/1.4 var(--b-mono); letter-spacing: 0.12em; text-transform: uppercase; }
 .site-nav a { color: inherit; text-decoration: none; transition: color 0.18s ease; }
 .site-nav a:hover, .site-nav a:focus-visible { color: var(--b-accent); }
@@ -42,7 +42,10 @@ a { color: inherit; }
 .kicker { color: var(--b-accent); font: 400 0.62rem/1.5 var(--b-mono); letter-spacing: 0.16em; text-transform: uppercase; }
 .meta { font: 400 0.66rem/1.5 var(--b-mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--b-muted); }
 .flow-band { position: relative; height: clamp(9rem, 28vh, 19rem); margin-top: clamp(48px, 7vw, 110px); overflow: hidden; opacity: 0.8; pointer-events: none; -webkit-mask-image: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.22) 10%, rgba(0, 0, 0, 0.7) 32%, #000 70%); mask-image: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.22) 10%, rgba(0, 0, 0, 0.7) 32%, #000 70%); }
-.flow-band canvas { display: block; width: 100%; height: 100%; }
+.flow-band pre { position: absolute; inset: 0; margin: 0; overflow: hidden; color: var(--b-ink); font: 400 13px/1.15 var(--b-mono); letter-spacing: 0; white-space: pre; }
+.flow-band .sf-stars { opacity: 0.5; }
+.flow-band .sf-band { opacity: 0.32; }
+.flow-band .sf-accent { color: var(--sf-accent, var(--b-accent)); }
 .site-foot { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px 24px; width: min(100%, 104rem); margin: 0 auto; padding: 1.5rem clamp(1.2rem, 3vw, 3.5rem) 2rem; border-top: 1px solid var(--b-rule); color: var(--b-muted); font: 400 0.63rem/1.4 var(--b-mono); letter-spacing: 0.12em; text-transform: uppercase; }
 .site-foot a { color: var(--b-ink); text-decoration: none; transition: color 0.18s ease; }
 .site-foot a:hover, .site-foot a:focus-visible { color: var(--b-accent); }
@@ -319,7 +322,7 @@ html:not(.js) .step { min-height: 0; }
 </section>
 </main>
 
-<div class="flow-band" aria-hidden="true"><canvas data-accent="#e2560f"></canvas></div>
+<div class="flow-band" aria-hidden="true" data-accent="#e2560f"><pre class="sf-stars"></pre><pre class="sf-band"></pre><pre class="sf-accent"></pre></div>
 <footer class="site-foot">
   <a href="https://www.taffy.wang/vibe-coding">← 返回 Vibe coding</a>
   <span>© 2026 Taffy Wang</span>
@@ -355,59 +358,62 @@ html:not(.js) .step { min-height: 0; }
   window.addEventListener("resize", pick);
   pick();
 })();
-/* 点阵流动条：博客作品集页底部那条电路点阵的简化版 */
+/* 星空：和博客作品集页背后同一片 ASCII 星空，一条带暗色尘埃带的银河、两层会闪的星星和偶尔划过的流星 */
 (function () {
-  var c = document.querySelector(".flow-band canvas");
-  if (!c || !c.getContext) return;
-  var ctx = c.getContext("2d"), CELL = 9, traces = [], W = 0, H = 0, t0 = performance.now(), visible = true;
-  var accent = c.getAttribute("data-accent") || "#7771d1", INK = "24,23,26";
+  var band = document.querySelector(".flow-band");
+  if (!band) return;
+  var layers = [band.querySelector(".sf-stars"), band.querySelector(".sf-band"), band.querySelector(".sf-accent")];
+  if (layers.some(function (l) { return !l; })) return;
+  band.style.setProperty("--sf-accent", band.getAttribute("data-accent") || "#7771d1");
   var still = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
-  function rnd(seed) { var s = seed >>> 0; return function () { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296; }; }
-  function snap(v) { return Math.round(v / CELL) * CELL; }
-  function build() {
-    var r = rnd(Math.round(W * 13 + H * 29)), lanes = Math.max(6, Math.min(12, Math.ceil(W / 170)));
-    traces = [];
-    for (var i = 0; i < lanes; i++) {
-      var y = snap((0.1 + (i / (lanes - 1)) * 0.84 + (r() - 0.5) * 0.03) * H);
-      traces.push({ pts: [[-CELL, y], [W + CELL, y]], phase: r() * 60, speed: 3 + r() * 4 });
-      for (var b = 1 + Math.floor(r() * 3); b > 0; b--) {
-        var x = snap((0.08 + r() * 0.84) * W), by = snap(y + (r() > 0.5 ? 1 : -1) * (0.06 + r() * 0.16) * H), bx = snap(x + (r() - 0.5) * 0.16 * W);
-        traces.push({ pts: [[x, y], [x, by], [bx, by]], phase: r() * 60, speed: 4 + r() * 5, node: [x, y] });
-      }
-    }
-    traces.forEach(function (tr) {
-      tr.cells = [];
-      for (var k = 0; k < tr.pts.length - 1; k++) {
-        var a = tr.pts[k], z = tr.pts[k + 1], dx = Math.sign(z[0] - a[0]), dy = Math.sign(z[1] - a[1]);
-        for (var s = 0, n = Math.max(Math.abs(z[0] - a[0]), Math.abs(z[1] - a[1])) / CELL; s < n; s++) tr.cells.push([a[0] + dx * s * CELL, a[1] + dy * s * CELL]);
-      }
-    });
+  var cw = 7.8, ch = 13 * 1.15, cols = 0, rows = 0, visible = true, last = 0;
+  var pointer = { x: 0, y: 0, inside: false }, lean = { x: 0, y: 0 };
+  function hash(x, y, s) { var h = (Math.imul(x | 0, 374761393) + Math.imul(y | 0, 668265263) + Math.imul(s | 0, 982451653)) | 0; h = Math.imul(h ^ (h >>> 13), 1274126177); return ((h ^ (h >>> 16)) >>> 0) / 4294967296; }
+  function grid() { var a = new Array(cols * rows); for (var i = 0; i < a.length; i++) a[i] = " "; return a; }
+  function put(g, x, y, c) { x = Math.round(x); y = Math.round(y); if (x >= 0 && y >= 0 && x < cols && y < rows) g[y * cols + x] = c; }
+  function text(g) { var out = []; for (var y = 0; y < rows; y++) out.push(g.slice(y * cols, (y + 1) * cols).join("")); return out.join("\n"); }
+  function size() {
+    var ctx = document.createElement("canvas").getContext("2d");
+    if (ctx) { ctx.font = getComputedStyle(layers[0]).font; cw = ctx.measureText("MMMMMMMMMMMMMMMMMMMM").width / 20 || cw; }
+    cols = Math.ceil(band.clientWidth / cw); rows = Math.ceil(band.clientHeight / ch);
   }
   function draw(now) {
-    var t = (now - t0) / 1000;
-    ctx.clearRect(0, 0, W, H);
-    traces.forEach(function (tr) {
-      var n = tr.cells.length, head = (t * tr.speed + tr.phase) % (n + 30);
-      for (var j = 0; j < n; j++) {
-        var d = head - j, p = tr.cells[j];
-        if (d >= 0 && d < 4) { ctx.fillStyle = accent; ctx.globalAlpha = 1 - d * 0.14; }
-        else { ctx.fillStyle = "rgba(" + INK + "," + (d >= 4 && d < 16 ? 0.16 + 0.5 * (1 - (d - 4) / 12) : 0.16).toFixed(3) + ")"; ctx.globalAlpha = 1; }
-        ctx.fillRect(p[0] - 1, p[1] - 1, 2, 2);
-      }
-      if (tr.node) { ctx.globalAlpha = 1; ctx.fillStyle = "rgba(" + INK + ",0.34)"; ctx.fillRect(tr.node[0] - 2.5, tr.node[1] - 2.5, 5, 5); }
-    });
-    ctx.globalAlpha = 1;
+    var t = still ? 3 : now / 1000, r = band.getBoundingClientRect();
+    var inX = pointer.inside && pointer.y > r.top - 200 && pointer.y < r.bottom;
+    lean.x += ((inX ? (pointer.x - r.left) / r.width - 0.5 : 0) - lean.x) * 0.15;
+    var stars = grid(), milky = grid(), accent = grid(), ca = Math.cos(-0.22), sa = Math.sin(-0.22);
+    // 银河：从左下斜向右上，中间一道暗色尘埃带
+    for (var y = 0; y < rows; y++) for (var x = 0; x < cols; x++) {
+      var px = x - cols / 2 + lean.x * 3, py = (y - rows * 0.55) * 2.1;
+      var across = -px * sa + py * ca, along = px * ca + py * sa, w = 7 + 2.5 * Math.sin(along * 0.045);
+      var p = Math.exp(-(across * across) / (2 * w * w)) * (1 - 0.8 * Math.exp(-((across - 1.2) * (across - 1.2)) / (2 * 1.5 * 1.5)));
+      var roll = hash(x, y, 81);
+      if (roll >= p * 0.45) continue;
+      if (!still && hash(x, y, Math.floor(t * 1.4 + hash(x, y, 9) * 7)) < 0.1) continue;
+      put(milky, x, y, roll < p * 0.05 ? "*" : roll < p * 0.15 ? ":" : ".");
+    }
+    // 远近两层星星，慢慢向左漂，近的随鼠标错开得多
+    var n = Math.round(cols * rows / 34);
+    for (var i = 0; i < n; i++) {
+      var near = hash(i, 4, 83) < 0.45;
+      var sx = (((hash(i, 1, 83) * cols - t * (near ? 0.22 : 0.08) + lean.x * (near ? 6 : 2)) % cols) + cols) % cols;
+      var g = Math.sin(t * (0.5 + hash(i, 3, 83) * 1.5) + i * 1.3);
+      if (g > 0.86) put(stars, sx, hash(i, 2, 83) * rows, "*");
+      else if (g > -0.2) put(stars, sx, hash(i, 2, 83) * rows, near && g > 0.6 ? "+" : ".");
+    }
+    for (var k = 0; k < 4; k++) put(accent, hash(k, 1, 87) * cols + lean.x * 6, (0.3 + 0.65 * hash(k, 2, 87)) * rows, Math.sin(t * 0.7 + k * 2.1) > 0.3 ? "*" : "+");
+    // 每隔几秒一颗流星
+    var per = 6.5, idx = Math.floor(t / per), age = t - idx * per;
+    if (!still && age < 1.1) for (var j = 0; j < 11; j++) put(j < 3 ? accent : stars, (0.1 + 0.55 * hash(idx, 1, 89)) * cols + age * 42 - j * 1.9, (0.3 + 0.3 * hash(idx, 2, 89)) * rows + age * 10 - j * 0.46, j === 0 ? "*" : j < 5 ? "\\" : ".");
+    layers[0].textContent = text(stars); layers[1].textContent = text(milky); layers[2].textContent = text(accent);
   }
-  function size() {
-    var box = c.getBoundingClientRect(), dpr = Math.min(2, window.devicePixelRatio || 1);
-    W = box.width; H = box.height; c.width = Math.round(W * dpr); c.height = Math.round(H * dpr);
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0); build(); draw(performance.now());
-  }
-  size();
-  window.addEventListener("resize", size);
+  size(); draw(performance.now());
+  window.addEventListener("resize", function () { size(); draw(performance.now()); });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { size(); draw(performance.now()); });
   if (still) return;
-  if ("IntersectionObserver" in window) new IntersectionObserver(function (e) { visible = e[0].isIntersecting; }).observe(c);
-  (function loop(now) { if (visible) draw(now); requestAnimationFrame(loop); })(performance.now());
+  window.addEventListener("pointermove", function (e) { pointer.x = e.clientX; pointer.y = e.clientY; pointer.inside = true; }, { passive: true });
+  if ("IntersectionObserver" in window) new IntersectionObserver(function (e) { visible = e[0].isIntersecting; }).observe(band);
+  (function loop(now) { requestAnimationFrame(loop); if (!visible || document.hidden || now - last < 1000 / 12) return; last = now; draw(now); })(performance.now());
 })();
 
 </script>
