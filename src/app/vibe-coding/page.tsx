@@ -17,12 +17,18 @@ const projects = [
   },
   {
     index: '02',
+    name: 'Word Notebook',
+    summary: '在电脑和 iPhone 之间同步的私有英语生词本',
+    href: '/vibe-coding/word-notebook',
+  },
+  {
+    index: '03',
     name: '办公小助手',
     summary: 'macOS 办公工具箱：周报、加班、图片转换、视频截帧',
     href: '/vibe-coding/office-assistant',
   },
   {
-    index: '03',
+    index: '04',
     name: 'Glance',
     summary: '在 Touch Bar 上看 Codex 和 Claude 的任务进度',
     href: '/vibe-coding/glance',

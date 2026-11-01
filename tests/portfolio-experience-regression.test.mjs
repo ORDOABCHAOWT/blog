@@ -282,7 +282,7 @@ test('Vibe coding opens its own project index with its work pages', () => {
     /source: '\/vibe-coding\/office-assistant', destination: '\/vibe-coding\/office-assistant\.html'/,
     'Expected the work page to be served without its .html extension'
   );
-  for (const slug of ['chordlens', 'office-assistant', 'glance']) {
+  for (const slug of ['chordlens', 'word-notebook', 'office-assistant', 'glance']) {
     const page = fs.readFileSync(
       new URL(`../public/vibe-coding/${slug}.html`, import.meta.url),
       'utf8'
