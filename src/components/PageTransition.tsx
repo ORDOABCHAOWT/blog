@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { playPortfolioWarp } from '@/components/portfolio-warp';
 
 /**
  * Grayscale 0/1 ash route transition.
@@ -92,6 +93,12 @@ export default function PageTransition() {
 
       if (reduceMotion) {
         router.push(fullPath);
+        return;
+      }
+
+      // From the homepage, the portfolio is reached by flying through the stars instead.
+      if (url.pathname === '/posts/aboutMyProjects' && window.location.pathname === '/') {
+        playPortfolioWarp(() => router.push(fullPath), { x: event.clientX, y: event.clientY });
         return;
       }
 

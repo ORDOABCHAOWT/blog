@@ -290,3 +290,48 @@ test('Vibe coding opens its own project index with its work pages', () => {
     );
   }
 });
+
+test('the homepage reaches the portfolio by flying through the stars', () => {
+  const pageTransition = fs.readFileSync(new URL('../src/components/PageTransition.tsx', import.meta.url), 'utf8');
+  const warp = fs.readFileSync(new URL('../src/components/portfolio-warp.ts', import.meta.url), 'utf8');
+  assert.match(
+    pageTransition,
+    /url\.pathname === '\/posts\/aboutMyProjects' && window\.location\.pathname === '\/'/,
+    'Expected only the homepage link to the portfolio to start the warp'
+  );
+  assert.match(
+    pageTransition,
+    /if \(reduceMotion\) \{\s*router\.push\(fullPath\);\s*return;\s*\}[\s\S]*playPortfolioWarp/,
+    'Expected visitors who reduce motion to skip the warp'
+  );
+  assert.match(warp, /setAttribute\(PORTFOLIO_WARP_ATTRIBUTE/, 'Expected the warp to tell the portfolio page to wait for it');
+  assert.match(warp, /Navigation must never wait on the animation/, 'Expected navigation to happen even if frames stop');
+  assert.match(
+    globalsCss,
+    /animation: portfolio-mac-arrive[\s\S]*\[data-portfolio-warp\] \.portfolio-mac \{\s*animation-delay/,
+    'Expected the computer to grow in, later when it arrives through the warp'
+  );
+  assert.match(
+    globalsCss,
+    /\[data-portfolio-warp\] \.portfolio-terminal-command \{\s*animation-delay: 1\.9s;/,
+    'Expected the screen to type only once the computer has arrived'
+  );
+});
+
+test('Vibe coding shows its projects as a gallery of covers', () => {
+  const vibePage = fs.readFileSync(new URL('../src/app/vibe-coding/page.tsx', import.meta.url), 'utf8');
+  assert.match(vibePage, /className="vibe-gallery"/, 'Expected a gallery instead of a list');
+  for (const slug of ['chordlens', 'word-notebook', 'office-assistant', 'glance']) {
+    assert.match(vibePage, new RegExp(`cover: '/vibe-coding/covers/${slug}\\.webp'`), `Expected a cover for ${slug}`);
+    assert.ok(
+      fs.existsSync(new URL(`../public/vibe-coding/covers/${slug}.webp`, import.meta.url)),
+      `Expected the ${slug} cover file`
+    );
+  }
+  assert.match(
+    globalsCss,
+    /\.vibe-gallery \{[^}]*grid-template-columns: repeat\(2, minmax\(0, 1fr\)\)/,
+    'Expected four equal covers, two to a row'
+  );
+  assert.doesNotMatch(vibePage + globalsCss, /vibe-project/, 'Expected the old list to be gone');
+});
