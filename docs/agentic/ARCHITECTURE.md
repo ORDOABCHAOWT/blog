@@ -32,6 +32,7 @@
 ## Known Architectural Exceptions
 
 - Next production builds currently skip TypeScript errors.
+- Production builds turn off the Turbopack build cache (`turbopackFileSystemCacheForBuild: false`). Vercel restores `.next/cache` between deploys, and on 2026-11-01 that cache made a deploy ship the previous CSS for an edited `globals.css` while the HTML was new.
 - Local CMS routes are intentionally passwordless and unavailable on Vercel.
 - Deploy API stages broadly and can push all current changes.
 

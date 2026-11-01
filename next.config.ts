@@ -2,6 +2,11 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   serverExternalPackages: ['ali-oss'],
+  experimental: {
+    // Vercel restores .next/cache between deploys; on 2026-11-01 the Turbopack build cache it
+    // carried produced the previous deploy's CSS for an edited globals.css. Build from scratch.
+    turbopackFileSystemCacheForBuild: false,
+  },
   typescript: {
     ignoreBuildErrors: true,
   },

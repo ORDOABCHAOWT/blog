@@ -51,6 +51,11 @@ for (const [name, source] of [
 
 assert.doesNotMatch(nextConfig, /\*\*\.aliyuncs\.com/, 'image optimizer must not trust arbitrary OSS buckets');
 assert.match(nextConfig, /X-Content-Type-Options/, 'baseline security headers must remain configured');
+assert.match(
+  nextConfig,
+  /turbopackFileSystemCacheForBuild:\s*false/,
+  'Vercel builds must not reuse the Turbopack build cache; it shipped stale CSS on 2026-11-01'
+);
 
 assert.match(
   nextConfig,
