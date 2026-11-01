@@ -3655,7 +3655,7 @@ select {
 
 .vibe-project {
   display: grid;
-  grid-template-columns: 2.25rem auto minmax(0, 1fr) auto;
+  grid-template-columns: 2.25rem 7rem minmax(0, 1fr) auto;
   gap: 0.8rem;
   align-items: center;
   min-height: 3.85rem;

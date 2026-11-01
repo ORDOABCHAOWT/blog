@@ -253,7 +253,7 @@ test('blog exposes the Japanese textbook through a scoped no-cache proxy', () =>
   );
 });
 
-test('Vibe coding opens its own project index with the office assistant work page', () => {
+test('Vibe coding opens its own project index with its work pages', () => {
   const vibePage = fs.readFileSync(
     new URL('../src/app/vibe-coding/page.tsx', import.meta.url),
     'utf8'
@@ -282,9 +282,25 @@ test('Vibe coding opens its own project index with the office assistant work pag
     /source: '\/vibe-coding\/office-assistant', destination: '\/vibe-coding\/office-assistant\.html'/,
     'Expected the work page to be served without its .html extension'
   );
-  assert.match(
-    officeAssistant,
-    /href="https:\/\/www\.taffy\.wang\/vibe-coding">← 返回 Vibe coding/,
-    'Expected the work page to lead back to the Vibe coding index'
-  );
+  for (const slug of ['chordlens', 'office-assistant', 'glance']) {
+    const page = fs.readFileSync(
+      new URL(`../public/vibe-coding/${slug}.html`, import.meta.url),
+      'utf8'
+    );
+    assert.match(
+      vibePage,
+      new RegExp(`href: '/vibe-coding/${slug}'`),
+      `Expected the index to list ${slug}`
+    );
+    assert.match(
+      nextConfig,
+      new RegExp(`source: '/vibe-coding/${slug}', destination: '/vibe-coding/${slug}\\.html'`),
+      `Expected ${slug} to be served without its .html extension`
+    );
+    assert.match(
+      page,
+      /href="https:\/\/www\.taffy\.wang\/vibe-coding">← 返回 Vibe coding/,
+      `Expected ${slug} to lead back to the Vibe coding index`
+    );
+  }
 });

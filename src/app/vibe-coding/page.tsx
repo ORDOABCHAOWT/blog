@@ -11,9 +11,21 @@ export const metadata: Metadata = {
 const projects = [
   {
     index: '01',
+    name: 'ChordLens',
+    summary: '和弦自学软件：和弦名、琴键、吉他指法同时展示',
+    href: '/vibe-coding/chordlens',
+  },
+  {
+    index: '02',
     name: '办公小助手',
     summary: 'macOS 办公工具箱：周报、加班、图片转换、视频截帧',
     href: '/vibe-coding/office-assistant',
+  },
+  {
+    index: '03',
+    name: 'Glance',
+    summary: '在 Touch Bar 上看 Codex 和 Claude 的任务进度',
+    href: '/vibe-coding/glance',
   },
 ];
 
