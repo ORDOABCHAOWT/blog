@@ -150,8 +150,8 @@ export default function HomeExperience({ posts }: HomeExperienceProps) {
 
           <p className="home-deck">Take it easy, just thinking.</p>
           <p className="home-intro">
-            Essays, project notes, and field observations on AI, work, images,
-            travel, and the ordinary details worth holding onto.
+            Thinking slowly about AI, work, and everyday things — and building
+            a few small tools to make life lighter.
           </p>
 
           <nav className="home-social-links" aria-label="Social links">
