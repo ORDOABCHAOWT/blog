@@ -252,3 +252,39 @@ test('blog exposes the Japanese textbook through a scoped no-cache proxy', () =>
     'Expected the service worker to control the canonical no-trailing-slash app URL'
   );
 });
+
+test('Vibe coding opens its own project index with the office assistant work page', () => {
+  const vibePage = fs.readFileSync(
+    new URL('../src/app/vibe-coding/page.tsx', import.meta.url),
+    'utf8'
+  );
+  const officeAssistant = fs.readFileSync(
+    new URL('../public/vibe-coding/office-assistant.html', import.meta.url),
+    'utf8'
+  );
+  assert.match(
+    portfolioComponent,
+    /label: 'Vibe coding', href: '\/vibe-coding'/,
+    'Expected the Vibe coding category to link to its index page'
+  );
+  assert.match(
+    vibePage,
+    /href: '\/vibe-coding\/office-assistant'/,
+    'Expected the index to list the office assistant page'
+  );
+  assert.match(
+    vibePage,
+    /<PortfolioCodeFlow \/>/,
+    'Expected the index to share the portfolio shell and digit flow'
+  );
+  assert.match(
+    nextConfig,
+    /source: '\/vibe-coding\/office-assistant', destination: '\/vibe-coding\/office-assistant\.html'/,
+    'Expected the work page to be served without its .html extension'
+  );
+  assert.match(
+    officeAssistant,
+    /href="https:\/\/www\.taffy\.wang\/vibe-coding">← 返回 Vibe coding/,
+    'Expected the work page to lead back to the Vibe coding index'
+  );
+});

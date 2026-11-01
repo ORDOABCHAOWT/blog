@@ -3617,6 +3617,117 @@ select {
   outline-offset: 4px;
 }
 
+/* /vibe-coding: the Vibe coding category's project index, in the selector's shell. */
+.vibe-crumbs {
+  display: flex;
+  gap: 0.9em;
+  justify-self: end;
+}
+
+.vibe-crumbs a {
+  transition: color 180ms ease;
+}
+
+.vibe-crumbs a:hover,
+.vibe-crumbs a:focus-visible {
+  color: var(--portfolio-accent);
+}
+
+.vibe-crumbs b {
+  color: var(--portfolio-ink);
+  font-weight: 500;
+}
+
+.vibe-lede {
+  margin: 1rem 0 0;
+  color: var(--portfolio-muted);
+  font-size: 0.95rem;
+  letter-spacing: -0.01em;
+}
+
+.vibe-project-list {
+  width: min(100%, 36rem);
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--portfolio-rule);
+  list-style: none;
+}
+
+.vibe-project {
+  display: grid;
+  grid-template-columns: 2.25rem auto minmax(0, 1fr) auto;
+  gap: 0.8rem;
+  align-items: center;
+  min-height: 3.85rem;
+  border-bottom: 1px solid var(--portfolio-rule);
+  color: var(--portfolio-ink);
+  transition: color 180ms ease, padding 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.vibe-project-name {
+  font-size: clamp(1rem, 1.6vw, 1.16rem);
+  font-weight: 500;
+  letter-spacing: -0.035em;
+}
+
+.vibe-project-summary {
+  overflow: hidden;
+  color: var(--portfolio-muted);
+  font-size: 0.82rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .vibe-project:hover {
+    padding-inline: 0.62rem;
+    color: var(--portfolio-accent);
+  }
+
+  .vibe-project:hover .portfolio-category-index,
+  .vibe-project:hover .portfolio-category-arrow {
+    color: currentColor;
+  }
+
+  .vibe-project:hover .portfolio-category-arrow {
+    transform: translate(0.22rem, -0.22rem);
+  }
+}
+
+.vibe-project:focus-visible {
+  outline: 2px solid var(--portfolio-accent);
+  outline-offset: 4px;
+}
+
+.vibe-back {
+  margin-top: 1.6rem;
+  color: var(--portfolio-muted);
+  font-family: var(--font-editorial-mono), monospace;
+  font-size: 0.63rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  transition: color 180ms ease;
+}
+
+.vibe-back:hover,
+.vibe-back:focus-visible {
+  color: var(--portfolio-accent);
+}
+
+@media (max-width: 620px) {
+  .vibe-project {
+    grid-template-columns: 2rem minmax(0, 1fr) auto;
+    row-gap: 0.1rem;
+    padding-block: 0.7rem;
+  }
+
+  .vibe-project-summary {
+    grid-column: 2 / 3;
+    grid-row: 2;
+    white-space: normal;
+  }
+}
+
 .portfolio-code-flow {
   position: absolute;
   inset: auto 0 0;
