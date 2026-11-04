@@ -88,6 +88,14 @@ export default function PageTransition() {
         return;
       }
 
+      // Static galleries load their own styles and scripts through document navigation.
+      if (anchor.hasAttribute('data-static-page')) return;
+
+      // Portfolio siblings already share the same sky and palette. Let Link handle
+      // its prefetched route without a second full-screen canvas covering the arrival.
+      const portfolioRoutes = ['/posts/aboutMyProjects', '/vibe-coding'];
+      if (portfolioRoutes.includes(window.location.pathname) && portfolioRoutes.includes(url.pathname)) return;
+
       event.preventDefault();
       const fullPath = `${url.pathname}${url.search}${url.hash}`;
 

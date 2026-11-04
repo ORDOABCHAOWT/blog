@@ -21,6 +21,7 @@ const nextConfig: NextConfig = {
   async rewrites() {
     // Vibe coding work pages are self-contained HTML files in public/vibe-coding/; serve them without the extension.
     return [
+      { source: '/graphic-design', destination: '/graphic-design/index.html' },
       { source: '/vibe-coding/chordlens', destination: '/vibe-coding/chordlens.html' },
       { source: '/vibe-coding/word-notebook', destination: '/vibe-coding/word-notebook.html' },
       { source: '/vibe-coding/office-assistant', destination: '/vibe-coding/office-assistant.html' },

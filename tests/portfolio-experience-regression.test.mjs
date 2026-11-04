@@ -335,3 +335,31 @@ test('Vibe coding shows its projects as a gallery of covers', () => {
   );
   assert.doesNotMatch(vibePage + globalsCss, /vibe-project/, 'Expected the old list to be gone');
 });
+
+
+test('Vibe coding tiles reveal stack and a learn-more action for hover, focus and touch', () => {
+  const page = fs.readFileSync(new URL('../src/app/vibe-coding/page.tsx', import.meta.url), 'utf8');
+  assert.equal((page.match(/stack: '/g) || []).length, 4);
+  assert.match(page, /vibe-card-stack/);
+  assert.match(page, /Learn more/);
+  assert.match(globalsCss, /\.vibe-card:hover \.vibe-card-cover,[\s\S]*?opacity: 0;/);
+  assert.match(globalsCss, /\.vibe-card:focus-visible \.vibe-card-meta\s*\{\s*opacity: 1;/);
+  assert.match(globalsCss, /@media \(hover: none\), \(pointer: coarse\)/);
+  assert.match(globalsCss, /\.vibe-gallery-section\s*\{\s*animation: none;/);
+});
+
+
+test('graphic design publishes the approved gallery and retains continuous phone reading', () => {
+  const page = fs.readFileSync(new URL('../public/graphic-design/index.html', import.meta.url), 'utf8');
+  const script = fs.readFileSync(new URL('../public/graphic-design/script.js', import.meta.url), 'utf8');
+  assert.match(portfolioComponent, /href: '\/graphic-design', staticPage: true/);
+  assert.match(portfolioTerminal, /entry.href && entry.staticPage\) window.location.assign\(entry.href\)/);
+  assert.match(nextConfig, /source: '\/graphic-design', destination: '\/graphic-design\/index.html'/);
+  assert.match(page, /story-complete.webp/);
+  assert.match(page, /shots-iphone17pro-deep-blue.png/);
+  assert.doesNotMatch(page, /data-story|expand-story|127\.0\.0\.1|localhost/);
+  assert.match(script, /reader.addEventListener\('scroll',readerProgress/);
+  for (const [, asset] of page.matchAll(/src="(\/graphic-design\/assets\/[^"]+)"/g)) {
+    assert.ok(fs.existsSync(new URL(`../public${asset}`, import.meta.url)), `Missing gallery asset: ${asset}`);
+  }
+});

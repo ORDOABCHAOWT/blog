@@ -39,3 +39,15 @@ Provide a personal editorial blog, portfolio experience, and locally operated CM
 - Preserve source-level regression tests for stable visual/product decisions.
 - Do not change posts, deploy behavior, authentication posture, or OSS behavior without explicit user intent.
 - Visible changes require browser verification on relevant public and admin routes.
+
+- Vibe coding uses a compact two-column cover gallery. Hover and keyboard focus
+  dissolve each cover into its title, summary, language/stack and Learn more action;
+  touch devices show the cover and details together. Portfolio index/category
+  navigation uses prefetched Next links without the global ash overlay, and the
+  gallery has a short arrival fade that respects reduced-motion preferences.
+
+- Graphic design is published at `/graphic-design`, using the approved editorial
+  gallery: small-radius poster rail, switchable brochure spreads, a continuous
+  exhibition artwork scrolled inside the original Shots iPhone 17 Pro frame, and
+  a large public-communication image. The portfolio terminal links to the static
+  gallery with a document navigation, for both mouse and keyboard entry.

@@ -3955,9 +3955,10 @@ select {
   z-index: 1;
   display: grid;
   justify-items: center;
-  width: min(100% - 2.5rem, 64rem);
+  align-content: start;
+  width: min(100% - 2.5rem, 76rem);
   margin: 0 auto;
-  padding-block: clamp(2.5rem, 7vh, 4.5rem) clamp(3rem, 8vh, 5rem);
+  padding-block: clamp(2rem, 5vh, 3.5rem) clamp(2rem, 5vh, 3rem);
 }
 
 .vibe-gallery-heading {
@@ -3973,11 +3974,16 @@ select {
   line-height: 0.98;
 }
 
-/* Four equal covers, two to a row; one column on phones. */
+.vibe-page {
+  --vibe-surface: #f4f3f0;
+}
+
+/* Compact editorial tiles: the cover dissolves into a quiet information face. */
 .vibe-gallery {
   display: grid;
+  align-content: start;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: clamp(1.5rem, 3vw, 2.2rem) clamp(1.25rem, 3vw, 2rem);
+  gap: 6px;
   width: 100%;
   margin: 0;
   padding: 0;
@@ -3985,19 +3991,28 @@ select {
 }
 
 .vibe-card {
-  display: grid;
-  gap: 0.8rem;
+  position: relative;
+  display: block;
+  overflow: hidden;
+  isolation: isolate;
+  aspect-ratio: 1.85;
+  border-radius: 5px;
   color: var(--portfolio-ink);
+  background: color-mix(in srgb, var(--portfolio-accent) 12%, var(--vibe-surface));
 }
 
 .vibe-card-cover {
+  position: absolute;
+  inset: 0;
   margin: 0;
-  overflow: hidden;
-  aspect-ratio: 3 / 2;
-  border-radius: 12px;
-  background: var(--portfolio-rule);
-  box-shadow: 0 0 0 1px var(--portfolio-rule), 0 26px 44px -30px rgba(24, 23, 26, 0.4);
-  transition: transform 350ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 350ms ease;
+  transition: opacity 320ms ease;
+}
+
+.vibe-card-cover::after {
+  position: absolute;
+  inset: 0;
+  content: '';
+  background: linear-gradient(180deg, rgba(0,0,0,.28), transparent 40%, rgba(0,0,0,.65));
 }
 
 .vibe-card-cover img {
@@ -4005,69 +4020,149 @@ select {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
+.vibe-card-label,
 .vibe-card-meta {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
-  gap: 0.15rem 0.75rem;
-  align-items: baseline;
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: clamp(1.2rem, 2.7vw, 2rem);
+  transition: opacity 260ms ease;
 }
 
-.vibe-card-name {
-  font-size: clamp(1.05rem, 1.6vw, 1.2rem);
-  font-weight: 500;
-  letter-spacing: -0.03em;
-  transition: color 180ms ease;
+.vibe-card-label {
+  color: #fff;
+  pointer-events: none;
 }
 
-.vibe-card-platform {
-  color: var(--portfolio-muted);
+.vibe-card-label > :first-child,
+.vibe-card-platform,
+.vibe-card-stack {
   font-family: var(--font-editorial-mono), monospace;
   font-size: 0.62rem;
-  letter-spacing: 0.1em;
+  line-height: 1.6;
+  letter-spacing: 0.07em;
+}
+
+.vibe-card-label > :first-child,
+.vibe-card-platform {
   text-transform: uppercase;
 }
 
+.vibe-card-label > :last-child,
+.vibe-card-name {
+  font-size: clamp(1.5rem, 3vw, 2.5rem);
+  font-weight: 500;
+  line-height: 1.05;
+  letter-spacing: -0.055em;
+}
+
+.vibe-card-meta {
+  opacity: 0;
+}
+
+.vibe-card-details {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.7rem;
+}
+
 .vibe-card-summary {
-  grid-column: 2 / -1;
+  max-width: 32em;
+  font-size: 0.82rem;
+  line-height: 1.6;
+}
+
+.vibe-card-stack {
   color: var(--portfolio-muted);
-  font-size: 0.88rem;
+  letter-spacing: 0;
+}
+
+.vibe-card-more {
+  display: inline-flex;
+  align-items: center;
+  gap: 1.4rem;
+  margin-top: 0.3rem;
+  padding: 0.55rem 0.9rem;
+  border-radius: 999px;
+  color: var(--vibe-surface);
+  background: var(--portfolio-ink);
+  font-size: 0.68rem;
+  line-height: 1;
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .vibe-card:hover .vibe-card-cover {
-    transform: translateY(-5px);
-    box-shadow: 0 0 0 1px var(--portfolio-rule), 0 34px 54px -30px rgba(24, 23, 26, 0.45);
+  .vibe-card:hover .vibe-card-cover,
+  .vibe-card:hover .vibe-card-label {
+    opacity: 0;
   }
 
-  .vibe-card:hover .vibe-card-cover img {
-    transform: scale(1.035);
-  }
-
-  .vibe-card:hover .vibe-card-name {
-    color: var(--portfolio-accent);
+  .vibe-card:hover .vibe-card-meta {
+    opacity: 1;
   }
 }
 
 .vibe-card:focus-visible {
-  border-radius: 14px;
   outline: 2px solid var(--portfolio-accent);
-  outline-offset: 6px;
+  outline-offset: 3px;
+}
+
+.vibe-card:focus-visible .vibe-card-cover,
+.vibe-card:focus-visible .vibe-card-label {
+  opacity: 0;
+}
+
+.vibe-card:focus-visible .vibe-card-meta {
+  opacity: 1;
+}
+
+@media (hover: none), (pointer: coarse), (max-width: 760px) {
+  .vibe-card {
+    aspect-ratio: auto;
+  }
+  .vibe-card-cover {
+    position: relative;
+    aspect-ratio: 1.85;
+  }
+  .vibe-card-cover::after,
+  .vibe-card-label {
+    display: none;
+  }
+  .vibe-card-meta {
+    position: relative;
+    gap: 1.4rem;
+    opacity: 1;
+  }
 }
 
 @media (max-width: 760px) {
   .vibe-gallery {
     grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
   }
+}
+
+@keyframes vibe-arrive {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.vibe-gallery-section {
+  animation: vibe-arrive 360ms ease-out both;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .vibe-card-cover,
-  .vibe-card-cover img,
-  .vibe-card-name {
+  .vibe-card-label,
+  .vibe-card-meta {
     transition: none;
+  }
+  .vibe-gallery-section {
+    animation: none;
   }
 }
 
@@ -4088,6 +4183,10 @@ select {
 
 
 @media (prefers-color-scheme: dark) {
+  .vibe-page {
+    --vibe-surface: #171619;
+  }
+
   .portfolio-page {
     --portfolio-ink: #eeeaf0;
     --portfolio-muted: #9c98a1;

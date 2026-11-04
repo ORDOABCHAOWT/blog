@@ -83,3 +83,10 @@ test('route transition overlay preserves the page background without blend tinti
     'Expected the ash canvas to sit inside a same-background overlay'
   );
 });
+
+
+test('portfolio sibling navigation uses prefetched Link without the ash overlay', () => {
+  assert.match(transitionSource, /const portfolioRoutes = \['\/posts\/aboutMyProjects', '\/vibe-coding'\];/);
+  const skip = transitionSource.indexOf('if (portfolioRoutes.includes(window.location.pathname) && portfolioRoutes.includes(url.pathname)) return;');
+  assert.ok(skip > 0 && skip < transitionSource.indexOf('event.preventDefault();'));
+});

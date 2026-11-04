@@ -10,6 +10,7 @@ export type TerminalEntry = {
   count: number;
   status: string;
   href?: string;
+  staticPage?: boolean;
 };
 
 type PortfolioTerminalProps = {
@@ -38,7 +39,8 @@ export default function PortfolioTerminal({ entries, badge, prompt = 'taffy ~ %'
 
   const open = (index: number) => {
     const entry = entries[index];
-    if (entry.href) router.push(entry.href);
+    if (entry.href && entry.staticPage) window.location.assign(entry.href);
+    else if (entry.href) router.push(entry.href);
     else setOutput(`${entry.label} · 作品整理中`);
   };
 
@@ -111,7 +113,11 @@ export default function PortfolioTerminal({ entries, badge, prompt = 'taffy ~ %'
                 };
                 return (
                   <li key={entry.dir} style={{ '--row': index } as CSSProperties}>
-                    {entry.href ? (
+                    {entry.href && entry.staticPage ? (
+                      <a className={className} href={entry.href} data-static-page {...handlers}>
+                        {content}
+                      </a>
+                    ) : entry.href ? (
                       <Link className={className} href={entry.href} {...handlers}>
                         {content}
                       </Link>

@@ -17,6 +17,7 @@ const projects = [
     summary: '和弦自学软件：和弦名、琴键、吉他指法同时展示',
     href: '/vibe-coding/chordlens',
     platform: 'macOS',
+    stack: 'TypeScript · React · Rust / Tauri',
     cover: '/vibe-coding/covers/chordlens.webp',
   },
   {
@@ -25,6 +26,7 @@ const projects = [
     summary: '在电脑和 iPhone 之间同步的私有英语生词本',
     href: '/vibe-coding/word-notebook',
     platform: 'PWA',
+    stack: 'TypeScript · React · Cloudflare Workers · D1',
     cover: '/vibe-coding/covers/word-notebook.webp',
   },
   {
@@ -33,6 +35,7 @@ const projects = [
     summary: 'macOS 办公工具箱：周报、加班、图片转换、视频截帧',
     href: '/vibe-coding/office-assistant',
     platform: 'macOS',
+    stack: 'Python · macOS',
     cover: '/vibe-coding/covers/office-assistant.webp',
   },
   {
@@ -41,6 +44,7 @@ const projects = [
     summary: '在 Touch Bar 上看 Codex 和 Claude 的任务进度',
     href: '/vibe-coding/glance',
     platform: 'Touch Bar',
+    stack: 'Swift · AppKit',
     cover: '/vibe-coding/covers/glance.webp',
   },
 ];
@@ -78,15 +82,22 @@ export default function VibeCodingPage() {
                     alt={`${project.name} 的封面`}
                     width={1200}
                     height={800}
-                    sizes="(max-width: 760px) 100vw, 31rem"
+                    sizes="(max-width: 760px) 100vw, (max-width: 1280px) 50vw, 38rem"
                     priority={position < 2}
                   />
                 </figure>
+                <span className="vibe-card-label" aria-hidden="true">
+                  <span>{project.index} / {project.platform}</span>
+                  <span>{project.name}</span>
+                </span>
                 <span className="vibe-card-meta">
-                  <span className="portfolio-category-index">{project.index}</span>
-                  <span className="vibe-card-name">{project.name}</span>
-                  <span className="vibe-card-platform">{project.platform}</span>
-                  <span className="vibe-card-summary">{project.summary}</span>
+                  <span className="vibe-card-platform">{project.index} / {project.platform}</span>
+                  <span className="vibe-card-details">
+                    <span className="vibe-card-name">{project.name}</span>
+                    <span className="vibe-card-summary">{project.summary}</span>
+                    <span className="vibe-card-stack">{project.stack}</span>
+                    <span className="vibe-card-more">Learn more <span aria-hidden="true">↗</span></span>
+                  </span>
                 </span>
               </a>
             </li>
