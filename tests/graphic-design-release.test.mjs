@@ -1,0 +1,39 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+const root=new URL('../public/graphic-design/',import.meta.url);
+const read=name=>fs.readFileSync(new URL(name,root),'utf8');
+
+test('graphic portfolio resolves every static reference from its canonical extensionless URL',()=>{
+  for(const name of ['index.html','public-exhibition.html','sports-design.html']){
+    const html=read(name);
+    assert.doesNotMatch(html,/127\.0\.0\.1|localhost|Design preview|\/Users\/|\/Volumes\//);
+    for(const [,url] of html.matchAll(/(?:src|href)="([^"#]+)"/g)){
+      if(url.startsWith('https:')||url.startsWith('http:'))continue;
+      assert.ok(url.startsWith('/'),`${name}: relative reference ${url} breaks canonical /graphic-design`);
+      if(url.startsWith('/graphic-design/')&&url.split('#')[0].match(/\.[a-z]+$/)){
+        assert.ok(fs.existsSync(new URL(`../public${url.split('#')[0]}`,import.meta.url)),`${name}: missing ${url}`);
+      }
+    }
+  }
+});
+
+test('approved chapters keep sports separate from public communication and retain complete app/wallpaper sets',()=>{
+  const home=read('index.html'),publicPage=read('public-exhibition.html'),sports=read('sports-design.html');
+  for(const id of ['public','vi','sports','app-design','wallpapers'])assert.match(home,new RegExp(`id="${id}"`));
+  assert.match(publicPage,/safety-328\.webp/);
+  assert.doesNotMatch(publicPage,/jiangdong-|id="events"/);
+  for(const material of ['standee','gate','bags','flags','booth','banners'])assert.match(sports,new RegExp(`jiangdong-${material}\\.webp`));
+  for(const id of ['home','payment','services','mine'])assert.ok(fs.existsSync(new URL(`assets/app-before-${id}.webp`,root)));
+  for(const id of ['home','payment','services','mine','reading','repair','payment-study'])assert.ok(fs.existsSync(new URL(`assets/app-after-${id}.webp`,root)));
+  for(const id of ['meter','service','inspection'])assert.ok(fs.existsSync(new URL(`assets/wallpaper-${id}.webp`,root)));
+});
+
+test('native mockup images scale responsively and wallpaper overlays do not add an extra strip',()=>{
+  assert.match(read('style.css'),/\.sports-portal>img\{height:auto;/);
+  const css=read('ui-work.css');
+  assert.match(css,/\.mac-wallpaper\{[^}]*inset:0;[^}]*height:100%;[^}]*object-fit:cover;/);
+  assert.match(read('index.html'),/shots-macbook-air-m2\.png/);
+  assert.match(read('ascii.js'),/prefers-reduced-motion: reduce/);
+  assert.ok(fs.existsSync(new URL('vendor/ascii-magic/LICENSE',root)));
+});

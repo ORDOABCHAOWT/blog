@@ -351,14 +351,15 @@ test('Vibe coding tiles reveal stack and a learn-more action for hover, focus an
 
 test('graphic design publishes the approved gallery and retains continuous phone reading', () => {
   const page = fs.readFileSync(new URL('../public/graphic-design/index.html', import.meta.url), 'utf8');
-  const script = fs.readFileSync(new URL('../public/graphic-design/script.js', import.meta.url), 'utf8');
   assert.match(portfolioComponent, /href: '\/graphic-design', staticPage: true/);
   assert.match(portfolioTerminal, /entry.href && entry.staticPage\) window.location.assign\(entry.href\)/);
   assert.match(nextConfig, /source: '\/graphic-design', destination: '\/graphic-design\/index.html'/);
   assert.match(page, /story-complete.webp/);
   assert.match(page, /shots-iphone17pro-deep-blue.png/);
   assert.doesNotMatch(page, /data-story|expand-story|127\.0\.0\.1|localhost/);
-  assert.match(script, /reader.addEventListener\('scroll',readerProgress/);
+  const galleryCss = fs.readFileSync(new URL('../public/graphic-design/style.css', import.meta.url), 'utf8');
+  assert.match(galleryCss, /\.story-continuous \.story-scroll[^}]*height:100%/);
+  assert.equal((page.match(/class="story-scroll"/g) || []).length, 2);
   for (const [, asset] of page.matchAll(/src="(\/graphic-design\/assets\/[^"]+)"/g)) {
     assert.ok(fs.existsSync(new URL(`../public${asset}`, import.meta.url)), `Missing gallery asset: ${asset}`);
   }

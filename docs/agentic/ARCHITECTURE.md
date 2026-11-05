@@ -29,6 +29,8 @@
 - `/vibe-coding` shows the Vibe coding portfolio projects as a gallery of covers (`public/vibe-coding/covers/`, 1200×800 crops of images from each project page); the portfolio selector's Vibe coding category links to it. Each project page is a self-contained HTML file in `public/vibe-coding/` (edited by hand outside the repo, then copied in) and mapped to an extension-less URL by a rewrite in `next.config.ts`.
 - Both Worker proxies reject declared request bodies larger than 4MB and abort upstream fetches after 30 seconds.
 
+- `/graphic-design` rewrites to a self-contained static portfolio under `public/graphic-design/`. Use absolute `/graphic-design/` asset URLs so the canonical URL without a trailing slash works. Public communication and sports have their own linked HTML pages; VI, app redesign and wallpaper chapters are inline. App comparisons pair four previous screens with seven new designs. Wallpaper selection updates the original art inside a native MacBook mockup; use cover fitting without adding background strips. The ASCII hero is a local MIT-licensed module with reduced-motion and offscreen handling.
+
 ## Known Architectural Exceptions
 
 - Next production builds currently skip TypeScript errors.

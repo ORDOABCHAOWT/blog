@@ -1,0 +1,11 @@
+(()=>{
+ const tabs=[...document.querySelectorAll('[data-ui]')],before=document.querySelector('#ui-before-img'),after=document.querySelector('#ui-after-img'),panel=document.querySelector('#ui-comparison');
+ const pages={home:['首页','让常用服务，一眼可见。','账户与待缴账单集中展示，缴费、查账单和报读数直接触达。'],payment:['充值缴费','让一笔缴费，顺畅完成。','账户、待缴金额与支付方式依次展开，减少页面跳转与填写负担。'],services:['全部服务','让服务分类，更有条理。','将办理、维修、账户与生活服务分组，建立一致的入口与视觉层级。'],mine:['我的','让账户管理，清晰有序。','多账户、业务记录与个人设置分层排列，常用信息优先呈现。']};
+ let sequence=0;
+ async function select(tab){const id=tab.dataset.ui,n=++sequence;const images=[new Image(),new Image()];images[0].src=`/graphic-design/assets/app-before-${id}.webp`;images[1].src=`/graphic-design/assets/app-after-${id}.webp`;
+  try{await Promise.all(images.map(i=>i.decode()));if(n!==sequence)return;const [label,title,copy]=pages[id];[before,after].forEach((img,i)=>{img.src=images[i].src;img.width=images[i].naturalWidth;img.height=images[i].naturalHeight;img.alt=`民生宝改版${i?'后':'前'}的${label}`;img.parentElement.scrollTop=0});document.querySelector('#ui-change-title').textContent=title;document.querySelector('#ui-change-copy').textContent=copy;tabs.forEach(b=>{b.setAttribute('aria-selected',String(b===tab));b.tabIndex=b===tab?0:-1});panel.setAttribute('aria-labelledby',tab.id)}catch(error){console.error('界面加载失败',error)}
+ }
+ tabs.forEach((tab,index)=>{tab.onclick=()=>select(tab);tab.addEventListener('keydown',e=>{let target;if(e.key==='ArrowRight')target=(index+1)%tabs.length;if(e.key==='ArrowLeft')target=(index+tabs.length-1)%tabs.length;if(e.key==='Home')target=0;if(e.key==='End')target=tabs.length-1;if(target!==undefined){e.preventDefault();tabs[target].focus();select(tabs[target])}})});
+ const options=[...document.querySelectorAll('[data-wallpaper]')],preview=document.querySelector('#wallpaper-preview');let wallpaperSequence=0;
+ options.forEach(button=>button.onclick=async()=>{const n=++wallpaperSequence,im=new Image();im.src=`/graphic-design/assets/wallpaper-${button.dataset.wallpaper}.webp`;try{await im.decode();if(n!==wallpaperSequence)return;preview.src=im.src;preview.alt=button.innerText+'主题 MacBook 桌面，含软件图标与 Dock';options.forEach(b=>b.setAttribute('aria-pressed',String(b===button)));document.querySelector('#wallpaper-announcement').textContent='当前壁纸：'+button.innerText}catch(error){console.error('壁纸加载失败',error)}});
+})();
