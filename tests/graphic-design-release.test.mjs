@@ -5,7 +5,7 @@ const root=new URL('../public/graphic-design/',import.meta.url);
 const read=name=>fs.readFileSync(new URL(name,root),'utf8');
 
 test('graphic portfolio resolves every static reference from its canonical extensionless URL',()=>{
-  for(const name of ['index.html','public-exhibition.html','sports-design.html']){
+  for(const name of ['index.html','public-exhibition.html','sports-design.html','u18-design.html']){
     const html=read(name);
     assert.doesNotMatch(html,/127\.0\.0\.1|localhost|Design preview|\/Users\/|\/Volumes\//);
     for(const [,url] of html.matchAll(/(?:src|href)="([^"#]+)"/g)){
@@ -36,4 +36,20 @@ test('native mockup images scale responsively and wallpaper overlays do not add 
   assert.match(read('index.html'),/shots-macbook-air-m2\.png/);
   assert.match(read('ascii.js'),/prefers-reduced-motion: reduce/);
   assert.ok(fs.existsSync(new URL('vendor/ascii-magic/LICENSE',root)));
+});
+
+test('U18 opens as its own sports case alongside the Jiangdong Cup',()=>{
+  const home=read('index.html');
+  const sports=home.match(/<section[^>]+id="sports"[^>]*>[\s\S]*?<\/section>/)?.[0] ?? '';
+  assert.match(sports,/href="\/graphic-design\/sports-design\.html"/);
+  assert.match(sports,/href="\/graphic-design\/u18-design\.html"/);
+  const u18=read('u18-design.html');
+  assert.doesNotMatch(u18,/full-schedule|dinner-wayfinding|pass-front|pass-back|lanyard|screen-[23]\.webp/);
+  assert.match(u18,/final-schedule\.webp/);
+  assert.match(u18,/screen-1\.webp/);
+  for(const view of ['arena','arena-wide'])assert.ok(u18.includes(`assets/u18/${view}-render.webp`));
+  assert.match(u18,/href="\/graphic-design#sports"/);
+  for(const id of ['promotion','schedule','venue','broadcast']){
+    assert.match(u18,new RegExp(`aria-labelledby="${id}"`));
+  }
 });

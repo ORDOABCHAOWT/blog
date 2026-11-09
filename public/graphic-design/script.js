@@ -1,6 +1,10 @@
-const posters=[['poster-dragon-window','端午安康','贸易之窗 · 节日海报'],['poster-mother-kitchen','母亲节','民生燃气 · 节日海报'],['poster-youth','青春不止步','民生燃气 · 青年节海报'],['poster-dragon-gas','端午','民生燃气 · 节日海报'],['poster-mother-light','她的关怀','民生燃气 · 母亲节海报']];
 const rail=document.querySelector('.poster-rail');
-posters.forEach(([asset,title],i)=>{const item=document.createElement('article');item.className='poster-piece';const button=document.createElement('button');button.className='poster-frame';button.setAttribute('aria-label',`查看${title}海报`);const img=document.createElement('img');img.src=`/graphic-design/assets/${asset}.webp`;img.alt=title;img.loading='lazy';button.append(img);const plus=document.createElement('span');plus.className='poster-open';plus.textContent='↗';button.append(plus);button.addEventListener('click',()=>openWork(asset,title));item.append(button);const meta=document.createElement('div');meta.className='poster-meta';const heading=document.createElement('h3');heading.textContent=title;meta.append(heading);item.append(meta);rail.append(item)});
+rail.querySelectorAll('.poster-frame').forEach(button => {
+  button.addEventListener('click', () => {
+    const title = button.closest('.poster-piece').querySelector('h3').textContent.trim();
+    openWork(button.dataset.poster, title);
+  });
+});
 const motion=()=>matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth';
 const prev=document.querySelector('#poster-prev'),next=document.querySelector('#poster-next');
 function railState(){prev.disabled=rail.scrollLeft<4;next.disabled=rail.scrollLeft+rail.clientWidth>=rail.scrollWidth-4}
@@ -11,5 +15,5 @@ rail.addEventListener('keydown',e=>{if(e.target!==rail)return;if(e.key==='ArrowR
 
 const dialog=document.querySelector('#lightbox'),fullImage=document.querySelector('#lightbox-img');let trigger;
 function openWork(asset,title){trigger=document.activeElement;fullImage.src=`/graphic-design/assets/${asset}.webp`;fullImage.alt=title;fullImage.className=asset.startsWith('poster')||asset.startsWith('story')?'portrait':'';document.querySelector('#lightbox-title').textContent=title;dialog.showModal();document.querySelector('.lightbox-body').scrollTop=0;document.querySelector('#close-lightbox').focus()}
-document.querySelector('#close-lightbox').onclick=()=>dialog.close();dialog.addEventListener('close',()=>trigger?.focus());document.querySelectorAll('.zoom-work').forEach(b=>b.onclick=()=>openWork(b.dataset.asset,b.dataset.title));
+document.querySelector('#close-lightbox').onclick=()=>dialog.close();dialog.addEventListener('close',()=>trigger?.focus());document.querySelectorAll('.zoom-work').forEach(b=>b.onclick=()=>openWork(b.dataset.asset,b.querySelector('span')?.textContent.replace(/\s*↗$/, '').trim() || b.dataset.title));
 const sections=[...document.querySelectorAll('section.chapter')],navLinks=[...document.querySelectorAll('.chapter-nav a')];function updateNav(){const threshold=innerHeight*.35;let current=sections[0];sections.forEach(s=>{if(s.getBoundingClientRect().top<threshold)current=s});navLinks.forEach(a=>{const active=a.hash===`#${current.id}`;a.classList.toggle('active',active);if(active)a.setAttribute('aria-current','location');else a.removeAttribute('aria-current')})}let ticking=false;window.addEventListener('scroll',()=>{if(!ticking){ticking=true;requestAnimationFrame(()=>{updateNav();ticking=false})}},{passive:true});updateNav();
