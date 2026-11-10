@@ -74,3 +74,31 @@
   .u18-final-schedule { grid-column: 1 / -1; }
   .u18-schedule-grid .u18-scroll { max-height: min(65vh, 560px); }
 }
+
+.u18-zoom { display:block; width:100%; padding:0; cursor:zoom-in; }
+.u18-lightbox {
+  width:min(1120px,90vw);
+  height:fit-content;
+  max-height:90dvh;
+  margin:auto;
+  background:transparent;
+  overflow:visible;
+  opacity:0;
+  transform:scale(.95);
+  transition:opacity .22s ease,transform .22s ease,display .22s allow-discrete,overlay .22s allow-discrete;
+}
+.u18-lightbox[open] { opacity:1; transform:none; }
+.u18-lightbox::backdrop { background:#14131983; backdrop-filter:blur(12px); }
+.u18-lightbox img { width:100%; max-height:82dvh; object-fit:contain; }
+.u18-lightbox-close {
+  position:absolute;
+  right:8px;
+  top:8px;
+  z-index:1;
+  width:36px;
+  height:36px;
+  color:white;
+  background:#0009;
+  font-size:24px;
+}
+@starting-style { .u18-lightbox[open] { opacity:0; transform:scale(.95); } }

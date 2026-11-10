@@ -53,3 +53,13 @@ test('U18 opens as its own sports case alongside the Jiangdong Cup',()=>{
     assert.match(u18,new RegExp(`aria-labelledby="${id}"`));
   }
 });
+
+test('graphic design showcases the new cover, book spread and broadcast zoom',()=>{
+  const home=read('index.html');
+  assert.match(home,/public-portal[^>]*>[\s\S]*?<img[^>]+gallery-report\.webp/);
+  assert.match(home,/data-poster="poster-gaokao"/);
+  assert.equal((home.match(/data-book-page="/g) || []).length,5);
+  assert.match(read('flipbook.js'),/brochure-cover-latest[^\n]*\n\s*\['brochure-design-10'/);
+  assert.match(read('ascii.js'),/pieces\/snow-train\.js/);
+  assert.equal((read('u18-design.html').match(/class="u18-zoom"/g) || []).length,3);
+});

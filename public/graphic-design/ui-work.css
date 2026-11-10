@@ -7,3 +7,22 @@
 /* Native Shots MacBook frame, with a self-contained macOS desktop overlay. */
 .desktop-stage{padding:35px 3% 28px}.macbook-mockup{position:relative;aspect-ratio:1640/1010;width:100%;max-width:1200px;margin:0 auto;filter:drop-shadow(0 22px 16px #0002)}.macbook-device{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:2}.macos-screen{position:absolute;left:10.97561%;top:4.752475%;width:78.04878%;height:82.376238%;overflow:hidden;background:#172a42;container-type:inline-size;color:#172a42}.mac-wallpaper{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;display:block}.macos-menubar{position:absolute;inset:0 0 auto;height:3.4%;display:flex;align-items:center;justify-content:space-between;padding:0 1.7%;font:1.02cqw/1.1 -apple-system,BlinkMacSystemFont,sans-serif;white-space:nowrap;background:#dbe9ff7a;backdrop-filter:blur(12px);z-index:1}.macos-menu-left,.macos-menu-right{display:flex;align-items:center;gap:1.2cqw}.macos-menu-left b{font-weight:600}.macos-apple{font-size:1.45cqw;line-height:1}.macos-menu-right{gap:.8cqw}.macos-menu-right svg{width:1.5cqw;height:1cqw}.macos-files{position:absolute;top:9%;left:3%;display:flex;flex-direction:column;gap:2.6cqw}.macos-file{display:flex;align-items:center;flex-direction:column;gap:.6cqw;color:white;font:1cqw/1.2 -apple-system,BlinkMacSystemFont,sans-serif;text-shadow:0 1px 3px #0005}.mac-folder{position:relative;display:block;width:4.2cqw;height:3.1cqw;border-radius:.3cqw;background:linear-gradient(#9bddff,#52b9ed);box-shadow:inset 0 0 0 1px #b8e9ff8c,0 1px 3px #003e7440}.mac-folder::before{position:absolute;content:'';width:45%;height:.5cqw;left:.2cqw;top:-.35cqw;background:#a4e0ff;border-radius:.2cqw .3cqw 0 0}.macos-dock{position:absolute;bottom:1.6%;left:50%;transform:translateX(-50%);height:8.6%;display:flex;align-items:center;gap:.85cqw;padding:.65cqw 1cqw;border-radius:1.35cqw;background:linear-gradient(120deg,#ebf5ff79,#c6dcf77d);border:1px solid #ffffff70;box-shadow:0 .4cqw 1.2cqw #174c702b,inset 0 0 .2cqw #fff9;backdrop-filter:blur(16px)}.macos-dock img{width:4cqw;height:4cqw;object-fit:contain;filter:drop-shadow(0 .2cqw .15cqw #14325440)}.macos-dock img:last-child{margin-left:.7cqw}.wallpaper-chapter .section-heading>p{max-width:360px}
 @media(max-width:620px){.desktop-stage{padding:25px 0 22px}.macbook-mockup{width:100%;max-width:none;margin-left:0}}
+
+/* The same Shots frame and display geometry used by the longform readers. */
+.ui-comparison .ui-phone {
+  width:min(100%,310px);
+  max-width:none;
+  padding:0;
+  border-radius:0;
+  background:transparent;
+  box-shadow:none;
+}
+.ui-comparison .ui-phone-screen {
+  position:absolute;
+  left:4.318182%;
+  top:1.766004%;
+  width:91.363636%;
+  height:96.504783%;
+  border-radius:0;
+  mask:url('/graphic-design/assets/shots-iphone17pro-display.svg') center / 100% 100% no-repeat;
+}

@@ -99,3 +99,13 @@ h1>.title-first,h1>.title-second{display:block}h1>.title-first{color:var(--ink)}
 @media (max-width: 620px) {
   .sports-projects { grid-template-columns: 1fr; }
 }
+
+/* Straight, square-corner entry arrows and uncropped case cover. */
+.entry-arrow { display:block; flex:none; }
+.public-portal .public-plus { border:0; border-radius:0; }
+.public-portal:hover .public-plus { background:none; transform:translate(3px,-3px); }
+.public-portal > img { aspect-ratio:auto; height:auto; }
+@media(min-width:621px) {
+  .flipbook-stage { padding-inline:clamp(14px,2vw,28px); }
+  .book-flip { max-width:min(1200px,calc(76svh * 1.415)); }
+}

@@ -2,6 +2,7 @@
  const book=document.querySelector('#brochure-book');if(!book)return;
  const pages=[
   ['brochure-cover-latest','海南民生众和集团画册封面与封底'],
+  ['brochure-design-10','业务画册第二跨页'],
   ['brochure-business-latest','城市管道燃气业务与发展历程'],
   ['brochure-service-latest','燃气服务与智慧燃气'],
   ['brochure-construction-latest','建设业务与工程监理设计']
