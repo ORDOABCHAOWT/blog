@@ -6,12 +6,32 @@ rail.querySelectorAll('.poster-frame').forEach(button => {
   });
 });
 const motion=()=>matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth';
-const prev=document.querySelector('#poster-prev'),next=document.querySelector('#poster-next');
-function railState(){prev.disabled=rail.scrollLeft<4;next.disabled=rail.scrollLeft+rail.clientWidth>=rail.scrollWidth-4}
-prev.onclick=()=>rail.scrollBy({left:-rail.clientWidth*.7,behavior:motion()});
-next.onclick=()=>rail.scrollBy({left:rail.clientWidth*.7,behavior:motion()});
-rail.addEventListener('scroll',railState,{passive:true});window.addEventListener('resize',railState);railState();
-rail.addEventListener('keydown',e=>{if(e.target!==rail)return;if(e.key==='ArrowRight'||e.key==='ArrowLeft'){e.preventDefault();rail.scrollBy({left:(e.key==='ArrowRight'?1:-1)*rail.clientWidth*.7,behavior:motion()})}});
+function setupRail(track, prev, next, step) {
+  function updateControls() {
+    prev.disabled = track.scrollLeft < 4;
+    next.disabled = track.scrollLeft + track.clientWidth >= track.scrollWidth - 4;
+  }
+  function scroll(direction) {
+    track.scrollBy({ left: direction * track.clientWidth * step, behavior: motion() });
+  }
+  prev.onclick = () => scroll(-1);
+  next.onclick = () => scroll(1);
+  track.addEventListener('scroll', updateControls, { passive: true });
+  window.addEventListener('resize', updateControls);
+  track.addEventListener('keydown', event => {
+    if (event.target !== track || !['ArrowRight', 'ArrowLeft'].includes(event.key)) return;
+    event.preventDefault();
+    scroll(event.key === 'ArrowRight' ? 1 : -1);
+  });
+  updateControls();
+}
+setupRail(rail, document.querySelector('#poster-prev'), document.querySelector('#poster-next'), .7);
+setupRail(
+  document.querySelector('#annual-meeting-rail'),
+  document.querySelector('#annual-meeting-prev'),
+  document.querySelector('#annual-meeting-next'),
+  .9
+);
 
 const dialog=document.querySelector('#lightbox'),fullImage=document.querySelector('#lightbox-img');let trigger;
 function openWork(asset,title){trigger=document.activeElement;fullImage.src=`/graphic-design/assets/${asset}.webp`;fullImage.alt=title;fullImage.className=asset.startsWith('poster')||asset.startsWith('story')?'portrait':'';document.querySelector('#lightbox-title').textContent=title;dialog.showModal();document.querySelector('.lightbox-body').scrollTop=0;document.querySelector('#close-lightbox').focus()}
