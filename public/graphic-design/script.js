@@ -1,10 +1,4 @@
 const rail=document.querySelector('.poster-rail');
-rail.querySelectorAll('.poster-frame').forEach(button => {
-  button.addEventListener('click', () => {
-    const title = button.closest('.poster-piece').querySelector('h3').textContent.trim();
-    openWork(button.dataset.poster, title);
-  });
-});
 const motion=()=>matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth';
 function setupRail(track, prev, next, step) {
   function updateControls() {

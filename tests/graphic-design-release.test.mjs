@@ -59,7 +59,11 @@ test('U18 opens as its own sports case alongside the Jiangdong Cup',()=>{
 
 test('graphic design showcases the book spread and broadcast zoom',()=>{
   const home=read('index.html');
-  assert.match(home,/data-poster="poster-gaokao"/);
+  const posters = home.match(/<section[^>]+id="posters"[^>]*>[\s\S]*?<\/section>/)?.[0] ?? '';
+  const cards = [...posters.matchAll(/<article class="poster-piece">([\s\S]*?)<\/article>/g)];
+  assert.equal(cards.length, 5);
+  assert.match(cards.at(-1)[1], /poster-gaokao\.webp/);
+  for (const [, card] of cards) assert.doesNotMatch(card, /<button\b|<a\b|zoom-work|↗/);
   assert.equal((home.match(/data-book-page="/g) || []).length,5);
   assert.match(read('flipbook.js'),/brochure-cover-latest[^\n]*\n\s*\['brochure-design-10'/);
   assert.match(read('ascii.js'),/pieces\/rule-30\.js/);
