@@ -1,0 +1,102 @@
+.page::before {
+  display: none;
+}
+
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+  gap: clamp(2.5rem, 5vw, 4rem) clamp(1.25rem, 3vw, 2.5rem);
+  width: 100%;
+}
+
+.work {
+  min-width: 0;
+}
+
+.player {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--portfolio-rule);
+  border-radius: 8px;
+  background: #111;
+}
+
+.caption {
+  margin-top: 1.25rem;
+}
+
+.caption h2 {
+  margin: 0;
+  font-size: clamp(1.1rem, 2vw, 1.4rem);
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+.caption p {
+  max-width: 42rem;
+  margin: 0.55rem 0 0;
+  color: var(--portfolio-muted);
+  line-height: 1.8;
+}
+
+.portrait {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(1.25rem, 3vw, 2.5rem);
+}
+
+.portrait .player {
+  width: min(100%, 19rem);
+  justify-self: center;
+}
+
+.portrait .caption {
+  margin-top: 0;
+}
+
+@media (max-width: 760px) {
+  .gallery,
+  .portrait {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .portrait {
+    gap: 1.25rem;
+  }
+}
+
+.process {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+  gap: clamp(1.25rem, 3vw, 2.5rem);
+}
+
+.process figure {
+  margin: 0;
+  min-width: 0;
+}
+
+.processImage {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 6px;
+}
+
+.process figcaption {
+  margin-top: 0.7rem;
+  color: var(--portfolio-muted);
+  font-size: 0.85rem;
+}
+
+@media (max-width: 760px) {
+  .process {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

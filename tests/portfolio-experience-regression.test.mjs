@@ -364,3 +364,18 @@ test('graphic design publishes the approved gallery and retains continuous phone
     assert.ok(fs.existsSync(new URL(`../public${asset}`, import.meta.url)), `Missing gallery asset: ${asset}`);
   }
 });
+
+test('the video planning category uses durable playable assets and a plain background', () => {
+  assert.match(portfolioComponent, /dir: 'video\/', label: '视频', count: 5,[^}]+href: '\/video'/);
+  const videoPage = fs.readFileSync(new URL('../src/app/video/page.tsx', import.meta.url), 'utf8');
+  assert.match(videoPage, /<h1 id="video-title">视频策划<\/h1>/);
+  assert.doesNotMatch(videoPage, /PortfolioStarfield/);
+  const works = fs.readFileSync(new URL('../src/app/video/works.ts', import.meta.url), 'utf8');
+  const slugs = [...works.matchAll(/slug: '([^']+)'/g)].map(match => match[1]);
+  assert.equal(slugs.length, 5);
+  for (const slug of slugs) {
+    for (const extension of ['mp4', 'webp']) {
+      assert.ok(fs.existsSync(new URL(`../public/video/${slug}.${extension}`, import.meta.url)));
+    }
+  }
+});
