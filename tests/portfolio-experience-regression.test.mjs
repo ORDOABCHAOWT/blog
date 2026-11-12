@@ -370,6 +370,10 @@ test('the video planning category uses durable playable assets and a plain backg
   const videoPage = fs.readFileSync(new URL('../src/app/video/page.tsx', import.meta.url), 'utf8');
   assert.match(videoPage, /<h1 id="video-title">视频策划<\/h1>/);
   assert.doesNotMatch(videoPage, /PortfolioStarfield/);
+  const player = fs.readFileSync(new URL('../src/app/video/VideoPlayer.tsx', import.meta.url), 'utf8');
+  assert.match(player, /controlsList="nodownload noremoteplayback"/);
+  assert.match(player, /onContextMenu=\{\(event\) => event.preventDefault\(\)\}/);
+  assert.doesNotMatch(player, /<a\b|download=/);
   const works = fs.readFileSync(new URL('../src/app/video/works.ts', import.meta.url), 'utf8');
   const slugs = [...works.matchAll(/slug: '([^']+)'/g)].map(match => match[1]);
   assert.equal(slugs.length, 5);

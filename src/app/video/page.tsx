@@ -3,6 +3,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import styles from './video.module.css';
 import { videoWorks } from './works';
+import VideoPlayer from './VideoPlayer';
 
 export const metadata: Metadata = {
   title: '视频策划 | Taffy Wang',
@@ -36,19 +37,12 @@ export default function VideoPortfolioPage() {
               key={work.slug}
               aria-labelledby={`${work.slug}-title`}
             >
-              <video
+              <VideoPlayer
                 className={styles.player}
                 width={work.width}
                 height={work.height}
-                controls
-                playsInline
-                preload="none"
-                poster={`/video/${work.slug}.webp`}
-                aria-labelledby={`${work.slug}-title`}
-              >
-                <source src={`/video/${work.slug}.mp4`} type="video/mp4" />
-                <a href={`/video/${work.slug}.mp4`}>打开视频文件</a>
-              </video>
+                slug={work.slug}
+              />
               <div className={styles.caption}>
                 <h2 id={`${work.slug}-title`}>{work.title}</h2>
                 <p>{work.description}</p>
