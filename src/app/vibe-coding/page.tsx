@@ -8,8 +8,8 @@ export const metadata: Metadata = {
   description: '王腾用 AI 编程做的小软件：按实际需要做出来，自己每天在用。',
 };
 
-// Each project page is a self-contained HTML file in public/vibe-coding/, mapped to a clean URL in next.config.ts;
-// its cover is a 1200×800 crop of an image from that page, in public/vibe-coding/covers/.
+// Project covers live in public/vibe-coding/covers/.
+// The original static work pages use rewrites; extension projects use App Router pages.
 const projects = [
   {
     index: '01',
@@ -47,6 +47,24 @@ const projects = [
     stack: 'Swift · AppKit',
     cover: '/vibe-coding/covers/glance.webp',
   },
+  {
+    index: '05',
+    name: 'Smart Bookmark',
+    summary: '收藏时自动生成标签，按关键词找回需要的网页',
+    href: '/vibe-coding/smart-bookmark',
+    platform: 'Chrome Extension',
+    stack: 'JavaScript · HTML / CSS · Manifest V3 · WebDAV',
+    cover: '/vibe-coding/covers/smart-bookmark.webp',
+  },
+  {
+    index: '06',
+    name: '小红书专注搜索页',
+    summary: '打开小红书，直接搜索自己想找的内容',
+    href: '/vibe-coding/rednote-focus',
+    platform: 'Chrome Extension',
+    stack: 'JavaScript · DOM / CSS · Manifest V3',
+    cover: '/vibe-coding/covers/rednote-focus.webp',
+  },
 ];
 
 export default function VibeCodingPage() {
@@ -74,7 +92,7 @@ export default function VibeCodingPage() {
         <ul className="vibe-gallery">
           {projects.map((project, position) => (
             <li key={project.index}>
-              {/* A plain anchor: the target is a static file, not an App Router page. */}
+              {/* Plain anchors support both static work pages and App Router project pages. */}
               <a className="vibe-card" href={project.href}>
                 <figure className="vibe-card-cover">
                   <Image

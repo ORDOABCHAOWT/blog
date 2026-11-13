@@ -76,7 +76,7 @@ test('new media chapter pairs both scrollable phone stories with five poster des
   assert.match(home, /href="#campaign">新媒体视觉<\/a>/);
   assert.match(chapter, /id="campaign-title">新媒体视觉<\/h2>/);
   assert.equal((chapter.match(/class="story-scroll"/g) ?? []).length, 2);
-  assert.equal((chapter.match(/class="media-poster zoom-work"/g) ?? []).length, 5);
+  assert.equal((chapter.match(/class="media-poster"/g) ?? []).length, 5);
 });
 
 test('portfolio chapters and navigation follow the same order', () => {

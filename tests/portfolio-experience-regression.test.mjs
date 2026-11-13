@@ -321,7 +321,7 @@ test('the homepage reaches the portfolio by flying through the stars', () => {
 test('Vibe coding shows its projects as a gallery of covers', () => {
   const vibePage = fs.readFileSync(new URL('../src/app/vibe-coding/page.tsx', import.meta.url), 'utf8');
   assert.match(vibePage, /className="vibe-gallery"/, 'Expected a gallery instead of a list');
-  for (const slug of ['chordlens', 'word-notebook', 'office-assistant', 'glance']) {
+  for (const slug of ['chordlens', 'word-notebook', 'office-assistant', 'glance', 'smart-bookmark', 'rednote-focus']) {
     assert.match(vibePage, new RegExp(`cover: '/vibe-coding/covers/${slug}\\.webp'`), `Expected a cover for ${slug}`);
     assert.ok(
       fs.existsSync(new URL(`../public/vibe-coding/covers/${slug}.webp`, import.meta.url)),
@@ -331,7 +331,7 @@ test('Vibe coding shows its projects as a gallery of covers', () => {
   assert.match(
     globalsCss,
     /\.vibe-gallery \{[^}]*grid-template-columns: repeat\(2, minmax\(0, 1fr\)\)/,
-    'Expected four equal covers, two to a row'
+    'Expected equal covers, two to a row'
   );
   assert.doesNotMatch(vibePage + globalsCss, /vibe-project/, 'Expected the old list to be gone');
 });
@@ -339,7 +339,7 @@ test('Vibe coding shows its projects as a gallery of covers', () => {
 
 test('Vibe coding tiles reveal stack and a learn-more action for hover, focus and touch', () => {
   const page = fs.readFileSync(new URL('../src/app/vibe-coding/page.tsx', import.meta.url), 'utf8');
-  assert.equal((page.match(/stack: '/g) || []).length, 4);
+  assert.equal((page.match(/stack: '/g) || []).length, 6);
   assert.match(page, /vibe-card-stack/);
   assert.match(page, /Learn more/);
   assert.match(globalsCss, /\.vibe-card:hover \.vibe-card-cover,[\s\S]*?opacity: 0;/);
@@ -373,13 +373,27 @@ test('the video planning category uses durable playable assets and a plain backg
   const player = fs.readFileSync(new URL('../src/app/video/VideoPlayer.tsx', import.meta.url), 'utf8');
   assert.match(player, /controlsList="nodownload noremoteplayback"/);
   assert.match(player, /onContextMenu=\{\(event\) => event.preventDefault\(\)\}/);
-  assert.doesNotMatch(player, /<a\b|download=/);
+  assert.doesNotMatch(player, /href=[^\n]*\.mp4|download=/);
+  assert.match(player, /shots-iphone17pro-deep-blue\.png/);
+  assert.doesNotMatch(player, /tiktokOverlay|douyin/);
   const works = fs.readFileSync(new URL('../src/app/video/works.ts', import.meta.url), 'utf8');
-  const slugs = [...works.matchAll(/slug: '([^']+)'/g)].map(match => match[1]);
+  const slugs = [...works.matchAll(/["']?slug["']?: ["']([^"']+)["']/g)].map(match => match[1]);
   assert.equal(slugs.length, 5);
   for (const slug of slugs) {
     for (const extension of ['mp4', 'webp']) {
       assert.ok(fs.existsSync(new URL(`../public/video/${slug}.${extension}`, import.meta.url)));
     }
   }
+});
+
+test('extension project cards open complete introductions through their own routes', () => {
+  for (const slug of ['smart-bookmark', 'rednote-focus']) {
+    const page = fs.readFileSync(new URL(`../src/app/vibe-coding/${slug}/page.tsx`, import.meta.url), 'utf8');
+    assert.match(page, /id="project-title"/);
+    assert.match(page, /href="\/vibe-coding">← 返回 Vibe coding/);
+    for (const [, asset] of page.matchAll(/src="(\/vibe-coding\/[^"]+\.webp)"/g)) {
+      assert.ok(fs.existsSync(new URL(`../public${asset}`, import.meta.url)));
+    }
+  }
+  assert.match(portfolioComponent, /label: 'Vibe coding', count: 6, status: '6 个项目'/);
 });

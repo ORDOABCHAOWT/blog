@@ -4,7 +4,7 @@ import PortfolioTerminal, { type TerminalEntry } from '@/components/PortfolioTer
 
 // Categories with published work link to their own index page; the rest answer "作品整理中" on the screen.
 const portfolioCategories: TerminalEntry[] = [
-  { dir: 'vibe-coding/', label: 'Vibe coding', count: 4, status: '4 个项目', href: '/vibe-coding' },
+  { dir: 'vibe-coding/', label: 'Vibe coding', count: 6, status: '6 个项目', href: '/vibe-coding' },
   { dir: 'graphic-design/', label: '平面设计', count: 12, status: '12 件作品', href: '/graphic-design', staticPage: true },
   { dir: 'video/', label: '视频', count: 5, status: '5 部作品', href: '/video' },
   { dir: 'social-media/', label: '新媒体运营', count: 0, status: '整理中' },

@@ -1,0 +1,98 @@
+.content {
+  position: relative;
+  width: min(100% - 2.5rem, 72rem);
+  margin: 0 auto;
+  padding: clamp(2.5rem, 6vw, 5rem) 0;
+}
+
+.heading {
+  max-width: 46rem;
+  margin-bottom: clamp(2rem, 5vw, 4rem);
+}
+
+.heading h1 {
+  margin: 0.6rem 0 1.25rem;
+  font-size: clamp(2.4rem, 6vw, 5rem);
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: -0.06em;
+}
+
+.heading p,
+.features p,
+.caption {
+  color: var(--portfolio-muted);
+  line-height: 1.8;
+}
+
+.heading p {
+  margin: 0;
+  font-size: clamp(1rem, 1.5vw, 1.2rem);
+}
+
+.screenshot {
+  margin: 0;
+}
+
+.screenshot img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+.features {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 2rem;
+  margin: clamp(2rem, 5vw, 4rem) 0;
+}
+
+.features h2 {
+  margin: 0 0 0.6rem;
+  font-size: 1.15rem;
+  font-weight: 500;
+}
+
+.features p {
+  margin: 0;
+}
+
+.caption {
+  margin: 0.75rem 0 0;
+  font-size: 0.8rem;
+}
+
+.footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem;
+  margin-top: clamp(2rem, 5vw, 4rem);
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--portfolio-rule);
+  color: var(--portfolio-muted);
+  font-size: 0.85rem;
+}
+
+.footer p {
+  margin: 0;
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+}
+
+.links a:hover {
+  color: var(--portfolio-accent);
+}
+
+@media (max-width: 760px) {
+  .features {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+}

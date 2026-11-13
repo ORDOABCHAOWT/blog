@@ -43,6 +43,7 @@ export default function VideoPortfolioPage() {
                 height={work.height}
                 slug={work.slug}
               />
+              <div className={work.process ? styles.processColumn : undefined}>
               <div className={styles.caption}>
                 <h2 id={`${work.slug}-title`}>{work.title}</h2>
                 <p>{work.description}</p>
@@ -64,6 +65,7 @@ export default function VideoPortfolioPage() {
                   ))}
                 </div>
               )}
+              </div>
             </article>
           ))}
         </div>
