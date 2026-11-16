@@ -3,19 +3,39 @@
 const stage = document.querySelector('.media-posters');
 if (stage) {
   const cards = [...stage.querySelectorAll('.media-poster')];
+  let order = [...cards];
+  function centerStack() {
+    const center = stage.clientWidth / 2;
+    // Include every depth slot, not just the front image, when centering the group.
+    // These projection values match the stage's 1200px perspective and 65px depth.
+    let low = -stage.clientWidth;
+    let high = stage.clientWidth;
+    for (let step = 0; step < 24; step++) {
+      const left = (low + high) / 2;
+      const bounds = order.map((card, index) => {
+        const scale = 1200 / (1200 + index * 65);
+        const start = center + (left + index * 23 - center) * scale;
+        return [start, start + card.offsetWidth * scale];
+      });
+      const groupCenter = (Math.min(...bounds.map(b => b[0])) + Math.max(...bounds.map(b => b[1]))) / 2;
+      if (groupCenter < center) low = left;
+      else high = left;
+    }
+    stage.style.setProperty('--stack-left', `${(low + high) / 2}px`);
+  }
   // Keep the taller poster within the stack while retaining every image's ratio.
   cards.forEach(card => {
     const image = card.querySelector('img');
     function fit() {
       if (image.naturalWidth && image.naturalHeight) {
         card.style.width = Math.min(stage.clientWidth * .67, stage.clientHeight * .78 * image.naturalWidth / image.naturalHeight) + 'px';
+        centerStack();
       }
     }
     image.addEventListener('load', fit);
     new ResizeObserver(fit).observe(stage);
     fit();
   });
-  let order = [...cards];
   let startX = 0;
   let dragged = false;
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
@@ -26,6 +46,7 @@ if (stage) {
       card.tabIndex = index === 0 ? 0 : -1;
       card.inert = index !== 0;
     });
+    centerStack();
   }
   function swap() {
     order.push(order.shift());

@@ -83,7 +83,7 @@ export default function VideoPlayer({ slug, width, height, className }: VideoPla
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={`/video/${slug}.webp`} width={width} height={height} alt="" />
-        <span className={styles.playIcon} aria-hidden="true">
+        <span className={`${styles.glassControl} ${styles.playIcon}`} aria-hidden="true">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
             <path d="M8 5v14l12-7z" />
           </svg>
@@ -96,7 +96,16 @@ export default function VideoPlayer({ slug, width, height, className }: VideoPla
         onClose={close}
         onClick={event => { if (event.target === event.currentTarget) dialog.current?.close(); }}
       >
-        <button className={styles.closePlayer} aria-label="关闭视频" onClick={() => dialog.current?.close()}>×</button>
+        <button
+          className={`${styles.glassControl} ${styles.closePlayer}`}
+          type="button"
+          aria-label="关闭视频"
+          onClick={() => dialog.current?.close()}
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="m6 6 12 12M18 6 6 18" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+          </svg>
+        </button>
         {video}
       </dialog>
     </>

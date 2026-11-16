@@ -200,7 +200,7 @@ h1>.title-first,h1>.title-second{display:block}h1>.title-first{color:var(--ink)}
 .media-posters .media-poster {
   position: absolute;
   top: 16%;
-  left: 3%;
+  left: var(--stack-left, 3%);
   width: 67%;
   height: auto;
   padding: 0;
@@ -208,7 +208,7 @@ h1>.title-first,h1>.title-second{display:block}h1>.title-first{color:var(--ink)}
   background: transparent;
   box-shadow: 0 16px 40px #0001;
   transform: translate3d(calc(var(--slot, 0) * 23px), calc(var(--slot, 0) * -20px), calc(var(--slot, 0) * -65px)) skewY(3deg);
-  transition: transform 600ms cubic-bezier(.22, 1, .36, 1);
+  transition: transform 600ms cubic-bezier(.22, 1, .36, 1), left 600ms cubic-bezier(.22, 1, .36, 1);
   cursor: pointer;
   touch-action: pan-y;
 }
