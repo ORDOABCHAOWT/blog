@@ -1,5 +1,6 @@
 import Link from 'next/link';
-import PortfolioStarfield from '@/components/PortfolioStarfield';
+import Profile from './personal-profile/profile';
+import './personal-profile/style.css';
 import PortfolioTerminal, { type TerminalEntry } from '@/components/PortfolioTerminal';
 
 // Categories with published work link to their own index page; the rest answer "作品整理中" on the screen.
@@ -13,7 +14,6 @@ const portfolioCategories: TerminalEntry[] = [
 export default function PortfolioExperience() {
   return (
     <main className="portfolio-page portfolio-desk-page">
-      <PortfolioStarfield />
 
       <header className="portfolio-navigation">
         <Link href="/" className="portfolio-wordmark">
@@ -22,10 +22,11 @@ export default function PortfolioExperience() {
         <span aria-hidden="true">◌</span>
       </header>
 
-      <section className="portfolio-desk" aria-labelledby="portfolio-title">
+      <section className="portfolio-desk profile-demo-desk" aria-labelledby="portfolio-title">
         <h1 id="portfolio-title" className="sr-only">
           作品集
         </h1>
+        <Profile />
         <PortfolioTerminal entries={portfolioCategories} badge="PORTFOLIO" />
       </section>
     </main>

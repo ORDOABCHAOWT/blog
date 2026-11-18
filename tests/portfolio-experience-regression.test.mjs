@@ -130,11 +130,11 @@ test('portfolio post metadata names the portfolio link correctly', () => {
   );
 });
 
-test('portfolio pages share an ASCII starfield with the Milky Way behind them', () => {
-  assert.match(
+test('the profile desk omits the animated starfield for readability', () => {
+  assert.doesNotMatch(
     portfolioComponent,
     /<PortfolioStarfield \/>/,
-    'Expected the starfield behind the computer'
+    'Expected a calm background behind the profile'
   );
   assert.doesNotMatch(
     portfolioComponent + globalsCss,
